@@ -10,8 +10,9 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
- '(w32shell-cygwin-bin "c:\\cygwin\\bin")
- '(w32shell-shell (quote cygwin)))
+; '(w32shell-cygwin-bin "c:\\cygwin\\bin")
+; '(w32shell-shell (quote cygwin)))
+)
 (custom-set-faces
   ;; custom-set-faces was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.
@@ -23,14 +24,21 @@
 ;; compile=f6; debug=f5
 (global-set-key (kbd "<f6>") 'compile)
 (global-set-key (kbd "<f5>") 'debug)
+;;goto line
+(global-set-key (kbd "C-;") 'goto-line)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; max soft width
 (setq-default fill-column 72)
 (setq auto-fill-mode 1)
-;; line numbers
+
+;; line numbers (in the info bar)
 (line-number-mode 1)
 (column-number-mode 1)
+
+;; line numbers
+;(require 'linum)
+(global-linum-mode 0)
 
 ;; color-themes plugin
 (add-to-list 'load-path (concat emacsfiles "/color-theme-6.6.0"))
@@ -66,8 +74,13 @@
       (setq load-path (cons my-lisp-dir load-path))
       (normal-top-level-add-subdirs-to-load-path)))
 
+;; TRAMP
+(require 'tramp)
+(setq tramp-default-method "plink")
+(setq tramp-default-user "jeff")
+
 ;; store autosave files in one location
-(defvar autosave-dir (concat emacsfiles "/autosaves"))
+(defvar autosave-dir (concat emacsfiles "/autosaves/"))
 (make-directory autosave-dir t)
 (defun make-auto-save-file-name ()
   (concat autosave-dir
@@ -77,13 +90,9 @@
 	     (concat "#%" (buffer-name) "#")))))
 
 ;; store backup files in one location
-(defvar backup-dir (concat emacsfiles "/backups"))
+(defvar backup-dir (concat emacsfiles "/backups/"))
 (make-directory backup-dir t)
 (setq backup-directory-alist (list (cons "." backup-dir)))
-
-;; line numbers
-(require 'linum)
-(global-linum-mode 1)
 
 ;; remove menubar, toolbar
 ;(menu-bar-mode -1)
@@ -143,6 +152,19 @@
 (autoload 'clojure-mode "clojure-mode" "Clojure Mode." t)
 (add-to-list 'auto-mode-alist '("\\.clj" . clojure-mode))
 
+;; swank-clojure
+(setq swank-clojure-jar-path "~/Projects/remote-repo/clj/jars/clojure.jar"
+      swank-clojure-extra-classpaths
+	  (file-expand-wildcards "~/Projects/remote-repo/clj/jars/*.jar"))
+(require 'swank-clojure-autoload)
+
+;; SLIME
+(eval-after-load "slime"
+  '(progn (slime-setup '(slime-repl))))
+;(setq inferior-lisp-program "clj")
+(require 'slime)
+(slime-setup)
+
 ;; Python ;;
 ;; python-mode
 (autoload 'python-mode "python-mode" "Python Mode." t)
@@ -189,3 +211,26 @@
 
 ;; django-mode ;;
 (load "django-mode.el")
+
+;; ruby-mode ;;
+(autoload 'ruby-mode "ruby-mode"
+  "Mode for editing ruby source files" t)
+(setq auto-mode-alist
+      (append '(("\\.rb$" . ruby-mode)) auto-mode-alist))
+(setq interpreter-mode-alist (append '(("ruby" . ruby-mode))
+				     interpreter-mode-alist))
+
+(autoload 'run-ruby "inf-ruby"
+  "Run an inferior Ruby process")
+(autoload 'inf-ruby-keys "inf-ruby"
+  "Set local key defs for inf-ruby in ruby-mode")
+(add-hook 'ruby-mode-hook
+	  '(lambda () (inf-ruby-keys)))
+
+;; rails-mode ;;
+;(require 'rails)
+
+
+;; salsa-mode == java-mode ;;
+(setq auto-mode-alist
+      (append '(("\\.salsa$" . java-mode)) auto-mode-alist))
