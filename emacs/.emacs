@@ -155,15 +155,19 @@
 ;; swank-clojure
 (setq swank-clojure-jar-path "~/Projects/remote-repo/clj/jars/clojure.jar"
       swank-clojure-extra-classpaths
-	  (file-expand-wildcards "~/Projects/remote-repo/clj/jars/*.jar"))
+      (append
+       (file-expand-wildcards "~/Projects/remote-repo/clj/jars/*.jar")
+       (file-expand-wildcards "~/Projects/remote-repo/clj/jars/*/*.jar")))
 (require 'swank-clojure-autoload)
 
-;; SLIME
-(eval-after-load "slime"
-  '(progn (slime-setup '(slime-repl))))
+;; SLIME - UBUNTU only
+;(eval-after-load "slime"
+;  '(progn (slime-setup '(slime-repl))))
+(setq slime-use-autodoc-mode nil)
 ;(setq inferior-lisp-program "clj")
 (require 'slime)
-(slime-setup)
+;(slime-setup) ;; UBUNTU only
+(slime-setup '(slime-fancy))
 
 ;; Python ;;
 ;; python-mode
@@ -172,7 +176,7 @@
 ;(add-to-list 'interpreter-mode-alist '("python" . python-mode))
 
 (add-hook 'python-mode-hook
-	  (lambda ()
+	  (lambda ()
 	    (set (make-variable-buffer-local 'beginning-of-defun-function)
 		 'py-beginning-of-def-or-class)
 	    (setq outline-regexp "def\\|class ")))
@@ -234,3 +238,11 @@
 ;; salsa-mode == java-mode ;;
 (setq auto-mode-alist
       (append '(("\\.salsa$" . java-mode)) auto-mode-alist))
+
+
+;; YAML-mode ;;
+(require 'yaml-mode)
+(add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
+(add-hook 'yaml-mode-hook
+	  '(lambda ()
+	     (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
