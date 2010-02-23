@@ -84,6 +84,7 @@ set noedcompatible
 if &t_Co > 2 || has("gui_running")
     " ...then use highlighting
     syntax on
+	set guioptions-=T
 endif
 
 if has("gui_running")
@@ -97,7 +98,7 @@ if has("gui_running")
         "set guifont=Monaco:h9:cANSI
         "set guifont=Courier:h10:cANSI
     else
-        set gfn=-adobe-courier-medium-r-normal-*-*-140-*-*-m-*-iso8859-15
+        "set gfn=-adobe-courier-medium-r-normal-*-*-140-*-*-m-*-iso8859-15
     endif
     "colorscheme morning
 	colorscheme twilight2
