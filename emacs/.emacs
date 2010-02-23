@@ -1,10 +1,11 @@
 ;; where emacs files are
 (defvar emacsfiles (concat (getenv "HOME") "/.emacs.d"))
 
-;; I only have emacs for windows, so this is win specific
-(cd "C:/Users/Jeff/")
 
-;; set win32-emacs valuds
+;; I only have emacs for windows, so this is win specific
+;(cd "C:/Users/Jeff/")
+
+;; set win32-emacs values
 (custom-set-variables
   ;; custom-set-variables was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.
@@ -20,12 +21,59 @@
   ;; If there is more than one, they won't work right.
  )
 
+(setq scroll-bar-mode-explicit t) 
+(set-scroll-bar-mode `right) 
+
+(set-face-attribute 'default nil :height 75)
+
 ;;;;;; KEY BINDINGS ;;;;;;;
 ;; compile=f6; debug=f5
 (global-set-key (kbd "<f6>") 'compile)
 (global-set-key (kbd "<f5>") 'debug)
 ;;goto line
 (global-set-key (kbd "C-;") 'goto-line)
+;; remove kill-ring crap
+(defun my-delete-word (arg)
+  "Delete characters forward until encountering the end of a word.
+With argument, do this that many times.
+This command does not push erased text to kill-ring."
+  (interactive "p")
+  (delete-region (point) (progn (forward-word arg) (point))))
+
+(defun my-backward-delete-word (arg)
+  "Delete characters backward until encountering the beginning of a word.
+With argument, do this that many times.
+This command does not push erased text to kill-ring."
+  (interactive "p")
+  (my-delete-word (- arg)))
+
+(defun my-delete-line ()
+  "Delete text from current position to end of line char."
+  (interactive)
+  (if (= (point)
+	 (save-excursion (move-end-of-line 1) (point)))
+    (delete-char 1)
+    (delete-region
+     (point)
+     (save-excursion (move-end-of-line 1) (point))))
+  ;(delete-char 1)
+)
+
+(defun my-delete-line-backward ()
+  "Delete text between the beginning of the line to the cursor position."
+  (interactive)
+  (let (x1 x2)
+    (setq x1 (point))
+    (move-beginning-of-line 1)
+    (setq x2 (point))
+    (delete-region x1 x2)))
+
+; Here's the code to bind them with emacs's default shortcut keys: 
+
+(global-set-key (kbd "C-S-k") 'my-delete-line-backward) ; Ctrl+Shift+k
+(global-set-key (kbd "C-k") 'my-delete-line)
+(global-set-key (kbd "M-d") 'my-delete-word)
+(global-set-key (kbd "<M-backspace>") 'my-backward-delete-word)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; max soft width
@@ -39,6 +87,12 @@
 ;; line numbers
 ;(require 'linum)
 (global-linum-mode 0)
+
+;; auto closes when slime is open
+(defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
+        "Prevent annoying \"Active processes exist\" query when you quit Emacs."
+        (flet ((process-list ())) ad-do-it))
+
 
 ;; color-themes plugin
 (add-to-list 'load-path (concat emacsfiles "/color-theme-6.6.0"))
@@ -149,25 +203,25 @@
 
 ;;;;; LANGUAGE MODES ;;;;;
 ;; clojure-mode ;;
-(autoload 'clojure-mode "clojure-mode" "Clojure Mode." t)
-(add-to-list 'auto-mode-alist '("\\.clj" . clojure-mode))
+;; (autoload 'clojure-mode "clojure-mode" "Clojure Mode." t)
+;; (add-to-list 'auto-mode-alist '("\\.clj" . clojure-mode))
 
-;; swank-clojure
-(setq swank-clojure-jar-path "~/Projects/remote-repo/clj/jars/clojure.jar"
-      swank-clojure-extra-classpaths
-      (append
-       (file-expand-wildcards "~/Projects/remote-repo/clj/jars/*.jar")
-       (file-expand-wildcards "~/Projects/remote-repo/clj/jars/*/*.jar")))
-(require 'swank-clojure-autoload)
+;; ;; swank-clojure
+;; (setq swank-clojure-jar-path "~/Projects/remote-repo/clj/jars/clojure.jar"
+;;       swank-clojure-extra-classpaths
+;;       (append
+;;        (file-expand-wildcards "~/Projects/remote-repo/clj/jars/*.jar")
+;;        (file-expand-wildcards "~/Projects/remote-repo/clj/jars/*/*.jar")))
+;; (require 'swank-clojure-autoload)
 
-;; SLIME - UBUNTU only
-;(eval-after-load "slime"
-;  '(progn (slime-setup '(slime-repl))))
-(setq slime-use-autodoc-mode nil)
-;(setq inferior-lisp-program "clj")
-(require 'slime)
-;(slime-setup) ;; UBUNTU only
-(slime-setup '(slime-fancy))
+;; ;; SLIME - UBUNTU only
+;; ;(eval-after-load "slime"
+;; ;  '(progn (slime-setup '(slime-repl))))
+;; (setq slime-use-autodoc-mode nil)
+;; ;(setq inferior-lisp-program "clj")
+;; (require 'slime)
+;; ;(slime-setup) ;; UBUNTU only
+;; (slime-setup '(slime-fancy))
 
 ;; Python ;;
 ;; python-mode
@@ -207,37 +261,32 @@
 ;(add-hook 'find-file-hooks 'loadn-ropemacs)
 
 ;; html-mode (nxhtml) ;;
-(load "nxhtml/autostart.el")
+;; (load "nxhtml/autostart.el")
 
-;; javascript-mode (js2Mode) ;;
-(autoload 'js2-mode "js2" nil t)
-(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+;; ;; javascript-mode (js2Mode) ;;
+;; (autoload 'js2-mode "js2" nil t)
+;; (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
 
 ;; django-mode ;;
 (load "django-mode.el")
 
 ;; ruby-mode ;;
-(autoload 'ruby-mode "ruby-mode"
-  "Mode for editing ruby source files" t)
-(setq auto-mode-alist
-      (append '(("\\.rb$" . ruby-mode)) auto-mode-alist))
-(setq interpreter-mode-alist (append '(("ruby" . ruby-mode))
-				     interpreter-mode-alist))
+;; (autoload 'ruby-mode "ruby-mode"
+;;   "Mode for editing ruby source files" t)
+;; (setq auto-mode-alist
+;;       (append '(("\\.rb$" . ruby-mode)) auto-mode-alist))
+;; (setq interpreter-mode-alist (append '(("ruby" . ruby-mode))
+;; 				     interpreter-mode-alist))
 
-(autoload 'run-ruby "inf-ruby"
-  "Run an inferior Ruby process")
-(autoload 'inf-ruby-keys "inf-ruby"
-  "Set local key defs for inf-ruby in ruby-mode")
-(add-hook 'ruby-mode-hook
-	  '(lambda () (inf-ruby-keys)))
+;; (autoload 'run-ruby "inf-ruby"
+;;   "Run an inferior Ruby process")
+;; (autoload 'inf-ruby-keys "inf-ruby"
+;;   "Set local key defs for inf-ruby in ruby-mode")
+;; (add-hook 'ruby-mode-hook
+;; 	  '(lambda () (inf-ruby-keys)))
 
 ;; rails-mode ;;
 ;(require 'rails)
-
-
-;; salsa-mode == java-mode ;;
-(setq auto-mode-alist
-      (append '(("\\.salsa$" . java-mode)) auto-mode-alist))
 
 
 ;; YAML-mode ;;
@@ -246,3 +295,14 @@
 (add-hook 'yaml-mode-hook
 	  '(lambda ()
 	     (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
+
+
+;;; This was installed by package-install.el.
+;;; This provides support for the package system and
+;;; interfacing with ELPA, the package archive.
+;;; Move this code earlier if you want to reference
+;;; packages in your .emacs.
+(when
+    (load
+     (expand-file-name "~/.emacs.d/elpa/package.el"))
+  (package-initialize))
