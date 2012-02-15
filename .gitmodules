@@ -1,3 +1,27 @@
 [submodule "vim/.vim/bundle/command-t"]
 	path = vim/.vim/bundle/command-t
 	url = git://git.wincent.com/command-t.git
+[submodule "vim/.vim/bundle/python-mode"]
+	path = vim/.vim/bundle/python-mode
+	url = git://github.com/klen/python-mode.git
+[submodule "vim/.vim/bundle/vim-rvm"]
+	path = vim/.vim/bundle/vim-rvm
+	url = git://github.com/tpope/vim-rvm.git
+[submodule "vim/.vim/bundle/vim-clojure"]
+	path = vim/.vim/bundle/vim-clojure
+	url = git://github.com/vim-scripts/VimClojure.git
+[submodule "vim/.vim/bundle/ack"]
+	path = vim/.vim/bundle/ack
+	url = git://github.com/mileszs/ack.vim.git
+[submodule "vim/.vim/bundle/vim-javascript"]
+	path = vim/.vim/bundle/vim-javascript
+	url = git://github.com/pangloss/vim-javascript.git
+[submodule "vim/.vim/bundle/supertab"]
+	path = vim/.vim/bundle/supertab
+	url = git://github.com/ervandew/supertab.git
+[submodule "vim/.vim/bundle/virtualenv"]
+	path = vim/.vim/bundle/virtualenv
+	url = git://github.com/jmcantrell/vim-virtualenv.git
+[submodule "vim/.vim/bundle/vim-surround"]
+	path = vim/.vim/bundle/vim-surround
+	url = git://github.com/tpope/vim-surround.git
