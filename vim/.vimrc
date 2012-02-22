@@ -226,8 +226,12 @@ let g:CommandTMatchWindowReverse=1
 map <leader>f :CommandTFlush<CR>\|:CommandT<CR>
 
 " Use templates when creating new files of same extensions
-autocmd! BufNewFile * silent! 0r ~/.vim/skel/tmpl.%:e
-autocmd! BufNewFile * silent! 0r ~/.vim/skel/%:e
+augroup templates
+    au!
+    autocmd BufNewFile *.* silent! execute '0r ~/.vim/skel/tmpl.'.expand('<afile>:e')
+    autocmd BufNewFile * %substitute#\[:EVAL:\]\(.\{-\}\)\[:END:\]#\=eval(submatch(1))#ge
+    autocmd BufNewFile * silent! foldopen!
+augroup END
 " but make sure a buffer with the template file isn't opened
 set cpoptions-=a
 
