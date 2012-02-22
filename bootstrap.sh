@@ -9,6 +9,7 @@ function main {
 
 function download_plugins {
     git submodule init
+    git submodule update
 }
 
 function build_command_t {
