@@ -107,6 +107,7 @@ autocmd FileType html setlocal shiftwidth=2
 autocmd FileType html setlocal noexpandtab
 
 autocmd FileType javascript setlocal noexpandtab
+autocmd FileType javascript setlocal foldlevel=99
 
 autocmd FileType clojure set lisp
 
@@ -115,6 +116,7 @@ autocmd FileType clojure set lisp
 autocmd FileType python setlocal cindent
 
 autocmd FileType make setlocal noexpandtab
+autocmd FileType make setlocal nosmartindent
 
 set complete=.,w,b,u,U,t,i,t
 set noinfercase
