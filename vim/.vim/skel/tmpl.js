@@ -1,6 +1,8 @@
-(function(window, document, $, undefined){
+(function(document, $, undefined){
+
+var window = this;
 
 $(function(){
 });
 
-})(window, document, jQuery);
+})(document, jQuery);
