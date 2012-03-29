@@ -34,7 +34,7 @@ function update {
     # install gocode files
     echo "Re-downloading gocode vim files ..."
     curl -L "https://raw.github.com/nsf/gocode/master/vim/autoload/gocomplete.vim" > $PWD/vim/.vim/bundle/gocomplete/autoload/gocomplete.vim
-    curl -L "https://raw.github.com/nsf/gocode/master/vim/ftplugin/go" > $PWD/vim/.vim/bundle/gocomplete/ftplugin/go.vim
+    curl -L "https://raw.github.com/nsf/gocode/master/vim/ftplugin/go.vim" > $PWD/vim/.vim/bundle/gocomplete/ftplugin/go.vim
 }
 
 function update_submodules {
