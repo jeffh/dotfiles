@@ -51,12 +51,12 @@ inoremap <c-k> <esc>Da
 inoremap <c-e> <esc>$a
 inoremap <c-bs> <c-w>
 
+" Suppress all whitespace at end of lines when saving
+noremap <leader>w :%s/\s\+$//e<cr>:w<cr>
+
 " File Explorer
 "nmap <leader>e :Ex<cr>
 "nmap <leader>s :Sex<cr>
-
-" Save
-nmap <leader>w :w<cr>
 
 " ctags
 " go to defn of tag under the cursor
@@ -67,7 +67,7 @@ fun! MatchCaseTag()
     try
         exe 'tjump ' . expand('')
     finally
-       let &ic = ic
+        let &ic = ic
     endtry
 endfun
 command! GenerateTags :!/usr/local/bin/ctags --python-kinds=-iv --exclude=build --exclude=dest -f .tags -R .
@@ -107,7 +107,6 @@ autocmd FileType html setlocal shiftwidth=2
 autocmd FileType html setlocal noexpandtab
 
 autocmd FileType javascript setlocal noexpandtab
-autocmd FileType javascript setlocal foldlevel=99
 
 autocmd FileType clojure set lisp
 
@@ -118,13 +117,37 @@ autocmd FileType python setlocal cindent
 autocmd FileType make setlocal noexpandtab
 autocmd FileType make setlocal nosmartindent
 
-set complete=.,w,b,u,U,t,i,t
+autocmd FileType php setlocal noexpandtab
+autocmd FileType php setlocal foldmethod=indent
+
+" where <C-P> should get it's completion list
+" . => current buffer
+" w => buffers from other windows
+" b => loaded buffers in buffer list
+" u => unloaded buffers in buffer list (can be unreliable)
+" U => buffers not in buffer list (can be unreliable)
+" k => dictionary
+" kspell => spell checking
+" s => thesaurus
+" i => scan current & included files
+" d => scan current & included files for defined name or macro
+" ] => tag completion
+" t => alias for ]
+set complete=.,w,b,t,d,i,t
+
+" menu => Show menu when multiple autocomplete items are available
+" preview => Show extra info about the currently selected completion in menu
+" menuone => Shows menu when only one item is available for autocomplete
+" longest => Only inserts longest common text for matches
+set completeopt=menu,preview,longest
+
 set noinfercase
 
 set list
 set listchars=tab:\|\ ,trail:·,
 
 set foldmethod=syntax
+set foldlevelstart=20
 " autocmd FileType <Syntax> setlocal foldmethod=syntax
 
 " ============= Syntaxes / Highlighting
@@ -201,13 +224,13 @@ set hlsearch
 " Type %/ or %? in command line to expand out to current buffer's file location
 " (if it exists)
 if has('unix')
-  cnoremap %/ <C-R>=expand("%:h") . "/" <CR>
-  cnoremap %? <C-R>=expand("%:h") . "/" <CR>
-  cnoremap %% <C-R>=expand("%:h") . "/" <CR>
+    cnoremap %/ <C-R>=expand("%:h") . "/" <CR>
+    cnoremap %? <C-R>=expand("%:h") . "/" <CR>
+    cnoremap %% <C-R>=expand("%:h") . "/" <CR>
 else
-  cnoremap %/ <C-R>=expand("%:h") . "\\" <CR>
-  cnoremap %? <C-R>=expand("%:h") . "\\" <CR>
-  cnoremap %% <C-R>=expand("%:h") . "\\" <CR>
+    cnoremap %/ <C-R>=expand("%:h") . "\\" <CR>
+    cnoremap %? <C-R>=expand("%:h") . "\\" <CR>
+    cnoremap %% <C-R>=expand("%:h") . "\\" <CR>
 endif
 
 " ============= Files, Backups, Undo
@@ -239,21 +262,21 @@ set cpoptions-=a
 
 " Persistent undo
 try
-  if has('win32')
-    set undodir=C:\Windows\Temp
-  else
-    set undodir=/tmp/vim_undodir
-  endif
-  set undofile
+    if has('win32')
+        set undodir=C:\Windows\Temp
+    else
+        set undodir=/tmp/vim_undodir
+    endif
+    set undofile
 catch
 endtry
 
 " Set shell
 if has('macunix') || has('mac')
-  set shell=/bin/bash
-  "elseif has('win32')
+    set shell=/bin/bash
+    "elseif has('win32')
 elseif has('unix')
-  set shell=/bin/bash
+    set shell=/bin/bash
 endif
 
 " ============= Editing
@@ -281,7 +304,7 @@ set number
 " Set encoding and language
 set encoding=utf8
 try
-  lang en_US
+    lang en_US
 catch
 endtry
 
@@ -292,18 +315,18 @@ set guicursor+=i:blinkon0
 
 " default line endings
 if has('macunix') || has('mac')
-  set ffs=unix,mac,dos
+    set ffs=unix,mac,dos
 elseif has('win32')
-  set ffs=dos,unix,mac
+    set ffs=dos,unix,mac
 elseif has('unix')
-  set ffs=unix,mac,dos
+    set ffs=unix,mac,dos
 endif
 
 " command line history
 set history=600
 
 " Suppress all spaces at end of lines when saving
-autocmd BufWritePre * :%s/^\s\+$//e
+"autocmd BufWritePre * :%s/^\s\+$//e
 
 " Keep more context when scrolling off the end of a buffer
 set scrolloff=3
@@ -311,14 +334,28 @@ set scrolloff=3
 " Remap the tab key to do autocompletion or indentation depending on the
 " context (from http://www.vim.org/tips/tip.php?tip_id=102)
 function! InsertTabWrapper()
-  let col = col('.') - 1
-  if !col || getline('.')[col - 1] !~ '\k'
-    return "\<tab>"
-  else
-    return "\<c-p>"
-  endif
+    let col = col('.') - 1
+    if !col || getline('.')[col - 1] !~ '\k'
+        return "\<tab>"
+    else
+        return "\<c-p>"
+    endif
 endfunction
-inoremap <tab> <c-r>=InsertTabWrapper()<CR>
+
+"inoremap <tab> <c-r>=InsertTabWrapper()<CR>
+function! CleverTab()
+    if pumvisible()
+        return "\<C-N>"
+    endif
+    if strpart( getline('.'), 0, col('.')-1 ) =~ '^\s*$'
+        return "\<Tab>"
+    elseif exists('&omnifunc') && &omnifunc != ''
+        return "\<C-X>\<C-O>"
+    else
+        return "\<C-N>"
+    endif
+endfunction
+inoremap <tab> <c-r>=CleverTab()<CR>
 inoremap <s-tab> <c-n>
 
 noremap Y <esc>yyp
@@ -353,21 +390,21 @@ set wildmode=longest:full:list
 set wildmenu
 
 if has("gui_running")
-  " disable toolbar & scrollbars
-  set guioptions-=T
-  set guioptions-=L
-  set guioptions-=r
+    " disable toolbar & scrollbars
+    set guioptions-=T
+    set guioptions-=L
+    set guioptions-=r
 
-  set spell
+    set spell
 
-  set guifont=Inconsolata-dz:h14
-  if has('win32')
-    " alt key jumps to menu
-    set winaltkeys=menu
-  end
-  if has('macunix')
-    set transparency=5
-  end
+    set guifont=Inconsolata-dz:h14
+    if has('win32')
+        " alt key jumps to menu
+        set winaltkeys=menu
+    end
+    if has('macunix')
+        set transparency=5
+    end
 endif
 
 " make active window larger
@@ -383,38 +420,38 @@ set winheight=999
 
 " From Gary - https://www.destroyallsoftware.com/file-navigation-in-vim.html
 function! RenameFile()
-  let old_name = expand('%')
-  let new_name = input('Rename to: ', expand('%'))
-  if new_name != '' && new_Name != old_name
-    exec ':saveas ' . new_name
-    exec ':silent !rm' . old_name
-    redraw!
-  endif
+    let old_name = expand('%')
+    let new_name = input('Rename to: ', expand('%'))
+    if new_name != '' && new_Name != old_name
+        exec ':saveas ' . new_name
+        exec ':silent !rm' . old_name
+        redraw!
+    endif
 endfunction
 map <leader>r :call RenameFile()<cr>
 
 function! DeleteFile(...)
-  if(exists('a:1'))
-    let theFile=a:1
-  elseif ( &ft == 'help' )
-    echohl Error
-    echo "Cannot delete a help buffer!"
-    echohl None
-    return -1
-  else
-    let theFile=expand('%:p')
-  endif
-  let delStatus=delete(theFile)
-  if(delStatus == 0)
-    echo "Deleted " . theFile
-  else
-    echohl WarningMsg
-    echo "Failed to delete " . theFile
-    echohl None
-  endif
+    if(exists('a:1'))
+        let theFile=a:1
+    elseif ( &ft == 'help' )
+        echohl Error
+        echo "Cannot delete a help buffer!"
+        echohl None
+        return -1
+    else
+        let theFile=expand('%:p')
+    endif
+    let delStatus=delete(theFile)
+    if(delStatus == 0)
+        echo "Deleted " . theFile
+    else
+        echohl WarningMsg
+        echo "Failed to delete " . theFile
+        echohl None
+    endif
 
-  echo theFile . " was deleted!"
-  return delStatus
+    echo theFile . " was deleted!"
+    return delStatus
 endfunction
 "delete the current file
 command! Rm call DeleteFile()
@@ -422,17 +459,24 @@ command! DeleteFile call DeleteFile()
 
 " =============== misc
 
-if version >= 700 && has('python')
-  autocmd FileType python set omnifunc=pythoncomplete#Complete
-  let Tlist_Ctags_Cmd='/usr/bin/ctags'
+" autocomplete
+if version >= 700
+    autocmd FileType python set omnifunc=pythoncomplete#Complete
+    autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
+    autocmd FileType html set omnifunc=htmlcomplete#CompleteTags
+    autocmd FileType css set omnifunc=csscomplete#CompleteCSS
+    autocmd FileType xml set omnifunc=xmlcomplete#CompleteTags
+    autocmd FileType php set omnifunc=phpcomplete#CompletePHP
+    autocmd FileType c set omnifunc=ccomplete#Complete
+    let Tlist_Ctags_Cmd='/usr/bin/ctags'
 endif
 
 " spacing in various languages
 augroup myfiletypes
-  " clear old defs
-  autocmd!
-  autocmd FileType ruby,haml,eruby,yaml,html,javascript,sass set ai sw=2 sts=2 et
-  autocmd FileType python set sw=4 sts=4 et
+    " clear old defs
+    autocmd!
+    autocmd FileType ruby,haml,eruby,yaml,html,javascript,sass set ai sw=2 sts=2 et
+    autocmd FileType python set sw=4 sts=4 et
 augroup END
 
 " ===================== HACKS
