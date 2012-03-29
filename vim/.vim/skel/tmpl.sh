@@ -3,7 +3,7 @@
 # stop on failed command
 set -e
 
-main {
+function main {
 }
 
 main
