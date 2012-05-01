@@ -51,6 +51,9 @@ inoremap <c-k> <esc>Da
 inoremap <c-e> <esc>$a
 inoremap <c-bs> <c-w>
 
+" remove highlighting on newline
+nnoremap <CR> :nohlsearch<cr><cr>
+
 " Suppress all whitespace at end of lines when saving
 noremap <leader>w :%s/\s\+$//e<cr>:w<cr>
 
@@ -99,6 +102,8 @@ set shiftwidth=4
 set tabstop=4
 set softtabstop=4
 
+set switchbuf="useopen"
+
 set showmatch
 
 " Language-specific tabbing
@@ -120,6 +125,11 @@ autocmd FileType make setlocal nosmartindent
 autocmd FileType php setlocal noexpandtab
 autocmd FileType php setlocal foldmethod=indent
 
+autocmd BufReadPost *
+            \ if line("'\"") > 0 && line("'\"") <= line("$") |
+            \ exe "normal g`\"" |
+            \ endif
+
 " where <C-P> should get it's completion list
 " . => current buffer
 " w => buffers from other windows
@@ -139,7 +149,7 @@ set complete=.,w,b,t,d,i,t
 " preview => Show extra info about the currently selected completion in menu
 " menuone => Shows menu when only one item is available for autocomplete
 " longest => Only inserts longest common text for matches
-set completeopt=menu,preview,longest
+set completeopt=menu,preview
 
 set noinfercase
 
@@ -170,6 +180,8 @@ filetype plugin indent on
 
 syntax enable
 
+" -------------- Styles
+
 colorscheme twilight
 
 " highlight the line the cursor is on
@@ -182,12 +194,14 @@ if has('gui_running')
     highlight StatusLineNC guifg=Grey10   guibg=Grey50
     " guibg=NONE so we get the nice transparency stuff
     highlight LineNr       guifg=Grey40   guibg=NONE
+    highlight Search                      guibg=NONE     gui=underline
 else
     highlight LineNr       ctermfg=DarkGrey    ctermbg=None
     highlight StatusLine   ctermfg=Grey        ctermbg=Black
     highlight Search       ctermfg=DarkYellow  ctermbg=Black
     highlight Pmenu        ctermfg=White       ctermbg=DarkGrey
     highlight PmenuSel     ctermfg=White       ctermbg=DarkRed
+    highlight Search       ctermfg=None        ctermbg=NONE      cterm=underline
 endif
 
 " --------------- Python syntax highlighting
@@ -331,18 +345,6 @@ set history=600
 " Keep more context when scrolling off the end of a buffer
 set scrolloff=3
 
-" Remap the tab key to do autocompletion or indentation depending on the
-" context (from http://www.vim.org/tips/tip.php?tip_id=102)
-function! InsertTabWrapper()
-    let col = col('.') - 1
-    if !col || getline('.')[col - 1] !~ '\k'
-        return "\<tab>"
-    else
-        return "\<c-p>"
-    endif
-endfunction
-
-"inoremap <tab> <c-r>=InsertTabWrapper()<CR>
 function! CleverTab()
     if pumvisible()
         return "\<C-N>"
@@ -461,7 +463,7 @@ command! DeleteFile call DeleteFile()
 
 " autocomplete
 if version >= 700
-    autocmd FileType python set omnifunc=pythoncomplete#Complete
+    autocmd FileType python set omnifunc= "pythoncomplete#Complete
     autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
     autocmd FileType html set omnifunc=htmlcomplete#CompleteTags
     autocmd FileType css set omnifunc=csscomplete#CompleteCSS
