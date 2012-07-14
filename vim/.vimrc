@@ -149,7 +149,7 @@ set complete=.,w,b,t,d,i,t
 " preview => Show extra info about the currently selected completion in menu
 " menuone => Shows menu when only one item is available for autocomplete
 " longest => Only inserts longest common text for matches
-set completeopt=menu,preview
+set completeopt=menuone,preview
 
 set noinfercase
 
@@ -182,23 +182,23 @@ syntax enable
 
 " -------------- Styles
 
-colorscheme twilight
+colorscheme jellybeans
+"colorscheme twilight
 
 " highlight the line the cursor is on
 set cursorline
 
-" Colors
+" for twilight Colors
 if has('gui_running')
     highlight CursorLine   guibg=#292929
-    highlight StatusLine   guifg=Grey20   guibg=white
+    highlight StatusLine   guifg=Grey   guibg=NONE
     highlight StatusLineNC guifg=Grey10   guibg=Grey50
     " guibg=NONE so we get the nice transparency stuff
-    highlight LineNr       guifg=Grey40   guibg=NONE
+    highlight LineNr       guifg=Grey30   guibg=NONE
     highlight Search                      guibg=NONE     gui=underline
 else
     highlight LineNr       ctermfg=DarkGrey    ctermbg=None
-    highlight StatusLine   ctermfg=Grey        ctermbg=Black
-    highlight Search       ctermfg=DarkYellow  ctermbg=Black
+    highlight StatusLine   ctermfg=Grey        ctermbg=None
     highlight Pmenu        ctermfg=White       ctermbg=DarkGrey
     highlight PmenuSel     ctermfg=White       ctermbg=DarkRed
     highlight Search       ctermfg=None        ctermbg=NONE      cterm=underline
@@ -250,7 +250,7 @@ endif
 " ============= Files, Backups, Undo
 
 " auto reload vimrc when edited
-autocmd! bufwritepost .vimrc source ~/.vimrc
+"autocmd! bufwritepost .vimrc source ~/.vimrc
 
 " vim's backup / swap system
 set backupdir=~/.vim/tmp/,~/.tmp,/var/tmp,/tmp
@@ -420,6 +420,13 @@ set winheight=999
 
 " =============== Utilities
 
+function! Find()
+    let text = input('Text to search: ', 'TODO')
+    exec 'lvim /' . text . '/g **/*.*'
+    :lw
+endfunction
+command! Grep call Find()
+
 " From Gary - https://www.destroyallsoftware.com/file-navigation-in-vim.html
 function! RenameFile()
     let old_name = expand('%')
@@ -464,12 +471,14 @@ command! DeleteFile call DeleteFile()
 " autocomplete
 if version >= 700
     autocmd FileType python set omnifunc= "pythoncomplete#Complete
-    autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
+    autocmd FileType javascript set omnifunc= "javascriptcomplete#CompleteJS
     autocmd FileType html set omnifunc=htmlcomplete#CompleteTags
     autocmd FileType css set omnifunc=csscomplete#CompleteCSS
     autocmd FileType xml set omnifunc=xmlcomplete#CompleteTags
     autocmd FileType php set omnifunc=phpcomplete#CompletePHP
     autocmd FileType c set omnifunc=ccomplete#Complete
+    autocmd FileType go setlocal tabstop=4
+    autocmd FileType go setlocal softtabstop=4
     let Tlist_Ctags_Cmd='/usr/bin/ctags'
 endif
 
