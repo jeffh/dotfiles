@@ -9,13 +9,12 @@
 " Don't emulate vi bugs
 set nocompatible
 
-" load pathogen (package manager)
-silent call pathogen#infect()
-"call pathogen#helptags()
-
 " Special key for custom bindings
 let mapleader = ","
 let g:mapleader = ","
+
+" System-like clipboard behavior
+set clipboard=unnamed
 
 " fast editing of vimrc file
 " ,v => edits current file
@@ -25,7 +24,7 @@ auto BufEnter * let &titlestring=expand("%:p:h:h:h:t") . "/" . expand("%:p:h:h:t
 
 set laststatus=2
 
-" switch buffers
+" jump to previous buffer
 noremap <leader><leader> <c-^>
 
 " Emacs keys for navigation
@@ -51,34 +50,16 @@ inoremap <c-k> <esc>Da
 inoremap <c-e> <esc>$a
 inoremap <c-bs> <c-w>
 
-" remove highlighting on newline
-nnoremap <CR> :nohlsearch<cr><cr>
-
 " Suppress all whitespace at end of lines when saving
 noremap <leader>w :%s/\s\+$//e<cr>:w<cr>
 
-" File Explorer
-"nmap <leader>e :Ex<cr>
-"nmap <leader>s :Sex<cr>
+" tab-navigation
+noremap <c-h> gT
+noremap <c-l> gt
+noremap <c-t> :tabnew<cr>
+noremap <c-c> :tabclose<cr>
 
-" ctags
-" go to defn of tag under the cursor
-" Make it case sensitive when doing so
-fun! MatchCaseTag()
-    let ic = &ic
-    set noic
-    try
-        exe 'tjump ' . expand('')
-    finally
-        let &ic = ic
-    endtry
-endfun
-command! GenerateTags :!/usr/local/bin/ctags --python-kinds=-iv --exclude=build --exclude=dest -f .tags -R .
-
-" Always update before jumping to symbol
-"nnoremap <c-]> :call MatchCaseTag()<cr>
 " Search tags
-nnoremap <leader>t :GenerateTags<cr>
 set tags=./.tags;$HOME
 
 
@@ -87,24 +68,23 @@ set notimeout
 
 " ============= Tabbing / Indentation / Autocomplete / Wrapping
 
-" no line wrapping
-set nowrap
-" no automatic wrapping (inserting \n) of text your type
-set textwidth=0
+set nowrap             " no line wrapping
+set textwidth=79       " width of document
+set formatoptions-=t   " don't automatically wrap text when typing
 
-set expandtab
-set autoindent
-set smarttab
-set smartindent
-set shiftround
+set expandtab          " use spaces for tab key
+set autoindent         " automatically detect how to indent
+set smarttab           " be smart to how much to indent
+set smartindent        " be smart for indenting a new line
+set shiftround         " round indent to multiple of shiftwidth
 
-set shiftwidth=4
-set tabstop=4
-set softtabstop=4
+set shiftwidth=4       " indent amounts
+set tabstop=4          " how long a tab is represented
+set softtabstop=4      " how many spaces a tab is (with expandtab)
 
-set switchbuf="useopen"
+set switchbuf="usetab" " buffer switching behavior - use tab or window if available
 
-set showmatch
+set showmatch          " show paren matching
 
 " Language-specific tabbing
 autocmd FileType html setlocal tabstop=2
@@ -119,6 +99,7 @@ autocmd FileType clojure set lisp
 " for python comments, that's annoying
 autocmd FileType python setlocal cindent
 
+" make requires tabs
 autocmd FileType make setlocal noexpandtab
 autocmd FileType make setlocal nosmartindent
 
@@ -151,14 +132,14 @@ set complete=.,w,b,t,d,i,t
 " longest => Only inserts longest common text for matches
 set completeopt=menuone,preview
 
-set noinfercase
+set noinfercase  " autocomplete without being case sensitive
 
+" visualize invisible characters. Show spaces at the end of lines and tabs.
 set list
 set listchars=tab:\|\ ,trail:·,
 
-set foldmethod=syntax
-set foldlevelstart=20
-" autocmd FileType <Syntax> setlocal foldmethod=syntax
+set foldmethod=syntax  " code folding is determined by syntax
+set foldlevelstart=20  " default fold level
 
 " ============= Syntaxes / Highlighting
 
@@ -198,9 +179,13 @@ if has('gui_running')
     highlight Search                      guibg=NONE     gui=underline
 else
     highlight LineNr       ctermfg=DarkGrey    ctermbg=None
-    highlight StatusLine   ctermfg=Grey        ctermbg=None
+    highlight StatusLine   ctermfg=Grey        ctermbg=Black
+    highlight StatusLineNC ctermfg=DarkGrey    ctermbg=Black
+    highlight VertSplit    ctermfg=Black       ctermbg=Black
     highlight Pmenu        ctermfg=White       ctermbg=DarkGrey
-    highlight PmenuSel     ctermfg=White       ctermbg=DarkRed
+    highlight PmenuSbar                        ctermbg=Yellow
+    highlight PmenuThumb                       ctermbg=Black
+    highlight PmenuSel     ctermfg=Black       ctermbg=Yellow
     highlight Search       ctermfg=None        ctermbg=NONE      cterm=underline
 endif
 
@@ -223,17 +208,14 @@ set ofu=syntaxcomplete#Complete
 
 " ============= Search
 
-set incsearch
-set ignorecase
-set smartcase
-set wrapscan
-
-" highlight search results
-set hlsearch
+set hlsearch   " highlight search results
+set incsearch  " incremental search
+set ignorecase " that's case insensitive
+set smartcase  " unless you type a capital letter
+set wrapscan   " and the search wraps around the file
 
 " disable highlighting when hitting the return or esc key
-"nnoremap <ESC> :nohlsearch<esc>
-"nnoremap <return> :noh<cr><return>
+nnoremap <CR> :nohlsearch<cr><cr>
 
 " Type %/ or %? in command line to expand out to current buffer's file location
 " (if it exists)
@@ -250,19 +232,18 @@ endif
 " ============= Files, Backups, Undo
 
 " auto reload vimrc when edited
-"autocmd! bufwritepost .vimrc source ~/.vimrc
+autocmd! bufwritepost .vimrc source ~/.vimrc
 
 " vim's backup / swap system
 set backupdir=~/.vim/tmp/,~/.tmp,/var/tmp,/tmp
 set directory=~/.vim/tmp/,~/.tmp,/var/tmp,/tmp
-set nobackup
-set writebackup
+" disable all swap, backup and writebackups
+set nobackup     " no backups
+set writebackup  " except when writing files
+set noswapfile   " no swapfiles
 
 " CommandT plugin config
-let g:CommandTMaxHeight=20
-let g:CommandTMatchWindowAtTop=0
-let g:CommandTMatchWindowReverse=1
-map <leader>f :CommandTFlush<CR>\|:CommandT<CR>
+map <leader>f :CtrlPMixed<cr>
 
 " Use templates when creating new files of same extensions
 augroup templates
@@ -285,21 +266,10 @@ try
 catch
 endtry
 
-" Set shell
-if has('macunix') || has('mac')
-    set shell=/bin/bash
-    "elseif has('win32')
-elseif has('unix')
-    set shell=/bin/bash
-endif
-
 " ============= Editing
-set autoread " auto refresh files that were changed
-
-" Let the cursor stray beyond the normal text bounds
-set virtualedit=all
-" backspace behaves like normal sane apps
-set backspace=eol,indent,start
+set autoread                   " auto refresh files that were changed
+set virtualedit=all            " let cursor stray beyond textfile bounds
+set backspace=eol,indent,start " backsapce behaves like normal program
 
 " Auto save buffers when focus is lost
 au FocusLost * silent! :wa
@@ -308,11 +278,7 @@ set autowrite
 " remember marks & undos for background buffers
 set hidden
 
-" use open buffer when possible which switching
-set switchbuf=useopen
-
-" enable line numbers
-set number
+set number " enable line numbers
 "set numberwidth=5
 
 " Set encoding and language
@@ -327,17 +293,10 @@ set guicursor=n-v-c:block-Cursor
 set guicursor+=i:block-Cursor
 set guicursor+=i:blinkon0
 
-" default line endings
-if has('macunix') || has('mac')
-    set ffs=unix,mac,dos
-elseif has('win32')
-    set ffs=dos,unix,mac
-elseif has('unix')
-    set ffs=unix,mac,dos
-endif
+set ffs=unix,dos,mac " default line endings
 
-" command line history
-set history=600
+set history=600      " command line history
+set undolevels=9000  " undo history
 
 " Suppress all spaces at end of lines when saving
 "autocmd BufWritePre * :%s/^\s\+$//e
@@ -387,7 +346,10 @@ set so=7 " move 7 lines when moving vertical
 set magic " Set for regular expressions' backslashes
 
 " make tab completion for files/buffers act like bash, but ignore sets of files
-set wildignore+=*.o,*.obj,.git,.svn,.cvs,*.rbc,*.pyc
+set wildignore+=*.o,*.obj,*/.git/*,.svn,.cvs,*.rbc,*.pyc
+set wildignore+=*/build/*
+set wildignore+=*/dist/*
+set wildignore+=*/.ropeproject/*
 set wildmode=longest:full:list
 set wildmenu
 
@@ -397,7 +359,7 @@ if has("gui_running")
     set guioptions-=L
     set guioptions-=r
 
-    set spell
+    set nospell
 
     set guifont=Inconsolata-dz:h14
     if has('win32')
@@ -417,54 +379,6 @@ set winwidth=84
 set winheight=10
 set winminheight=10
 set winheight=999
-
-" =============== Utilities
-
-function! Find()
-    let text = input('Text to search: ', 'TODO')
-    exec 'lvim /' . text . '/g **/*.*'
-    :lw
-endfunction
-command! Grep call Find()
-
-" From Gary - https://www.destroyallsoftware.com/file-navigation-in-vim.html
-function! RenameFile()
-    let old_name = expand('%')
-    let new_name = input('Rename to: ', expand('%'))
-    if new_name != '' && new_Name != old_name
-        exec ':saveas ' . new_name
-        exec ':silent !rm' . old_name
-        redraw!
-    endif
-endfunction
-map <leader>r :call RenameFile()<cr>
-
-function! DeleteFile(...)
-    if(exists('a:1'))
-        let theFile=a:1
-    elseif ( &ft == 'help' )
-        echohl Error
-        echo "Cannot delete a help buffer!"
-        echohl None
-        return -1
-    else
-        let theFile=expand('%:p')
-    endif
-    let delStatus=delete(theFile)
-    if(delStatus == 0)
-        echo "Deleted " . theFile
-    else
-        echohl WarningMsg
-        echo "Failed to delete " . theFile
-        echohl None
-    endif
-
-    echo theFile . " was deleted!"
-    return delStatus
-endfunction
-"delete the current file
-command! Rm call DeleteFile()
-command! DeleteFile call DeleteFile()
 
 " =============== misc
 
@@ -497,3 +411,7 @@ badd *scratch*
 
 " ===================== JS Indent (web-indent)
 let g:js_indent_log = 0 " disable logging
+
+" load pathogen (package manager)
+silent call pathogen#infect()
+call pathogen#helptags()

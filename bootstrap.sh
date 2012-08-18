@@ -3,7 +3,6 @@ set -e
 
 function main {
     download_plugins
-    build_command_t
     symlink_to_home
 }
 
@@ -12,22 +11,11 @@ function download_plugins {
     git submodule update
 }
 
-function build_command_t {
-    # build command-t
-    echo "Building Command-T"
-    cd vim/.vim/bundle/command-t
-    rake make
-    # restore cwd
-    cd ../../../..
-}
-
 function symlink_to_home {
     echo "Symlinking to home."
     ln -s $PWD/vim/.vim $HOME/.vim
     ln -s $PWD/vim/.vimrc $HOME/.vimrc
 }
-
-
 
 function update {
     update_submodules
@@ -44,8 +32,11 @@ function update_submodules {
     do
         echo "Updating $i ..."
         cd $CWD/$i
+        git reset --hard
         git checkout master
         git pull
+        git checkout master
+        rm -f doc/tags Powerline_default_default_compatible.cache
     done
     cd $CWD
 }
