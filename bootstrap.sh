@@ -36,7 +36,6 @@ function update_submodules {
         git checkout master
         git pull
         git checkout master
-        rm -f doc/tags Powerline_default_default_compatible.cache
     done
     cd $CWD
 }
