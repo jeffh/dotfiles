@@ -18,7 +18,7 @@
 	url = git://github.com/pangloss/vim-javascript.git
 [submodule "vim/.vim/bundle/supertab"]
 	path = vim/.vim/bundle/supertab
-	url = git://github.com/ervandew/supertab.git
+	url = https://github.com/ervandew/supertab
 [submodule "vim/.vim/bundle/virtualenv"]
 	path = vim/.vim/bundle/virtualenv
 	url = git://github.com/jmcantrell/vim-virtualenv.git
