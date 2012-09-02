@@ -59,6 +59,10 @@ noremap <c-l> gt
 noremap <c-t> :tabnew<cr>
 noremap <c-c> :tabclose<cr>
 
+" indenting
+"vnoremap < <gv
+"vnoremap > >gv
+
 " Search tags
 set tags=./.tags;$HOME
 
@@ -105,11 +109,6 @@ autocmd FileType make setlocal nosmartindent
 
 autocmd FileType php setlocal noexpandtab
 autocmd FileType php setlocal foldmethod=indent
-
-autocmd BufReadPost *
-            \ if line("'\"") > 0 && line("'\"") <= line("$") |
-            \ exe "normal g`\"" |
-            \ endif
 
 " where <C-P> should get it's completion list
 " . => current buffer
@@ -197,6 +196,8 @@ let g:pymode_lint_write = 0
 "map <c-t> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
 "\ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
 "\ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
+let g:pymode_rope = 1
+let g:pymode_rope_auto_project = 1
 
 " ============= Commands
 command! ConvertTabsToSpaces :set expandtab|retab
@@ -216,6 +217,7 @@ set wrapscan   " and the search wraps around the file
 
 " disable highlighting when hitting the return or esc key
 nnoremap <CR> :nohlsearch<cr><cr>
+"nnoremap <Esc> :nohlsearch<Esc>
 
 " Type %/ or %? in command line to expand out to current buffer's file location
 " (if it exists)
@@ -242,8 +244,11 @@ set nobackup     " no backups
 set writebackup  " except when writing files
 set noswapfile   " no swapfiles
 
-" CommandT plugin config
-map <leader>f :CtrlPMixed<cr>
+" CtrlP plugin config
+"map <leader>f :CtrlPMixed<cr>
+let g:ctrlp_map = '<leader>f'
+let g:ctrlp_cmd = 'CtrlPMixed'
+let g:ctrlp_working_path_mode = 'rc'
 
 " Use templates when creating new files of same extensions
 augroup templates
@@ -317,7 +322,7 @@ function! CleverTab()
     endif
 endfunction
 inoremap <tab> <c-r>=CleverTab()<CR>
-inoremap <s-tab> <c-n>
+inoremap <s-tab> <C-p>
 
 noremap Y <esc>yyp
 
@@ -400,7 +405,7 @@ endif
 augroup myfiletypes
     " clear old defs
     autocmd!
-    autocmd FileType ruby,haml,eruby,yaml,html,javascript,sass set ai sw=2 sts=2 et
+    autocmd FileType ruby,haml,eruby,html,javascript,sass set ai sw=2 sts=2 et
     autocmd FileType python set sw=4 sts=4 et
 augroup END
 

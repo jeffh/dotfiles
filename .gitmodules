@@ -43,3 +43,9 @@
 [submodule "vim/.vim/bundle/ctrlp"]
 	path = vim/.vim/bundle/ctrlp
 	url = git://github.com/kien/ctrlp.vim.git
+[submodule "vim/.vim/bundle/salt-vim"]
+	path = vim/.vim/bundle/salt-vim
+	url = git://github.com/saltstack/salt-vim.git
+[submodule "vim/.vim/bundle/snipmate.vim"]
+	path = vim/.vim/bundle/snipmate.vim
+	url = git://github.com/msanders/snipmate.vim.git
