@@ -48,4 +48,7 @@
 	url = git://github.com/saltstack/salt-vim.git
 [submodule "vim/.vim/bundle/snipmate.vim"]
 	path = vim/.vim/bundle/snipmate.vim
-	url = git://github.com/msanders/snipmate.vim.git
+	url = git://github.com/garbas/vim-snipmate.git
+[submodule "gocode"]
+	path = gocode
+	url = git://github.com/nsf/gocode.git

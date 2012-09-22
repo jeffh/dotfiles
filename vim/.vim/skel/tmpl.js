@@ -1,3 +1,5 @@
+'use strict';
+
 (function(document, $, undefined){
 
 var window = this;

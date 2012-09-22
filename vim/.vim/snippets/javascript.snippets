@@ -1,7 +1,26 @@
 # jasmine
-snippet desc
+snippet cdesc
 	describe("${1:object}", function(){
 		${2:// body..}
 	});
 
-snippet before
+snippet cbef
+	beforeEach(function(){
+		${1}
+	});
+
+snippet caft
+	afterEach(function(){
+		${1}
+	});
+
+snippet cit
+	it("should ${1:do action}", function(){
+		${2:// body}
+	});
+
+# angular
+snippet cbefi
+	beforeEach(inject(function(${1:$rootScope}){
+		${2:// body}
+	}));
