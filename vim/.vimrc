@@ -309,21 +309,21 @@ set undolevels=9000  " undo history
 " Keep more context when scrolling off the end of a buffer
 set scrolloff=3
 
-function! CleverTab()
-    if pumvisible()
-        return "\<C-N>"
-    endif
-    if strpart( getline('.'), 0, col('.')-1 ) =~ '^\s*$'
-        "return "\<Tab>"
-        return "<c-r>=TriggerSnippet()<cr>"
-    elseif exists('&omnifunc') && &omnifunc != ''
-        return "\<C-X>\<C-O>"
-    else
-        return "\<C-N>"
-    endif
-endfunction
-inoremap <tab> <c-r>=CleverTab()<CR>
-inoremap <s-tab> <C-p>
+"function! CleverTab()
+"    if pumvisible()
+"        return "\<C-N>"
+"    endif
+"    if strpart( getline('.'), 0, col('.')-1 ) =~ '^\s*$'
+"        "return "\<Tab>"
+"        return "<c-r>=TriggerSnippet()<cr>"
+"    elseif exists('&omnifunc') && &omnifunc != ''
+"        return "\<C-X>\<C-O>"
+"    else
+"        return "\<C-N>"
+"    endif
+"endfunction
+"inoremap <tab> <c-r>=CleverTab()<CR>
+"inoremap <s-tab> <C-p>
 
 noremap Y <esc>yyp
 
@@ -421,3 +421,6 @@ let g:js_indent_log = 0 " disable logging
 " load pathogen (package manager)
 silent call pathogen#infect()
 call pathogen#helptags()
+
+" ===================== SuperTab
+let g:SuperTabDefaultCompletionType = "context"
