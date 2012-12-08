@@ -73,7 +73,7 @@ set notimeout
 " ============= Tabbing / Indentation / Autocomplete / Wrapping
 
 set nowrap             " no line wrapping
-set textwidth=79       " width of document
+set textwidth=0        " width of document
 set formatoptions-=t   " don't automatically wrap text when typing
 
 set expandtab          " use spaces for tab key
@@ -129,7 +129,7 @@ set complete=.,w,b,t,d,i,t
 " preview => Show extra info about the currently selected completion in menu
 " menuone => Shows menu when only one item is available for autocomplete
 " longest => Only inserts longest common text for matches
-set completeopt=menuone,preview
+set completeopt=menu,preview
 
 set noinfercase  " autocomplete without being case sensitive
 
@@ -166,7 +166,7 @@ colorscheme jellybeans
 "colorscheme twilight
 
 " highlight the line the cursor is on
-set cursorline
+"set cursorline
 
 " for twilight Colors
 if has('gui_running')
@@ -338,6 +338,8 @@ set novisualbell
 set t_vb=
 set tm=500
 
+set vb
+
 set lazyredraw " don't redraw when running macros
 set shortmess=aOstT " shortens messages to avoid 'press a key' prompt
 
@@ -413,7 +415,7 @@ augroup END
 " ===================== HACKS
 " create extra buffer to prevent commandT from complaining
 " when we try to open something on the last buffer
-badd *scratch*
+"badd *scratch*
 
 " ===================== JS Indent (web-indent)
 let g:js_indent_log = 0 " disable logging
@@ -424,3 +426,6 @@ call pathogen#helptags()
 
 " ===================== SuperTab
 let g:SuperTabDefaultCompletionType = "context"
+
+" ===================== Jedi-Vim
+let g:jedi#popup_on_dot = 0
