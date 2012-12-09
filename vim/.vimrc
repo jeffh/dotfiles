@@ -249,6 +249,11 @@ set noswapfile   " no swapfiles
 let g:ctrlp_map = '<leader>f'
 let g:ctrlp_cmd = 'CtrlPMixed'
 let g:ctrlp_working_path_mode = 'rc'
+let g:ctrlp_custom_ignore = {
+  \ 'dir':  '\v[\/]\.(git|hg|svn)$',
+  \ 'file': '\v\.(exe|so|dll|log)$',
+  \ 'link': 'some_bad_symbolic_links',
+  \ }
 
 " Use templates when creating new files of same extensions
 augroup templates
@@ -429,3 +434,6 @@ let g:SuperTabDefaultCompletionType = "context"
 
 " ===================== Jedi-Vim
 let g:jedi#popup_on_dot = 0
+
+" ===================== Vim-Clojure
+let vimclojure#WantNailgun = 1

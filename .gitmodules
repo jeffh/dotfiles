@@ -58,3 +58,6 @@
 [submodule "vim/.vim/bundle/vim-markdown"]
 	path = vim/.vim/bundle/vim-markdown
 	url = git://github.com/plasticboy/vim-markdown.git
+[submodule "vim/.vim/bundle/paredit.vim"]
+	path = vim/.vim/bundle/paredit.vim
+	url = https://github.com/vim-scripts/paredit.vim
