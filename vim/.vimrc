@@ -165,8 +165,8 @@ syntax enable
 colorscheme jellybeans
 "colorscheme twilight
 
-" highlight the line the cursor is on
-"set cursorline
+" highlight the line the cursor is on (can be slow for large files)
+set cursorline
 
 " for twilight Colors
 if has('gui_running')
@@ -248,12 +248,7 @@ set noswapfile   " no swapfiles
 "map <leader>f :CtrlPMixed<cr>
 let g:ctrlp_map = '<leader>f'
 let g:ctrlp_cmd = 'CtrlPMixed'
-let g:ctrlp_working_path_mode = 'rc'
-let g:ctrlp_custom_ignore = {
-  \ 'dir':  '\v[\/]\.(git|hg|svn)$',
-  \ 'file': '\v\.(exe|so|dll|log)$',
-  \ 'link': 'some_bad_symbolic_links',
-  \ }
+let g:ctrlp_working_path_mode = 'c'
 
 " Use templates when creating new files of same extensions
 augroup templates
@@ -359,7 +354,7 @@ set so=7 " move 7 lines when moving vertical
 set magic " Set for regular expressions' backslashes
 
 " make tab completion for files/buffers act like bash, but ignore sets of files
-set wildignore+=*.o,*.obj,*/.git/*,.svn,.cvs,*.rbc,*.pyc
+set wildignore+=*.o,*.obj,*/.git/*,.svn,.cvs,*.rbc,*.pyc,*.class,*.jar
 set wildignore+=*/build/*
 set wildignore+=*/dist/*
 set wildignore+=*/.ropeproject/*
@@ -389,8 +384,8 @@ set winwidth=84
 " We have to have a winheight bigger than we want to set winminheight. But if
 " we set winheight to be huge before winminheight, the winminheight set will
 " fail.
-set winheight=10
-set winminheight=10
+set winheight=5
+set winminheight=5
 set winheight=999
 
 " =============== misc
