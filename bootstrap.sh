@@ -13,8 +13,9 @@ function download_plugins {
 
 function symlink_to_home {
     echo "Symlinking to home."
-    ln -s $PWD/vim/.vim $HOME/.vim
-    ln -s $PWD/vim/.vimrc $HOME/.vimrc
+    ln -s $PWD/vim/vim $HOME/.vim
+    ln -s $PWD/vim/vimrc $HOME/.vimrc
+    ln -s $PWD/zshrc $HOME/.zshrc
 }
 
 function update {
