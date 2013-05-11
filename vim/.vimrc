@@ -468,6 +468,15 @@ let g:pymode_lint_write = 0
 let g:pymode_rope = 1
 let g:pymode_rope_auto_project = 1
 
+"""""""""""""
+" Google Go "
+"""""""""""""
+
+augroup googlego_customizations
+    autocmd!
+    autocmd Filetype go autocmd BufWritePre <buffer> Fmt
+augroup END
+
 """""""""""
 " Clojure "
 """""""""""
@@ -477,7 +486,11 @@ let g:vimclojure#FuzzyIndent=1
 let g:vimclojure#DynamicHighlighting=1
 
 " HighlightBuiltins doesn't work....
-autocmd Filetype clojure highlight link ClojureSpecial Define
+augroup clojure_customizations
+    autocmd!
+    autocmd Filetype clojure highlight link ClojureSpecial Define
+augroup END
+
 filetype plugin indent on
 syntax enable
 

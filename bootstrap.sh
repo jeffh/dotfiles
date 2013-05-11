@@ -7,8 +7,8 @@ function main {
 }
 
 function download_plugins {
-    git submodule init
-    git submodule update
+    git submodule update --init --recursive
+    echo "Run :BundleInstall in vim to install all packages."
 }
 
 function symlink_to_home {
@@ -21,8 +21,8 @@ function update {
     update_submodules
     # install gocode files
     echo "Re-downloading gocode vim files ..."
-    curl -L "https://raw.github.com/nsf/gocode/master/vim/autoload/gocomplete.vim" > $PWD/vim/.vim/bundle/gocomplete/autoload/gocomplete.vim
-    curl -L "https://raw.github.com/nsf/gocode/master/vim/ftplugin/go.vim" > $PWD/vim/.vim/bundle/gocomplete/ftplugin/go.vim
+    curl -L "https://raw.github.com/nsf/gocode/master/vim/autoload/gocomplete.vim" > $PWD/vim/.vim/autoload/gocomplete.vim
+    curl -L "https://raw.github.com/nsf/gocode/master/vim/ftplugin/go.vim" > $PWD/vim/.vim/ftplugin/go.vim
 }
 
 function update_submodules {
