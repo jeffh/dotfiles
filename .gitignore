@@ -3,4 +3,5 @@
 *.swp
 *.tmp
 .DS_Store
-vim/.vim/bundle/*
+vim/vim/bundle/*
+/vim/vim/.netrwhist
