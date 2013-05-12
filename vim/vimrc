@@ -122,7 +122,19 @@ inoremap <c-e> <esc>$a
 inoremap <c-bs> <c-w>
 
 " Suppress all whitespace at end of lines when saving
-noremap <leader>w :%s/\s\+$//e<cr>:w<cr>
+" But preserve repeat macro & cursor position
+function! <SID>StripTrailingWhitespaces()
+    " Preparation: save last search, and cursor position.
+    let _s=@/
+    let l = line(".")
+    let c = col(".")
+    " Do the business:
+    %s/\s\+$//e
+    " Clean up: restore previous search history, and cursor position
+    let @/=_s
+    call cursor(l, c)
+endfunction
+noremap <leader>w :call <SID>StripTrailingWhitespaces()<cr>:w<cr>
 
 " tab-navigation
 noremap <c-h> gT
@@ -194,7 +206,7 @@ set magic              " Set for regular expressions' backslashes
 
 " visualize invisible characters. Show spaces at the end of lines and tabs.
 set list
-set listchars=tab:\|\ ,trail:·,
+set listchars=tab:▸\ ,trail:·,
 
 set foldmethod=syntax  " code folding is determined by syntax
 set foldlevelstart=20  " default fold level
@@ -252,7 +264,10 @@ set history=600      " command line history
 set undolevels=9000  " undo history
 
 " auto reload vimrc when edited
-autocmd! bufwritepost .vimrc source ~/.vimrc
+augroup vim_autoreload
+    autocmd!
+    autocmd bufwritepost .vimrc source ~/.vimrc
+augroup END
 
 " vim's backup / swap system
 set backupdir=~/.vim/tmp/,~/.tmp,/var/tmp,/tmp
@@ -295,14 +310,13 @@ catch
 endtry
 
 " Use templates when creating new files of same extensions
+set cpoptions-=a " make sure a buffer with the template file isn't opened
 augroup templates
     au!
     autocmd BufNewFile *.* silent! execute '0r ~/.vim/skel/tmpl.'.expand('<afile>:e')
     autocmd BufNewFile * %substitute#\[:EVAL:\]\(.\{-\}\)\[:END:\]#\=eval(submatch(1))#ge
     autocmd BufNewFile * silent! foldopen!
 augroup END
-" but make sure a buffer with the template file isn't opened
-set cpoptions-=a
 
 
 """""""
@@ -384,6 +398,8 @@ if has('gui_running')
     " guibg=NONE so we get the nice transparency stuff
     highlight LineNr       guifg=Grey30   guibg=NONE
     highlight Search                      guibg=NONE     gui=underline
+    highlight NonText      guifg=Grey90
+    highlight SpecialKey   guifg=Grey90
 else
     highlight LineNr       ctermfg=DarkGrey    ctermbg=None
     highlight StatusLine   ctermfg=Grey        ctermbg=Black
@@ -394,6 +410,8 @@ else
     highlight PmenuThumb                       ctermbg=Black
     highlight PmenuSel     ctermfg=Black       ctermbg=Yellow
     highlight Search       ctermfg=None        ctermbg=NONE      cterm=underline
+    highlight NonText      ctermfg=DarkGrey
+    highlight SpecialKey   ctermfg=DarkGrey
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""
@@ -420,25 +438,26 @@ set shiftround         " round indent to multiple of shiftwidth
 
 set shiftwidth=4       " indent amounts
 set tabstop=4          " how long a tab is represented
-set softtabstop=4      " how many spaces a tab is (with expandtab)
+set softtabstop=4      " how many spaces to delete when backspacing
 
 augroup language_customizations
     " clear old defs
     autocmd!
-    autocmd FileType ruby,haml,eruby,html,javascript,sass setlocal autoindent
-    autocmd FileType ruby,haml,eruby,html,javascript,sass setlocal expandtab
-    autocmd FileType ruby,haml,eruby,html,javascript,sass setlocal tabstop=2
-    autocmd FileType ruby,haml,eruby,html,javascript,sass setlocal softtabstop=2
-
     autocmd FileType python setlocal expandtab
-    autocmd FileType python setlocal tabstop=4 softtabstop=4
     " cindent instead of smartindent to not force hashes going to beginning of line
     " for python comments, that's annoying
     autocmd FileType python setlocal smartindent
 
-    autocmd FileType go setlocal tabstop=4 softtabstop=4
+    autocmd FileType yaml setlocal expandtab
+
+    autocmd FileType sls setlocal expandtab
+
+    autocmd FileType go setlocal tabstop=4
+    autocmd FileType go setlocal softtabstop=4
+    autocmd FileType go setlocal shiftwidth=4
 
     autocmd FileType html setlocal tabstop=2
+    autocmd FileType html setlocal softtabstop=2
     autocmd FileType html setlocal shiftwidth=2
     autocmd FileType html setlocal noexpandtab
 
@@ -456,6 +475,11 @@ augroup END
 """""""""""""""""""""""""""""""""""""""""""""""
 "              PLUGIN CONFIG                  "
 """""""""""""""""""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""
+" YouCompleteMe/Jedi "
+""""""""""""""""""""""
+let g:jedi#show_function_definition = "0"
 
 """"""""""
 " Python "
