@@ -47,6 +47,9 @@ Bundle 'altercation/vim-colors-solarized'
 " AutoSave
 Bundle 'vim-auto-save'
 
+" NERDTree
+Bundle 'scrooloose/nerdtree'
+
 """""""""""""
 " Languages "
 """""""""""""
@@ -75,6 +78,7 @@ Bundle 'pangloss/vim-javascript'
 
 " Ruby
 Bundle 'tpope/vim-rvm'
+Bundle 'vim-ruby/vim-ruby'
 
 " Objective-C
 Bundle 'git://github.com/msanders/cocoa.vim.git'
@@ -120,6 +124,12 @@ inoremap <c-k> <esc>Da
 "noremap <c-a> <esc>^i
 inoremap <c-e> <esc>$a
 inoremap <c-bs> <c-w>
+
+" NERDTree
+map <leader>d :NERDTreeToggle<cr>
+
+" expand snippet
+inoremap <c-s> <c-r>=snipMate#TriggerSnippet()<cr>
 
 " Suppress all whitespace at end of lines when saving
 " But preserve repeat macro & cursor position
@@ -362,12 +372,12 @@ if has("gui_running")
 
     set nospell
 
-    set guifont=Inconsolata-dz:h14
     if has('win32')
         " alt key jumps to menu
         set winaltkeys=menu
     end
     if has('macunix')
+        set guifont=Monaco:h14
         set transparency=5
     end
 endif
@@ -447,6 +457,13 @@ augroup language_customizations
     " cindent instead of smartindent to not force hashes going to beginning of line
     " for python comments, that's annoying
     autocmd FileType python setlocal smartindent
+
+    autocmd FileType ruby setlocal expandtab
+    autocmd FileType ruby setlocal tabstop=2
+    autocmd FileType ruby setlocal softtabstop=2
+    autocmd FileType ruby setlocal shiftwidth=2
+
+    autocmd FileType javascript setlocal noexpandtab
 
     autocmd FileType yaml setlocal expandtab
 

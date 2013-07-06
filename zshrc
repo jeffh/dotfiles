@@ -14,10 +14,16 @@ setopt HIST_REDUCE_BLANKS
 # support emacs keybindings
 bindkey -e
 #####################################################
+# aliases
+
+alias workspace='cd ~/workspace'
+
+#####################################################
 
 if [ -z "$VIRTUALENVWRAPPER_PYTHON" ]; then
     source /usr/local/bin/virtualenvwrapper_lazy.sh
 fi
+
 #####################################################
 export WORKON_HOME=$HOME/.virtualenvs
 
@@ -25,13 +31,18 @@ export WORKON_HOME=$HOME/.virtualenvs
 export PATH=$HOME/bin:/usr/local/go/bin:$HOME/.rvm/gems/ruby-1.9.2-p290/bin:$HOME/.rvm/gems/ruby-1.9.2-p290@global/bin:/Users/jeff/.rvm/rubies/ruby-1.9.2-p290/bin:$HOME/.rvm/bin:/usr/local/bin/:/usr/local/share/python/:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/X11/bin
 
 export EDITOR=`which vim`
-export GOROOT=/usr/local/go
-export GOBIN=$GOROOT/bin
+#export GOROOT=/usr/local/Cellar/go/1.1.1
+#export GOBIN=$GOROOT/bin
+export GOPATH=~/workspace/gopath
+
+export PATH=$PATH:$GOPATH/bin
 
 export PYTHONPATH=.:$PYTHONPATH
 
 source /Users/jeff/.rvm/scripts/rvm
 PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
+
+PATH=$PATH:/usr/local/share/npm/bin/ # for npm/node
 
 PATH=$PATH:/usr/local/sbin/ # for rabbitmq
 #####################################################
