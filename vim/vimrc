@@ -128,9 +128,6 @@ inoremap <c-bs> <c-w>
 " NERDTree
 map <leader>d :NERDTreeToggle<cr>
 
-" expand snippet
-inoremap <c-s> <c-r>=snipMate#TriggerSnippet()<cr>
-
 " Suppress all whitespace at end of lines when saving
 " But preserve repeat macro & cursor position
 function! <SID>StripTrailingWhitespaces()
@@ -167,6 +164,16 @@ else
     cnoremap %? <C-R>=expand("%:h") . "\\" <CR>
     cnoremap %% <C-R>=expand("%:h") . "\\" <CR>
 endif
+
+" expand snippet
+function! ExpandSnippet()
+    if pumvisible()
+        return "\<c-e>\<c-r>=snipMate#TriggerSnippet()\<cr>"
+    else
+        return "\<c-r>=snipMate#TriggerSnippet()\<cr>"
+    endif
+endfunction
+inoremap <c-s> <c-r>=ExpandSnippet()<cr>
 
 " Smart tabbing behavior
 function! CleverTab()
@@ -383,13 +390,15 @@ if has("gui_running")
 endif
 
 " make active window larger
-set winwidth=84
+"set winwidth=84
 " We have to have a winheight bigger than we want to set winminheight. But if
 " we set winheight to be huge before winminheight, the winminheight set will
 " fail.
-set winheight=5
-set winminheight=5
-set winheight=999
+"set winheight=5
+"set winminheight=5
+"set winheight=999
+" Equalize window sizes when a window is removed
+set equalalways
 
 " highlight the line the cursor is on (can be slow for large files)
 set cursorline
@@ -466,6 +475,9 @@ augroup language_customizations
     autocmd FileType javascript setlocal noexpandtab
 
     autocmd FileType yaml setlocal expandtab
+    autocmd FileType sls setlocal tabstop=4
+    autocmd FileType sls setlocal softtabstop=4
+    autocmd FileType sls setlocal shiftwidth=4
 
     autocmd FileType sls setlocal expandtab
 
@@ -477,6 +489,8 @@ augroup language_customizations
     autocmd FileType html setlocal softtabstop=2
     autocmd FileType html setlocal shiftwidth=2
     autocmd FileType html setlocal noexpandtab
+
+    autocmd FileType css setlocal noexpandtab
 
     autocmd FileType clojure set lisp
 

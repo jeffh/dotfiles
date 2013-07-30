@@ -28,13 +28,14 @@ fi
 export WORKON_HOME=$HOME/.virtualenvs
 
 # Customize to your needs...
-export PATH=$HOME/bin:/usr/local/go/bin:$HOME/.rvm/gems/ruby-1.9.2-p290/bin:$HOME/.rvm/gems/ruby-1.9.2-p290@global/bin:/Users/jeff/.rvm/rubies/ruby-1.9.2-p290/bin:$HOME/.rvm/bin:/usr/local/bin/:/usr/local/share/python/:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/X11/bin
+export PATH=$HOME/bin:/usr/local/go/bin:$HOME/.rvm/bin:/usr/local/bin/:/usr/local/share/python/:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/X11/bin
 
 export EDITOR=`which vim`
 #export GOROOT=/usr/local/Cellar/go/1.1.1
 #export GOBIN=$GOROOT/bin
-export GOPATH=~/workspace/gopath
+export GOPATH=$HOME/workspace/gopath
 
+### Include bin dir by default
 export PATH=$PATH:$GOPATH/bin
 
 export PYTHONPATH=.:$PYTHONPATH

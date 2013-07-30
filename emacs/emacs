@@ -1,0 +1,14 @@
+;; Basic Editor Configuration
+
+;; highlight line of the cursor
+(global-hl-line-mode 1)
+
+;; indent size
+(setq standard-indent 4)
+
+;; suppress backups
+(setq make-backup-files nil)
+
+;; line & column numbers
+(line-number-mode 1)
+(column-number-mode 1)

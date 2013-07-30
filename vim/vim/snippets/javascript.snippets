@@ -1,7 +1,7 @@
 # jasmine
 snippet cdesc
 	describe("${1:object}", function(){
-		${2:// body..}
+		${2}
 	});
 
 snippet cbef
@@ -16,11 +16,37 @@ snippet caft
 
 snippet cit
 	it("should ${1:do action}", function(){
-		${2:// body}
+		${2}
 	});
 
 # angular
 snippet cbefi
 	beforeEach(inject(function(${1:$rootScope}){
-		${2:// body}
+		${2}
+	}));
+
+# without c-prefix
+snippet desc
+	describe("${1:object}", function(){
+		${2}
+	});
+
+snippet bef
+	beforeEach(function(){
+		${1}
+	});
+
+snippet aft
+	afterEach(function(){
+		${1}
+	});
+
+snippet it
+	it("should ${1:do action}", function(){
+		${2}
+	});
+
+snippet befi
+	beforeEach(inject(function(${1:$rootScope}){
+		${2}
 	}));

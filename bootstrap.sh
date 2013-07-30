@@ -17,6 +17,7 @@ function symlink_to_home {
     ln -fs $PWD/vim/vim $HOME/.vim
     ln -fs $PWD/vim/vimrc $HOME/.vimrc
     ln -fs $PWD/zshrc $HOME/.zshrc
+    ln -fs $PWD/emacs/emacs $HOME/.emacs
 }
 
 function update {
