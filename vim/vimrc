@@ -128,6 +128,9 @@ inoremap <c-bs> <c-w>
 " NERDTree
 map <leader>d :NERDTreeToggle<cr>
 
+" YouCompleteMe GotoDefinition
+noremap <leader>j :YcmCompleter GoToDefinitionElseDeclaration<cr>
+
 " Suppress all whitespace at end of lines when saving
 " But preserve repeat macro & cursor position
 function! <SID>StripTrailingWhitespaces()
