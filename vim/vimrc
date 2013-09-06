@@ -41,9 +41,6 @@ Bundle 'tpope/vim-surround'
 " Autocomplete
 Bundle 'Valloric/YouCompleteMe'
 
-" Theme
-Bundle 'altercation/vim-colors-solarized'
-
 " AutoSave
 Bundle 'vim-auto-save'
 
@@ -409,32 +406,17 @@ set cursorline
 """""""""
 " Theme "
 """""""""
-colorscheme jellybeans
-"colorscheme twilight
+colorscheme Tomorrow-Night
 
-" for twilight Colors
-if has('gui_running')
-    highlight CursorLine   guibg=#292929
-    highlight StatusLine   guifg=Grey   guibg=NONE
-    highlight StatusLineNC guifg=Grey10   guibg=Grey50
-    " guibg=NONE so we get the nice transparency stuff
-    highlight LineNr       guifg=Grey30   guibg=NONE
-    highlight Search                      guibg=NONE     gui=underline
-    highlight NonText      guifg=Grey90
-    highlight SpecialKey   guifg=Grey90
-else
-    highlight LineNr       ctermfg=DarkGrey    ctermbg=None
-    highlight StatusLine   ctermfg=Grey        ctermbg=Black
-    highlight StatusLineNC ctermfg=DarkGrey    ctermbg=Black
-    highlight VertSplit    ctermfg=Black       ctermbg=Black
-    highlight Pmenu        ctermfg=White       ctermbg=DarkGrey
-    highlight PmenuSbar                        ctermbg=Yellow
-    highlight PmenuThumb                       ctermbg=Black
-    highlight PmenuSel     ctermfg=Black       ctermbg=Yellow
-    highlight Search       ctermfg=None        ctermbg=NONE      cterm=underline
-    highlight NonText      ctermfg=DarkGrey
-    highlight SpecialKey   ctermfg=DarkGrey
-endif
+augroup color_customizations
+    autocmd!
+    if has('gui_running')
+        autocmd ColorScheme * highlight CursorLine guibg=#292929
+        autocmd ColorScheme * highlight LineNr guifg=Grey30 guibg=NONE
+    else
+        autocmd ColorScheme * highlight LineNr ctermfg=233 ctermbg=None
+    endif
+augroup END
 
 """""""""""""""""""""""""""""""""""""""""""""""
 "        CUSTOM FUNCTIONS / COMMANDS          "
