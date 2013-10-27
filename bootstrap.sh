@@ -16,8 +16,8 @@ function symlink_to_home {
     echo "Symlinking to home."
     ln -fs $PWD/vim/vim $HOME/.vim
     ln -fs $PWD/vim/vimrc $HOME/.vimrc
-    ln -fs $PWD/zshrc $HOME/.zshrc
-    ln -fs $PWD/emacs/emacs $HOME/.emacs
+    ln -fs $PWD/zsh/zshrc $HOME/.zshrc
+    ln -fs $PWD/zsh/zsh $HOME/.zsh
 }
 
 function update {
@@ -52,7 +52,7 @@ function help {
     echo "Usage: $0 COMMAND"
     echo
     echo "Commands:"
-    echo "  install   Sets up vim config. Symlinks files to home directory."
+    echo "  install   Symlinks files to home directory (overwrites existing)."
     echo "  update    Updates all submodules & gocode. Changes the repository."
     echo "  help      This help"
     echo

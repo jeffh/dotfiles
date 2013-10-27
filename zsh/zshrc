@@ -20,6 +20,11 @@ bindkey -e
 alias workspace='cd ~/workspace'
 
 #####################################################
+# Completions
+
+fpath=(~/.zsh $fpath)
+
+#####################################################
 
 if [ -z "$VIRTUALENVWRAPPER_PYTHON" ]; then
     source /usr/local/bin/virtualenvwrapper_lazy.sh
