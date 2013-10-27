@@ -22,7 +22,7 @@ alias workspace='cd ~/workspace'
 #####################################################
 # Completions
 
-fpath=(~/.zsh $fpath)
+autoload -U compinit && compinit
 
 #####################################################
 
