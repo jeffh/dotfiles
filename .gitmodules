@@ -1,3 +1,9 @@
 [submodule "vim/vim/bundle/vundle"]
 	path = vim/vim/bundle/vundle
 	url = https://github.com/gmarik/vundle.git
+[submodule "zsh/zsh/plugins/autosuggestions"]
+	path = zsh/zsh/plugins/autosuggestions
+	url = https://github.com/tarruda/zsh-autosuggestions.git
+[submodule "fish/plugins/virtualfish"]
+	path = fish/plugins/virtualfish
+	url = https://github.com/adambrenecki/virtualfish.git

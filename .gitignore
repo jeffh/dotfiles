@@ -8,3 +8,6 @@ vim/vim/bundle/*
 
 /vim/vim/ftplugin/go.vim
 /vim/vim/autoload/gocomplete.vim
+fish/fish_history
+fishd.*
+

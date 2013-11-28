@@ -10,6 +10,7 @@
 
 " Don't emulate vi bugs
 set nocompatible
+set shell=/bin/bash
 
 """""""""""""""""""""""""""""""""""""""""""""""
 "                  VUNDLE                     "
@@ -55,6 +56,9 @@ Bundle 'vim-auto-save'
 
 " NERDTree
 Bundle 'scrooloose/nerdtree'
+
+" Syntastic (syntax check)
+Bundle 'scrooloose/syntastic'
 
 """""""""""""
 " Languages "
@@ -413,7 +417,7 @@ endif
 set equalalways
 
 " highlight the line the cursor is on (can be slow for large files)
-set cursorline
+set nocursorline
 
 """""""""
 " Theme "
@@ -568,4 +572,9 @@ let g:ctrlp_working_path_mode = 'ra'
 """""""""""""""""
 let g:auto_save = 1 " enable
 
+
+"""""""""""""""""
+" YouCompleteMe "
+"""""""""""""""""
+let g:ycm_cache_omnifunc = 0
 

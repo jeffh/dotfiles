@@ -2,27 +2,73 @@
 # enable prompt colors
 autoload -U colors && colors
 
+# ls colors
+export CLICOLOR=1
+export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
+
 # disable auto-correct, I have perfect typing!
 unsetopt correct_all
 
+# history
 unsetopt SHARE_HISTORY
+setopt APPEND_HISTORY
+setopt INC_APPEND_HISTORY
 setopt EXTENDED_HISTORY
-setopt HIST_SAVE_NO_DUPS
 setopt HIST_IGNORE_DUPS
 setopt HIST_REDUCE_BLANKS
+setopt EXTENDED_HISTORY
 setopt NO_CASE_GLOB
+HISTSIZE=10000
+SAVEHIST=10000
+
+# allow comments in shell
+setopt INTERACTIVE_COMMENTS
 
 # support emacs keybindings
 bindkey -e
+
 #####################################################
 # aliases
 
-alias workspace='cd ~/workspace'
+ws() {
+    echo "$HOME/workspace/$*"
+    cd "$HOME/workspace/$*"
+}
+
+alias o='open .'
+alias gs='git status'
+alias gpush='git push origin head'
+alias grep='grep --color'
 
 #####################################################
 # Completions
 
-autoload -U compinit && compinit
+fpath=($HOME/.zsh/completion $fpath)
+autoload -U compinit
+compinit
+
+setopt NO_BEEP # turn off beeping
+setopt AUTO_LIST # lways so list when ambiguous autocomplete
+unsetopt MENU_COMPLETE
+setopt COMPLETE_IN_WORD
+setopt ALWAYS_TO_END
+setopt AUTOMENU
+
+zstyle ':completion:*' auto-description 'specify: %d'
+zstyle ':completion:*' completer _expand _complete _correct _approximate
+zstyle ':completion:*' format 'Completing %d'
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*' list-colors ''
+zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
+zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Z}' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=* l:|=*'
+zstyle ':completion:*' menu select=long
+zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p%s
+zstyle ':completion:*' use-compctl false
+zstyle ':completion:*' verbose true
+
+zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
+zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
 
 #####################################################
 
@@ -34,7 +80,7 @@ fi
 export WORKON_HOME=$HOME/.virtualenvs
 
 # Customize to your needs...
-export PATH=$HOME/bin:/usr/local/go/bin:$HOME/.rvm/bin:/usr/local/bin/:/usr/local/share/python/:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/X11/bin
+export PATH=$HOME/.rvm/gems/ruby-1.9.3-p448/bin:$HOME/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/X11/bin
 
 export EDITOR=`which vim`
 
@@ -50,10 +96,8 @@ export PYTHONPATH=.:$PYTHONPATH
 
 source /Users/jeff/.rvm/scripts/rvm
 PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
-
-PATH=$PATH:/usr/local/share/npm/bin/ # for npm/node
-
-PATH=$PATH:/usr/local/sbin/ # for rabbitmq
+PATH=$PATH:/usr/local/share/npm/bin # for npm/node
+PATH=$PATH:/usr/local/sbin # for rabbitmq
 #####################################################
 
 workon_virtualenv() {
@@ -114,3 +158,19 @@ export RPROMPT=$'$(workon_virtualenv)'
 
 ### Added by the Heroku Toolbelt
 export PATH="/usr/local/heroku/bin:$PATH"
+
+#####################################################
+# plugins
+
+##### zsh-autosuggestions
+source ~/.zsh/plugins/autosuggestions/autosuggestions.zsh
+
+# Enable autosuggestions automatically
+zle-line-init() {
+    zle autosuggest-start
+}
+zle -N zle-line-init
+
+bindkey '^T' autosuggest-toggle
+
+#### END

@@ -18,6 +18,8 @@ function symlink_to_home {
     ln -fs $PWD/vim/vimrc $HOME/.vimrc
     ln -fs $PWD/zsh/zshrc $HOME/.zshrc
     ln -fs $PWD/zsh/zsh $HOME/.zsh
+    mkdir $HOME/.config; true
+    ln -fs $PWD/fish $HOME/.config/fish
 }
 
 function update {
