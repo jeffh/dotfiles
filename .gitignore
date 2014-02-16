@@ -11,3 +11,4 @@ vim/vim/bundle/*
 fish/fish_history
 fishd.*
 
+fish/fish_read_history

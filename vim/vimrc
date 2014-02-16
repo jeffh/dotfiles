@@ -220,7 +220,9 @@ noremap Y <esc>yyp
 "                CORE CONFIG                  "
 """""""""""""""""""""""""""""""""""""""""""""""
 
-set clipboard=unnamed  " System-like clipboard behavior
+if $TMUX == ''
+    set clipboard=unnamed  " System-like clipboard behavior if not in TMUX
+endif
 
 set tags=./.tags;$HOME " Search path for ctags
 
@@ -453,7 +455,7 @@ command! ConvertToUTF8 :set encoding=utf-8 fileencodings=.
 set expandtab          " use spaces for tab key
 set autoindent         " automatically detect how to indent
 set smarttab           " be smart to how much to indent
-set smartindent        " be smart for indenting a new line
+set cindent            " be smart for indenting a new line
 set shiftround         " round indent to multiple of shiftwidth
 
 set shiftwidth=4       " indent amounts
@@ -466,7 +468,7 @@ augroup language_customizations
     autocmd FileType python setlocal expandtab
     " cindent instead of smartindent to not force hashes going to beginning of line
     " for python comments, that's annoying
-    autocmd FileType python setlocal smartindent
+    autocmd FileType python setlocal cindent
 
     " RegExp to find file names + line numbers in quickfix window
     autocmd FileType python setlocal efm=%C\ %.%#,%A\ \ File\ \"%f\"\\,\ line\ %l%.%#,%Z%[%^\ ]%\\@=%m
@@ -475,6 +477,7 @@ augroup language_customizations
     autocmd FileType ruby setlocal tabstop=2
     autocmd FileType ruby setlocal softtabstop=2
     autocmd FileType ruby setlocal shiftwidth=2
+    autocmd BufRead,BufNewFile Podfile set filetype=ruby
 
     autocmd FileType javascript setlocal noexpandtab
 
@@ -482,7 +485,6 @@ augroup language_customizations
     autocmd FileType sls setlocal tabstop=4
     autocmd FileType sls setlocal softtabstop=4
     autocmd FileType sls setlocal shiftwidth=4
-
     autocmd FileType sls setlocal expandtab
 
     autocmd FileType go setlocal tabstop=4
@@ -577,4 +579,12 @@ let g:auto_save = 1 " enable
 " YouCompleteMe "
 """""""""""""""""
 let g:ycm_cache_omnifunc = 0
+
+"""""""""""""""""
+" experimental  "
+"""""""""""""""""
+set cinkeys=0{,0},0),:,0#,!,!^F,!<Tab>,;
+"set indentkeys=0{,0},0),:,0#,!,!^F,!<Tab>,;
+map <Tab> i<Tab><Esc>^
+
 

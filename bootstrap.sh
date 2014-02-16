@@ -17,8 +17,10 @@ function symlink_to_home {
     ln -fs $PWD/vim/vim $HOME/.vim
     ln -fs $PWD/vim/vimrc $HOME/.vimrc
     ln -fs $PWD/zsh/zshrc $HOME/.zshrc
+    rm $HOME/.zsh 2>> /dev/null; true
     ln -fs $PWD/zsh/zsh $HOME/.zsh
-    mkdir $HOME/.config; true
+    ln -fs $PWD/tmux/.tmux.conf $HOME/.tmux.conf
+    mkdir $HOME/.config > /dev/null 2> /dev/null; true
     ln -fs $PWD/fish $HOME/.config/fish
 }
 
