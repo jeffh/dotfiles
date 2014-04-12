@@ -54,9 +54,6 @@ Bundle 'Valloric/YouCompleteMe'
 " AutoSave
 Bundle 'vim-auto-save'
 
-" NERDTree
-Bundle 'scrooloose/nerdtree'
-
 " Syntastic (syntax check)
 Bundle 'scrooloose/syntastic'
 
@@ -353,6 +350,10 @@ augroup templates
     autocmd BufNewFile * silent! foldopen!
 augroup END
 
+autocmd BufReadPost *
+    \ if line("'\"") > 0 && line("'\"") <= line("$") |
+    \   exec "normal g`\"" |
+    \ endif
 
 """""""
 " GUI "
@@ -407,14 +408,6 @@ if has("gui_running")
     end
 endif
 
-" make active window larger
-"set winwidth=84
-" We have to have a winheight bigger than we want to set winminheight. But if
-" we set winheight to be huge before winminheight, the winminheight set will
-" fail.
-"set winheight=5
-"set winminheight=5
-"set winheight=999
 " Equalize window sizes when a window is removed
 set equalalways
 
@@ -444,6 +437,69 @@ command! -nargs=1 -range SuperRetab <line1>,<line2>s/\v%(^ *)@<= {<args>}/\t/g
 command! ConvertSpacesToTab :'<,'>SuperRetab 4
 command! ConvertToUTF8 :set encoding=utf-8 fileencodings=.
 
+" Rename current file
+function! RenameFile()
+    let old_name = expand('%')
+    let new_name = input('New file name: ', expand('%'))
+    if new_name != '' && new_name != old_name
+        exec ':saveas ' . new_name
+        exec ':silent !rm ' . old_name
+        redraw!
+    endif
+endfunction
+map <leader>r :call RenameFile()<cr>
+
+"""""""""""""""""
+" Running Tests "
+"""""""""""""""""
+function! RunTestFile(...)
+    if a:0
+        let command_suffix = a:1
+    else
+        let command_suffix = ""
+    endif
+
+    let w:rtf_spec_regex = exists('w:rtf_spec_regex') ? w:rtf_spec_regex : '\(.feature\|_spec.rb\)$'
+
+    let in_test_file = match(expand("%"), w:rtf_spec_regex) != -1
+    if in_test_file
+        call SetTestFile()
+    elseif !exists("t:rtf_test_file")
+        echo "No test to run!"
+        return
+    end
+
+    call RunTests(t:rtf_test_file . command_suffix)
+endfunction
+
+function! RunNearestTest()
+    let spec_line_number = line('.')
+    call RunTestFile(":" . spec_line_number . " -b")
+endfunction
+
+function! SetTestFile()
+    let t:rtf_test_file=@%
+endfunction
+
+function! RunTests(filename)
+    :w
+    :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
+    :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
+    :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
+    :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
+    :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
+    let cmd_prefix = ""
+    let w:rtf_command = exists("w:rtf_command") ? w:rtf_command : "rspec "
+
+    if filereadable("Gemfile")
+        cmd_prefix = "bundle exec "
+    endif
+
+    exec ":!" . cmd_prefix . w:rtf_command . a:filename
+endfunction
+
+nnoremap <leader>t :call RunTestFile()<cr>
+nnoremap <leader>T :call RunNearestTest()<cr>
 
 """""""""""""""""""""""""""""""""""""""""""""""
 "                LANG CONFIG                  "
@@ -583,7 +639,7 @@ let g:ycm_cache_omnifunc = 0
 """""""""""""""""
 " experimental  "
 """""""""""""""""
-set cinkeys=0{,0},0),:,0#,!,!^F,!<Tab>,;
+"set cinkeys=0{,0},0),:,0#,!,!^F,!<Tab>,;
 "set indentkeys=0{,0},0),:,0#,!,!^F,!<Tab>,;
 map <Tab> i<Tab><Esc>^
 
