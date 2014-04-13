@@ -13,3 +13,6 @@ fish/fish_history
 fishd.*
 
 fish/fish_read_history
+.smex-items
+elpa
+emacs/emacs.d/places

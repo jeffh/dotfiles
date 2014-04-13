@@ -48,6 +48,7 @@ function symlink_to_home {
     ln -fs $PWD/fish $HOME/.config/fish
 
     echo " - emacs (.emacs.d)"
+    rm $HOME/.emacs.d 2> /dev/null || true
     ln -fs $PWD/emacs/emacs.d $HOME/.emacs.d
 
     echo " - scripts (bin)"
@@ -92,6 +93,7 @@ function help {
     echo
     echo "Commands:"
     echo "  install   Symlinks files to home directory (overwrites existing)."
+    echo "  osx       Installed MacVim and Emacs via homebrew."
     echo "  update    Updates all submodules & gocode. Changes the repository."
     echo "  help      This help"
     echo
