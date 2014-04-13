@@ -29,9 +29,6 @@ Bundle 'gmarik/vundle'
 " Repeat (Plugin for plugins to use .)
 Bundle 'tpope/vim-repeat'
 
-" Background command execution
-Bundle 'tpope/vim-dispatch'
-
 " gcc to (un)comment lines
 Bundle 'tpope/vim-commentary'
 
@@ -639,8 +636,6 @@ let g:ycm_cache_omnifunc = 0
 """""""""""""""""
 " experimental  "
 """""""""""""""""
-"set cinkeys=0{,0},0),:,0#,!,!^F,!<Tab>,;
-"set indentkeys=0{,0},0),:,0#,!,!^F,!<Tab>,;
 map <Tab> i<Tab><Esc>^
 
 

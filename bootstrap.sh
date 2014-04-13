@@ -16,7 +16,7 @@ function print_post_install_message {
     echo
     echo "Done! The following steps need to be done manually:"
     echo " - open vim, then type :BundleInstall to install the packages"
-    echo " - open '$PWD/emacs/emacs.d/init.el' in emacs, then M-x eval-buffer"
+    echo " - open emacs to install packages out of the box"
     echo
     echo
 }
