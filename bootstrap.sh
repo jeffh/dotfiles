@@ -1,39 +1,75 @@
 #!/usr/bin/env bash
 set -e
 
+function run {
+    echo " >> $@"
+    $@
+}
+
 function main {
-    set -x
     download_plugins
     symlink_to_home
-    set +x
+    print_post_install_message
+}
+
+function print_post_install_message {
+    echo
+    echo "Done! The following steps need to be done manually:"
+    echo " - open vim, then type :BundleInstall to install the packages"
+    echo " - open '$PWD/emacs/emacs.d/init.el' in emacs, then M-x eval-buffer"
+    echo
+    echo
 }
 
 function download_plugins {
-    git submodule update --init --recursive
+    echo
+    echo "Downloading plugins"
+    run git submodule update --init --recursive
 }
 
 function symlink_to_home {
-    echo "Symlinking to home."
+    echo
+    echo "Symlinking configuration to $HOME"
+    echo " - vim (.vim, .vimrc)"
     ln -fs $PWD/vim/vim $HOME/.vim
     ln -fs $PWD/vim/vimrc $HOME/.vimrc
+
+    echo " - zsh (.zshrc, .zsh)"
     ln -fs $PWD/zsh/zshrc $HOME/.zshrc
-    rm $HOME/.zsh 2>> /dev/null; true
+    rm $HOME/.zsh 2> /dev/null || true
     ln -fs $PWD/zsh/zsh $HOME/.zsh
+
+    echo " - tmux (.tmux.conf)"
     ln -fs $PWD/tmux/.tmux.conf $HOME/.tmux.conf
-    mkdir $HOME/.config > /dev/null 2> /dev/null; true
+
+    echo " - fish (.config/fish)"
+    mkdir $HOME/.config > /dev/null 2> /dev/null || true
+    rm $HOME/.config/fish 2> /dev/null || true
     ln -fs $PWD/fish $HOME/.config/fish
+
+    echo " - emacs (.emacs.d)"
+    ln -fs $PWD/emacs/emacs.d $HOME/.emacs.d
+
+    echo " - scripts (bin)"
+    rm $HOME/bin 2> /dev/null || true
+    ln -fs $PWD/bin $HOME/bin
+}
+
+function osx {
+    brew install python
+    brew install macvim
+    brew install emacs --cocoa --srgb
+    brew linkapps
 }
 
 function update {
-    set -x
     update_submodules
     # install gocode files
     echo "Re-downloading gocode vim files ..."
-    curl -L "https://raw.github.com/nsf/gocode/master/vim/autoload/gocomplete.vim" > $PWD/vim/vim/autoload/gocomplete.vim
-    curl -L "https://raw.github.com/nsf/gocode/master/vim/ftplugin/go.vim" > $PWD/vim/vim/ftplugin/go.vim
+    run curl -L "https://raw.github.com/nsf/gocode/master/vim/autoload/gocomplete.vim" > $PWD/vim/vim/autoload/gocomplete.vim
+    run curl -L "https://raw.github.com/nsf/gocode/master/vim/ftplugin/go.vim" > $PWD/vim/vim/ftplugin/go.vim
 
-    set +x
-    echo "Run :BundleInstall in vim to install all packages."
+    print_post_install_message
 }
 
 function update_submodules {
@@ -43,14 +79,13 @@ function update_submodules {
     do
         echo "Updating $i ..."
         cd $CWD/$i
-        git reset --hard
-        git checkout master
-        git pull
-        git checkout master
+        run git reset --hard
+        run git checkout master
+        run git pull
+        run git checkout master
     done
     cd $CWD
 }
-
 
 function help {
     echo "Usage: $0 COMMAND"
@@ -64,6 +99,7 @@ function help {
 
 case "$1" in
     "install") main;;
+    "osx") osx;;
     "upgrade"|"update") update;;
     "help") help;;
     *) echo "Invalid command. Use '$0 help' for help";;
