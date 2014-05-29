@@ -50,6 +50,7 @@ function symlink_to_home {
     echo " - emacs (.emacs.d)"
     rm $HOME/.emacs.d 2> /dev/null || true
     ln -fs $PWD/emacs/emacs.d $HOME/.emacs.d
+    ln -fs $PWD/emacs/emacs.d/init.el $HOME/Library/Preferences/Aquamacs\ Emacs/Preferences.el
 
     echo " - scripts (bin)"
     rm $HOME/bin 2> /dev/null || true

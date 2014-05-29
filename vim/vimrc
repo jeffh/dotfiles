@@ -22,6 +22,9 @@ call vundle#rc()
 
 Bundle 'gmarik/vundle'
 
+" Theme
+Bundle 'Zenburn'
+
 """""""""""
 " Plugins "
 """""""""""
@@ -31,6 +34,9 @@ Bundle 'tpope/vim-repeat'
 
 " gcc to (un)comment lines
 Bundle 'tpope/vim-commentary'
+
+" dispatch
+"Bundle 'tpope/vim-dispatch'
 
 " Textmate-styled snippets
 Bundle "MarcWeber/vim-addon-mw-utils"
@@ -71,6 +77,7 @@ Bundle 'nsf/gocode'
 Bundle 'git://github.com/vim-scripts/paredit.vim.git'
 Bundle 'guns/vim-clojure-static'
 Bundle 'tpope/vim-fireplace'
+"Bundle 'tpope/vim-leiningen'
 Bundle 'kien/rainbow_parentheses.vim'
 
 " Python
@@ -367,7 +374,6 @@ set guicursor=n-v-c:block-Cursor
 set guicursor+=i:block-Cursor
 set guicursor+=i:blinkon0
 
-
 " Command bar height
 set cmdheight=1
 
@@ -414,7 +420,7 @@ set nocursorline
 """""""""
 " Theme "
 """""""""
-colorscheme Tomorrow-Night
+colorscheme zenburn
 
 augroup color_customizations
     autocmd!
@@ -522,6 +528,7 @@ augroup language_customizations
     " cindent instead of smartindent to not force hashes going to beginning of line
     " for python comments, that's annoying
     autocmd FileType python setlocal cindent
+    autocmd FileType python nmap g] :YcmCompleter GoTo<cr>
 
     " RegExp to find file names + line numbers in quickfix window
     autocmd FileType python setlocal efm=%C\ %.%#,%A\ \ File\ \"%f\"\\,\ line\ %l%.%#,%Z%[%^\ ]%\\@=%m
