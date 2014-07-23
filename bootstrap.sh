@@ -57,13 +57,6 @@ function symlink_to_home {
     ln -fs $PWD/bin $HOME/bin
 }
 
-function osx {
-    brew install python
-    brew install macvim
-    brew install emacs --cocoa --srgb
-    brew linkapps
-}
-
 function update {
     update_submodules
     # install gocode files
@@ -89,15 +82,36 @@ function update_submodules {
     cd $CWD
 }
 
+function osx {
+    brew install python
+    brew install macvim
+    brew install emacs --cocoa --srgb
+    brew linkapps
+
+    brew install caskroom/cask/brew-cask
+    brew cask install google-chrome
+    brew cask install alfred
+    brew cask install dropbox
+    brew cask install caffeine
+    brew cask install ccmenu
+    brew cask install iterm2
+    brew cask install sublime-text
+    brew cask install appcode
+    brew cask install hopper-disassembler
+    brew cask install virtualbox
+    brew cask install transmission
+    brew cask install shiftit
+    brew cask install skype
+}
+
 function help {
     echo "Usage: $0 COMMAND"
     echo
     echo "Commands:"
     echo "  install   Symlinks files to home directory (overwrites existing)."
-    echo "  osx       Installed MacVim and Emacs via homebrew."
+    echo "  osx       Installs various OSX Applications"
     echo "  update    Updates all submodules & gocode. Changes the repository."
     echo "  help      This help"
-    echo
 }
 
 case "$1" in
