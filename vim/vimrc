@@ -17,84 +17,90 @@ set shell=/bin/bash
 """""""""""""""""""""""""""""""""""""""""""""""
 filetype off
 
-set rtp+=~/.vim/bundle/vundle/
-call vundle#rc()
+set rtp+=~/.vim/bundle/Vundle.vim/
+call vundle#begin()
 
-Bundle 'gmarik/vundle'
+Plugin 'gmarik/Vundle.vim'
 
 " Theme
-Bundle 'Zenburn'
+Plugin 'Zenburn'
 
 """""""""""
 " Plugins "
 """""""""""
 
+" Autocomplete
+Plugin 'Shougo/neocomplete.vim'
+
 " Repeat (Plugin for plugins to use .)
-Bundle 'tpope/vim-repeat'
+Plugin 'tpope/vim-repeat'
 
 " gcc to (un)comment lines
-Bundle 'tpope/vim-commentary'
-
-" dispatch
-"Bundle 'tpope/vim-dispatch'
+Plugin 'tpope/vim-commentary'
 
 " Textmate-styled snippets
-Bundle "MarcWeber/vim-addon-mw-utils"
-Bundle "tomtom/tlib_vim"
-Bundle "honza/vim-snippets"
-" ^^^ snipmate dependencies ^^^ "
-Bundle 'garbas/vim-snipmate'
+Plugin 'Shougo/neosnippet'
+Plugin 'Shougo/neosnippet-snippets'
 
 " File finding
-Bundle 'kien/ctrlp.vim'
+Plugin 'kien/ctrlp.vim'
 
 " Paren, quotes, bracket editing
-Bundle 'tpope/vim-surround'
-
-" Autocomplete
-Bundle 'Valloric/YouCompleteMe'
+Plugin 'tpope/vim-surround'
 
 " AutoSave
-Bundle 'vim-auto-save'
+Plugin 'vim-auto-save'
 
 " Syntastic (syntax check)
-Bundle 'scrooloose/syntastic'
+Plugin 'scrooloose/syntastic'
+
+" Complementary pairing hotkeys & operations
+" eg - ]q jumps to next in quicklist, [q for other way
+"      ]space adds a new line below, [space adds new line above
+Plugin 'tpope/vim-unimpaired'
+
+" Git
+Plugin 'tpope/vim-fugitive'
+
+" status line
+Plugin 'bling/vim-airline'
+
+" Tabular alignment
+Plugin 'vim-easy-align'
 
 """""""""""""
 " Languages "
 """""""""""""
 
 " Markdown
-Bundle 'plasticboy/vim-markdown'
+Plugin 'plasticboy/vim-markdown'
 
 " Mustache
-Bundle 'juvenn/mustache.vim'
+Plugin 'juvenn/mustache.vim'
 
 " Google Go
-Bundle 'nsf/gocode'
+Plugin 'nsf/gocode'
 
 " Clojure
-Bundle 'git://github.com/vim-scripts/paredit.vim.git'
-Bundle 'guns/vim-clojure-static'
-Bundle 'tpope/vim-fireplace'
-"Bundle 'tpope/vim-leiningen'
-Bundle 'kien/rainbow_parentheses.vim'
+Plugin 'git://github.com/vim-scripts/paredit.vim.git'
+Plugin 'guns/vim-clojure-static'
+Plugin 'guns/vim-clojure-highlight'
+Plugin 'tpope/vim-fireplace'
+Plugin 'kien/rainbow_parentheses.vim'
 
 " Python
-Bundle 'jmcantrell/vim-virtualenv'
-Bundle 'klen/python-mode'
-Bundle 'saltstack/salt-vim'
+Plugin 'jmcantrell/vim-virtualenv'
+Plugin 'klen/python-mode'
+Plugin 'saltstack/salt-vim'
 
 " Javascript
-Bundle 'pangloss/vim-javascript'
+Plugin 'pangloss/vim-javascript'
 
 " Ruby
-Bundle 'tpope/vim-rvm'
-Bundle 'vim-ruby/vim-ruby'
+Plugin 'tpope/vim-rvm'
+Plugin 'vim-ruby/vim-ruby'
 
-" Objective-C
-Bundle 'git://github.com/msanders/cocoa.vim.git'
-
+call vundle#end()
 
 filetype plugin indent on
 syntax enable
@@ -140,12 +146,6 @@ inoremap <c-bs> <c-w>
 noremap <leader>j :cn<cr>
 noremap <leader>k :cp<cr>
 
-" NERDTree
-map \ :NERDTreeToggle<cr>
-
-" YouCompleteMe GotoDefinition
-noremap <leader>j :YcmCompleter GoToDefinitionElseDeclaration<cr>
-
 " Suppress all whitespace at end of lines when saving
 " But preserve repeat macro & cursor position
 function! <SID>StripTrailingWhitespaces()
@@ -169,7 +169,6 @@ noremap <c-c> :tabclose<cr>
 
 " disable highlighting when hitting the return or esc key
 nnoremap <CR> :nohlsearch<cr><cr>
-"nnoremap <Esc> :nohlsearch<Esc>
 
 " Type %/ or %? in command line to expand out to current buffer's file location
 " (if it exists)
@@ -183,18 +182,11 @@ else
     cnoremap %% <C-R>=expand("%:h") . "\\" <CR>
 endif
 
-" expand snippet
-function! ExpandSnippet()
-    if pumvisible()
-        return "\<c-e>\<c-r>=snipMate#TriggerSnippet()\<cr>"
-    else
-        return "\<c-r>=snipMate#TriggerSnippet()\<cr>"
-    endif
-endfunction
-inoremap <c-s> <c-r>=ExpandSnippet()<cr>
-
 " Smart tabbing behavior
 function! CleverTab()
+    if neosnippet#expandable_or_jumpable()
+        return "\<Plug>(neosnippet_expand_or_jump)"
+    endif
     if pumvisible()
         return "\<C-N>"
     endif
@@ -211,7 +203,8 @@ function! CleverTab()
         return "\<C-N>"
     endif
 endfunction
-inoremap <tab> <c-r>=CleverTab()<CR>
+
+imap <expr><tab> CleverTab()
 inoremap <s-tab> <C-p>
 
 " Duplicate current line
@@ -243,7 +236,7 @@ set magic              " Set for regular expressions' backslashes
 
 " visualize invisible characters. Show spaces at the end of lines and tabs.
 set list
-set listchars=tab:▸\ ,trail:·,
+set listchars=tab:▸\ ,trail:·
 
 set foldmethod=syntax  " code folding is determined by syntax
 set foldlevelstart=20  " default fold level
@@ -435,9 +428,6 @@ augroup END
 """""""""""""""""""""""""""""""""""""""""""""""
 "        CUSTOM FUNCTIONS / COMMANDS          "
 """""""""""""""""""""""""""""""""""""""""""""""
-command! ConvertTabsToSpaces :set expandtab|retab
-command! -nargs=1 -range SuperRetab <line1>,<line2>s/\v%(^ *)@<= {<args>}/\t/g
-command! ConvertSpacesToTab :'<,'>SuperRetab 4
 command! ConvertToUTF8 :set encoding=utf-8 fileencodings=.
 
 " Rename current file
@@ -447,10 +437,23 @@ function! RenameFile()
     if new_name != '' && new_name != old_name
         exec ':saveas ' . new_name
         exec ':silent !rm ' . old_name
+        exec '<c-^>:bw'
         redraw!
+        exec ":echom \"Renamed " . old_name . " to " . new_name . "\""
     endif
 endfunction
 map <leader>r :call RenameFile()<cr>
+
+function! DeleteFile()
+    call inputsave()
+    let file_name = input('Delete: ', expand('%'), "file")
+    call inputrestore()
+    exec ':silent !rm ' . file_name
+    exec ':silent bw'
+    redraw!
+    exec ":echom \"Deleted " . file_name . "\""
+endfunction
+map <leader>d :call DeleteFile()<cr>
 
 """""""""""""""""
 " Running Tests "
@@ -504,6 +507,7 @@ endfunction
 nnoremap <leader>t :call RunTestFile()<cr>
 nnoremap <leader>T :call RunNearestTest()<cr>
 
+
 """""""""""""""""""""""""""""""""""""""""""""""
 "                LANG CONFIG                  "
 """""""""""""""""""""""""""""""""""""""""""""""
@@ -528,7 +532,6 @@ augroup language_customizations
     " cindent instead of smartindent to not force hashes going to beginning of line
     " for python comments, that's annoying
     autocmd FileType python setlocal cindent
-    autocmd FileType python nmap g] :YcmCompleter GoTo<cr>
 
     " RegExp to find file names + line numbers in quickfix window
     autocmd FileType python setlocal efm=%C\ %.%#,%A\ \ File\ \"%f\"\\,\ line\ %l%.%#,%Z%[%^\ ]%\\@=%m
@@ -582,11 +585,6 @@ augroup END
 "              PLUGIN CONFIG                  "
 """""""""""""""""""""""""""""""""""""""""""""""
 
-""""""""""""""""""""""
-" YouCompleteMe/Jedi "
-""""""""""""""""""""""
-let g:jedi#show_function_definition = "0"
-
 """"""""""
 " Python "
 """"""""""
@@ -634,15 +632,48 @@ let g:ctrlp_working_path_mode = 'ra'
 """""""""""""""""
 let g:auto_save = 1 " enable
 
+"""""""""""""""
+" neocomplete "
+"""""""""""""""
+inoremap <expr><C-g> neocomplete#cancel_popup()
 
-"""""""""""""""""
-" YouCompleteMe "
-"""""""""""""""""
-let g:ycm_cache_omnifunc = 0
+let g:neocomplete#enable_at_startup = 1
+let g:neocomplete#enable_smart_case = 1
+let g:neocomplete#sources#syntax#min_keyword_length = 3
+let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
+let g:neocomplete#force_overwrite_completefunc = 1
+
+autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+
+if !exists('g:neocomplete#sources#omni#input_patterns')
+  let g:neocomplete#sources#omni#input_patterns = {}
+endif
+let g:neocomplete#sources#omni#input_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
+let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
+let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
+
+"""""""""""""""
+" neosnippet  "
+"""""""""""""""
+let g:neosnippet#snippets_directory = "$HOME/.vim/snippets/"
+
+""""""""""""""""""
+" vim-easy-align "
+""""""""""""""""""
+vmap <Enter> <Plug>(EasyAlign)
+nmap <Leader>a <Plug>(EasyAlign)
 
 """""""""""""""""
 " experimental  "
 """""""""""""""""
-map <Tab> i<Tab><Esc>^
+
+" For snippet_complete marker.
+if has('conceal')
+    set conceallevel=2 concealcursor=i
+endif
 
 
