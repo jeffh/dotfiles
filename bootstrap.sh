@@ -84,7 +84,7 @@ function update_submodules {
 
 function osx {
     brew install python
-    brew install macvim
+    brew install macvim --with-cscope --with-lua --override-system-vim
     brew install emacs --cocoa --srgb
     brew linkapps
 
