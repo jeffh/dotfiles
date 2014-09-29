@@ -9,3 +9,5 @@ set -x GOPATH $HOME/workspace/gopath
 
 alias trim_tree="ack --print0 -l '[ \t]+\$' --known-types | xargs -0 -n1 perl -pi -e 's/[ \t]+\$//'"
 
+set PATH $HOME/.rbenv/bin $PATH
+. (rbenv init -|psub)
