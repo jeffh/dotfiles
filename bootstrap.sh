@@ -86,6 +86,7 @@ function osx {
     brew install python
     brew install macvim --with-cscope --with-lua --override-system-vim
     brew install emacs --cocoa --srgb
+    brew install fish
     brew linkapps
 
     brew install caskroom/cask/brew-cask
@@ -93,15 +94,16 @@ function osx {
     brew cask install alfred
     brew cask install dropbox
     brew cask install caffeine
-    brew cask install ccmenu
-    brew cask install iterm2
     brew cask install sublime-text
     brew cask install appcode
     brew cask install hopper-disassembler
     brew cask install virtualbox
-    brew cask install transmission
     brew cask install shiftit
     brew cask install skype
+    brew cask install dropbox
+    brew cask install onepassword
+    brew cask install evernote
+    brew cask install steam
 }
 
 function help {
