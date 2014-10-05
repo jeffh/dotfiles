@@ -104,6 +104,14 @@ function osx {
     brew cask install onepassword
     brew cask install evernote
     brew cask install steam
+    brew cask install flux
+
+    echo "Switching to fish shell. Requires sudo."
+    if [ $(cat /etc/shells | grep -q $(which fish)) = 0 ]; then
+        echo "Fish shell already in /etc/shells"
+    else
+        which fish | sudo tee -a /etc/shells > /dev/null
+    fi
 }
 
 function help {
