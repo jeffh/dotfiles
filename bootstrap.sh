@@ -106,7 +106,7 @@ function osx {
     brew cask install steam
     brew cask install flux
 
-    echo "Switching to fish shell. Requires sudo."
+    echo "Switch default to fish shell. Requires sudo. Abort to skip"
     if [ "$(cat /etc/shells | grep -q $(which fish))" = "0" ]; then
         echo "Fish shell already in /etc/shells"
     else
