@@ -84,6 +84,7 @@ function update_submodules {
 
 function osx {
     brew install python
+    brew install rbenv --HEAD
     brew install macvim --with-cscope --with-lua --override-system-vim
     brew install emacs --cocoa --srgb
     brew install fish
