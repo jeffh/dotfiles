@@ -72,14 +72,18 @@ Plugin 'vim-easy-align'
 " Languages "
 """""""""""""
 
+" Ansible YAML
+Plugin 'chase/vim-ansible-yaml'
+
 " Markdown
+Plugin 'godlygeek/tabular'
 Plugin 'plasticboy/vim-markdown'
 
 " Mustache
 Plugin 'juvenn/mustache.vim'
 
 " Google Go
-Plugin 'nsf/gocode'
+Plugin 'nsf/gocode',  {'rtp': 'vim/'}
 
 " Clojure
 Plugin 'git://github.com/vim-scripts/paredit.vim.git'
@@ -239,7 +243,7 @@ set list
 set listchars=tab:▸\ ,trail:·
 
 set foldmethod=syntax  " code folding is determined by syntax
-set foldlevelstart=20  " default fold level
+set foldlevel=99  " default fold level
 
 
 """"""""""
@@ -337,15 +341,6 @@ try
     lang en_US
 catch
 endtry
-
-" Use templates when creating new files of same extensions
-augroup templates
-    au!
-    set cpoptions-=a " make sure a buffer with the template file isn't opened
-    autocmd BufNewFile *.* silent! execute '0r ~/.vim/skel/tmpl.'.expand('<afile>:e')
-    autocmd BufNewFile * %substitute#\[:EVAL:\]\(.\{-\}\)\[:END:\]#\=eval(submatch(1))#ge
-    autocmd BufNewFile * silent! foldopen!
-augroup END
 
 autocmd BufReadPost *
     \ if line("'\"") > 0 && line("'\"") <= line("$") |
@@ -543,7 +538,6 @@ augroup language_customizations
     autocmd BufRead,BufNewFile Podfile set filetype=ruby
 
     autocmd FileType javascript setlocal noexpandtab
-
     autocmd FileType yaml setlocal expandtab
     autocmd FileType sls setlocal tabstop=4
     autocmd FileType sls setlocal softtabstop=4
@@ -577,8 +571,6 @@ augroup language_customizations
     autocmd FileType make setlocal nosmartindent
 
     autocmd FileType php setlocal noexpandtab
-    autocmd FileType php setlocal foldmethod=indent
-
 augroup END
 
 """""""""""""""""""""""""""""""""""""""""""""""
@@ -666,6 +658,11 @@ let g:neosnippet#snippets_directory = "$HOME/.vim/snippets/"
 """"""""""""""""""
 vmap <Enter> <Plug>(EasyAlign)
 nmap <Leader>a <Plug>(EasyAlign)
+
+""""""""""""""""
+" vim-markdown "
+""""""""""""""""
+let g:vim_markdown_initial_foldlevel=99
 
 """""""""""""""""
 " experimental  "
