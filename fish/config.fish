@@ -1,7 +1,7 @@
 set PATH $HOME/bin /usr/local/bin $PATH
 
 set -x EDITOR $HOME/bin/vim
-set -x GOPATH $HOME/workspace/gopath
+set -x GOPATH $HOME/workspace
 
 . $HOME/.config/fish/plugins/virtualfish/virtual.fish
 . $HOME/.config/fish/plugins/virtualfish/auto_activation.fish

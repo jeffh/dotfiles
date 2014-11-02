@@ -9,6 +9,7 @@ function run {
 function main {
     download_plugins
     symlink_to_home
+    setup_vim
     print_post_install_message
 }
 
@@ -58,6 +59,10 @@ function symlink_to_home {
     ln -fs $PWD/bin $HOME/bin
 }
 
+function setup_vim {
+    vim +BundleInstall +qall
+}
+
 function update {
     update_submodules
     # install gocode files
@@ -101,6 +106,7 @@ function osx {
     brew cask install hopper-disassembler
     brew cask install virtualbox
     brew cask install shiftit
+    brew cask install xquartz
     brew cask install skype
     brew cask install dropbox
     brew cask install onepassword

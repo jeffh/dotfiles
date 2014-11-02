@@ -51,6 +51,9 @@ Plugin 'tpope/vim-surround'
 " AutoSave
 Plugin 'vim-auto-save'
 
+" NERD tree
+Plugin 'scrooloose/nerdtree'
+
 " Syntastic (syntax check)
 Plugin 'scrooloose/syntastic'
 
@@ -63,7 +66,7 @@ Plugin 'tpope/vim-unimpaired'
 Plugin 'tpope/vim-fugitive'
 
 " Git-gutter
-Plugin 'airblade/vim-gitgutter'
+" Plugin 'airblade/vim-gitgutter'
 
 " status line
 Plugin 'bling/vim-airline'
@@ -78,14 +81,18 @@ Plugin 'luan/vipe'
 " Languages "
 """""""""""""
 
+" Ansible YAML
+Plugin 'chase/vim-ansible-yaml'
+
 " Markdown
+Plugin 'godlygeek/tabular'
 Plugin 'plasticboy/vim-markdown'
 
 " Mustache
 Plugin 'juvenn/mustache.vim'
 
 " Google Go
-Plugin 'nsf/gocode'
+Plugin 'nsf/gocode',  {'rtp': 'vim/'}
 
 " Clojure
 Plugin 'git://github.com/vim-scripts/paredit.vim.git'
@@ -216,6 +223,9 @@ inoremap <s-tab> <C-p>
 " Duplicate current line
 noremap Y <esc>yyp
 
+" NERDTree toggle
+noremap \ :NERDTreeToggle<CR>
+
 """""""""""""""""""""""""""""""""""""""""""""""
 "                CORE CONFIG                  "
 """""""""""""""""""""""""""""""""""""""""""""""
@@ -245,7 +255,7 @@ set list
 set listchars=tab:▸\ ,trail:·
 
 set foldmethod=syntax  " code folding is determined by syntax
-set foldlevelstart=20  " default fold level
+set foldlevel=99  " default fold level
 
 
 """"""""""
@@ -344,15 +354,6 @@ try
 catch
 endtry
 
-" Use templates when creating new files of same extensions
-augroup templates
-    au!
-    set cpoptions-=a " make sure a buffer with the template file isn't opened
-    autocmd BufNewFile *.* silent! execute '0r ~/.vim/skel/tmpl.'.expand('<afile>:e')
-    autocmd BufNewFile * %substitute#\[:EVAL:\]\(.\{-\}\)\[:END:\]#\=eval(submatch(1))#ge
-    autocmd BufNewFile * silent! foldopen!
-augroup END
-
 autocmd BufReadPost *
     \ if line("'\"") > 0 && line("'\"") <= line("$") |
     \   exec "normal g`\"" |
@@ -370,8 +371,9 @@ set laststatus=2
 
 " stylize the cursor in different modes
 set guicursor=n-v-c:block-Cursor
-set guicursor+=i:block-Cursor
+set guicursor+=ve:ver35-Cursor
 set guicursor+=i:blinkon0
+set guicursor+=i:ver25-Cursor/lCursor
 
 " Command bar height
 set cmdheight=1
@@ -465,54 +467,75 @@ map <leader>d :call DeleteFile()<cr>
 """""""""""""""""
 " Running Tests "
 """""""""""""""""
-function! RunTestFile(...)
-    if a:0
-        let command_suffix = a:1
-    else
-        let command_suffix = ""
-    endif
-
-    let w:rtf_spec_regex = exists('w:rtf_spec_regex') ? w:rtf_spec_regex : '\(.feature\|_spec.rb\)$'
-
-    let in_test_file = match(expand("%"), w:rtf_spec_regex) != -1
-    if in_test_file
-        call SetTestFile()
-    elseif !exists("t:rtf_test_file")
-        echo "No test to run!"
-        return
+function! RunIfMatchesFile(command, file_ext_regex)
+    let in_runnable_file = match(expand("%"), a:file_ext_regex) != -1
+    if in_runnable_file
+        let t:last_ran_file=@%
+    elseif !exists("t:last_ran_file")
+        return 0
+    elseif match(expand("%"), a:file_ext_regex) == -1
+        return 0
     end
 
-    call RunTests(t:rtf_test_file . command_suffix)
+    :silent w
+    return RunCommand(a:command . t:last_ran_file)
 endfunction
 
-function! RunNearestTest()
-    let spec_line_number = line('.')
-    call RunTestFile(":" . spec_line_number . " -b")
+function! RunCommand(command)
+    " :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
+    " :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
+    " :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
+    " :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
+    " :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
+    " exec ":!" . a:command
+    exec ":Vipe " . a:command
+    return 1
 endfunction
 
-function! SetTestFile()
-    let t:rtf_test_file=@%
-endfunction
-
-function! RunTests(filename)
-    :w
-    :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
-    :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
-    :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
-    :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
-    :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
-    let cmd_prefix = ""
-    let w:rtf_command = exists("w:rtf_command") ? w:rtf_command : "rspec "
-
+function! RunTestFileIfPossible()
+    let t:skip_file_check=0
+    let has_ran=0
+    " Ruby
     if filereadable("Gemfile")
-        cmd_prefix = "bundle exec "
+        let has_ran = RunIfMatchesFile("bundle exec rspec ", '\(.feature|_spec.rb\)$')
+    elseif executable('rspec')
+        let has_ran = RunIfMatchesFile("rspec ", '\(.feature|_spec.rb\)$')
+    endif
+    " Python
+    if executable('py.test') == 1
+        let has_ran = RunIfMatchesFile("py.test ", '.*test.*.py$')
+    elseif executable('nosetests') == 1
+        let has_ran = RunIfMatchesFile("nosetests ", '.*test.*.py$')
     endif
 
-    exec ":!" . cmd_prefix . w:rtf_command . a:filename
+    if !has_ran
+        echom "Failed to discover test runner. Please bind manually."
+    endif
 endfunction
 
-nnoremap <leader>t :call RunTestFile()<cr>
-nnoremap <leader>T :call RunNearestTest()<cr>
+function! RunTestsIfPossible()
+    let t:skip_file_check=0
+    let has_ran=0
+    " Ruby
+    if filereadable("Gemfile")
+        let has_ran = RunCommand("bundle exec rspec")
+    elseif executable('rspec')
+        let has_ran = RunCommand("rspec")
+    endif
+    " Python
+    if executable('py.test') == 1
+        let has_ran = RunCommand("py.test")
+    elseif executable('nosetests') == 1
+        let has_ran = RunCommand("nosetests")
+    endif
+
+    if !has_ran
+        echom "Failed to discover test runner. Please bind manually."
+    endif
+endfunction
+
+nnoremap <leader>t :call RunTestFileIfPossible()<cr>
+nnoremap <leader>T :call RunTestsIfPossible()<cr>
 
 
 """""""""""""""""""""""""""""""""""""""""""""""
@@ -550,7 +573,6 @@ augroup language_customizations
     autocmd BufRead,BufNewFile Podfile set filetype=ruby
 
     autocmd FileType javascript setlocal noexpandtab
-
     autocmd FileType yaml setlocal expandtab
     autocmd FileType sls setlocal tabstop=4
     autocmd FileType sls setlocal softtabstop=4
@@ -584,8 +606,6 @@ augroup language_customizations
     autocmd FileType make setlocal nosmartindent
 
     autocmd FileType php setlocal noexpandtab
-    autocmd FileType php setlocal foldmethod=indent
-
 augroup END
 
 """""""""""""""""""""""""""""""""""""""""""""""
@@ -673,6 +693,11 @@ let g:neosnippet#snippets_directory = "$HOME/.vim/snippets/"
 """"""""""""""""""
 vmap <Enter> <Plug>(EasyAlign)
 nmap <Leader>a <Plug>(EasyAlign)
+
+""""""""""""""""
+" vim-markdown "
+""""""""""""""""
+let g:vim_markdown_initial_foldlevel=99
 
 """""""""""""""""
 " experimental  "
