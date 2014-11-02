@@ -51,6 +51,9 @@ Plugin 'tpope/vim-surround'
 " AutoSave
 Plugin 'vim-auto-save'
 
+" NERD tree
+Plugin 'scrooloose/nerdtree'
+
 " Syntastic (syntax check)
 Plugin 'scrooloose/syntastic'
 
@@ -63,7 +66,7 @@ Plugin 'tpope/vim-unimpaired'
 Plugin 'tpope/vim-fugitive'
 
 " Git-gutter
-Plugin 'airblade/vim-gitgutter'
+" Plugin 'airblade/vim-gitgutter'
 
 " status line
 Plugin 'bling/vim-airline'
@@ -220,6 +223,9 @@ inoremap <s-tab> <C-p>
 " Duplicate current line
 noremap Y <esc>yyp
 
+" NERDTree toggle
+noremap \ :NERDTreeToggle<CR>
+
 """""""""""""""""""""""""""""""""""""""""""""""
 "                CORE CONFIG                  "
 """""""""""""""""""""""""""""""""""""""""""""""
@@ -365,8 +371,9 @@ set laststatus=2
 
 " stylize the cursor in different modes
 set guicursor=n-v-c:block-Cursor
-set guicursor+=i:block-Cursor
+set guicursor+=ve:ver35-Cursor
 set guicursor+=i:blinkon0
+set guicursor+=i:ver25-Cursor/lCursor
 
 " Command bar height
 set cmdheight=1
@@ -460,54 +467,75 @@ map <leader>d :call DeleteFile()<cr>
 """""""""""""""""
 " Running Tests "
 """""""""""""""""
-function! RunTestFile(...)
-    if a:0
-        let command_suffix = a:1
-    else
-        let command_suffix = ""
-    endif
-
-    let w:rtf_spec_regex = exists('w:rtf_spec_regex') ? w:rtf_spec_regex : '\(.feature\|_spec.rb\)$'
-
-    let in_test_file = match(expand("%"), w:rtf_spec_regex) != -1
-    if in_test_file
-        call SetTestFile()
-    elseif !exists("t:rtf_test_file")
-        echo "No test to run!"
-        return
+function! RunIfMatchesFile(command, file_ext_regex)
+    let in_runnable_file = match(expand("%"), a:file_ext_regex) != -1
+    if in_runnable_file
+        let t:last_ran_file=@%
+    elseif !exists("t:last_ran_file")
+        return 0
+    elseif match(expand("%"), a:file_ext_regex) == -1
+        return 0
     end
 
-    call RunTests(t:rtf_test_file . command_suffix)
+    :silent w
+    return RunCommand(a:command . t:last_ran_file)
 endfunction
 
-function! RunNearestTest()
-    let spec_line_number = line('.')
-    call RunTestFile(":" . spec_line_number . " -b")
+function! RunCommand(command)
+    " :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
+    " :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
+    " :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
+    " :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
+    " :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
+    " exec ":!" . a:command
+    exec ":Vipe " . a:command
+    return 1
 endfunction
 
-function! SetTestFile()
-    let t:rtf_test_file=@%
-endfunction
-
-function! RunTests(filename)
-    :w
-    :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
-    :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
-    :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
-    :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
-    :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
-    let cmd_prefix = ""
-    let w:rtf_command = exists("w:rtf_command") ? w:rtf_command : "rspec "
-
+function! RunTestFileIfPossible()
+    let t:skip_file_check=0
+    let has_ran=0
+    " Ruby
     if filereadable("Gemfile")
-        cmd_prefix = "bundle exec "
+        let has_ran = RunIfMatchesFile("bundle exec rspec ", '\(.feature|_spec.rb\)$')
+    elseif executable('rspec')
+        let has_ran = RunIfMatchesFile("rspec ", '\(.feature|_spec.rb\)$')
+    endif
+    " Python
+    if executable('py.test') == 1
+        let has_ran = RunIfMatchesFile("py.test ", '.*test.*.py$')
+    elseif executable('nosetests') == 1
+        let has_ran = RunIfMatchesFile("nosetests ", '.*test.*.py$')
     endif
 
-    exec ":!" . cmd_prefix . w:rtf_command . a:filename
+    if !has_ran
+        echom "Failed to discover test runner. Please bind manually."
+    endif
 endfunction
 
-nnoremap <leader>t :call RunTestFile()<cr>
-nnoremap <leader>T :call RunNearestTest()<cr>
+function! RunTestsIfPossible()
+    let t:skip_file_check=0
+    let has_ran=0
+    " Ruby
+    if filereadable("Gemfile")
+        let has_ran = RunCommand("bundle exec rspec")
+    elseif executable('rspec')
+        let has_ran = RunCommand("rspec")
+    endif
+    " Python
+    if executable('py.test') == 1
+        let has_ran = RunCommand("py.test")
+    elseif executable('nosetests') == 1
+        let has_ran = RunCommand("nosetests")
+    endif
+
+    if !has_ran
+        echom "Failed to discover test runner. Please bind manually."
+    endif
+endfunction
+
+nnoremap <leader>t :call RunTestFileIfPossible()<cr>
+nnoremap <leader>T :call RunTestsIfPossible()<cr>
 
 
 """""""""""""""""""""""""""""""""""""""""""""""
