@@ -9,6 +9,7 @@ function run {
 function main {
     download_plugins
     symlink_to_home
+    setup_vim
     print_post_install_message
 }
 
@@ -56,6 +57,10 @@ function symlink_to_home {
     echo " - scripts (bin)"
     rm $HOME/bin 2> /dev/null || true
     ln -fs $PWD/bin $HOME/bin
+}
+
+function setup_vim {
+    vim +BundleInstall +qall
 }
 
 function update {
