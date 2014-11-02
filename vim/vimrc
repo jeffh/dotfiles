@@ -23,7 +23,7 @@ call vundle#begin()
 Plugin 'gmarik/Vundle.vim'
 
 " Theme
-Plugin 'Zenburn'
+Plugin 'w0ng/vim-hybrid'
 
 """""""""""
 " Plugins "
@@ -62,11 +62,17 @@ Plugin 'tpope/vim-unimpaired'
 " Git
 Plugin 'tpope/vim-fugitive'
 
+" Git-gutter
+Plugin 'airblade/vim-gitgutter'
+
 " status line
 Plugin 'bling/vim-airline'
 
 " Tabular alignment
 Plugin 'vim-easy-align'
+
+" Vipe
+Plugin 'luan/vipe'
 
 """""""""""""
 " Languages "
@@ -408,7 +414,8 @@ set nocursorline
 """""""""
 " Theme "
 """""""""
-colorscheme zenburn
+let &t_Co=256
+colorscheme Hybrid
 
 augroup color_customizations
     autocmd!
