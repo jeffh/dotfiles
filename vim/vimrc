@@ -32,6 +32,9 @@ Plugin 'w0ng/vim-hybrid'
 " Autocomplete
 Plugin 'Shougo/neocomplete.vim'
 
+" Ag / Silver Searcher
+Plugin 'rking/ag.vim'
+
 " Repeat (Plugin for plugins to use .)
 Plugin 'tpope/vim-repeat'
 
