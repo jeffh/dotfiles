@@ -34,6 +34,9 @@ function symlink_to_home {
     ln -fs $PWD/vim/vim $HOME/.vim
     ln -fs $PWD/vim/vimrc $HOME/.vimrc
 
+    echo " - ctags (.ctags)"
+    ln -fs $PWD/ctags/ctags $HOME/.ctags
+
     echo " - zsh (.zshrc, .zsh)"
     ln -fs $PWD/zsh/zshrc $HOME/.zshrc
     rm $HOME/.zsh 2> /dev/null || true
@@ -46,6 +49,9 @@ function symlink_to_home {
     mkdir $HOME/.config > /dev/null 2> /dev/null || true
     rm $HOME/.config/fish 2> /dev/null || true
     ln -fs $PWD/fish $HOME/.config/fish
+
+    echo " - fzf: Fuzzy File Find (ctrl-t in shell)"
+    ln -fs $PWD/fzf $HOME/.fzf
 
     echo " - emacs (.emacs.d)"
     rm $HOME/.emacs.d 2> /dev/null || true
@@ -60,6 +66,7 @@ function symlink_to_home {
 
 function setup_vim {
     vim +BundleInstall +qall
+    vim +GoInstallBinaries +qall
 }
 
 function update {
@@ -88,31 +95,21 @@ function update_submodules {
 }
 
 function osx {
-    brew install python
-    brew install rbenv --HEAD
-    brew install macvim --with-cscope --with-lua --override-system-vim
-    brew install emacs --cocoa --srgb
-    brew install fish
-    brew linkapps
+    run brew install ctags
+    if [ ! -f /usr/local/bin/python ]; then
+        run brew install python
+    fi
+    run brew install rbenv --HEAD
+    run brew install macvim --with-cscope --with-lua --override-system-vim
+    run brew install emacs --cocoa --srgb
+    run brew install hg
+    run brew install fish
+    run brew install autojump
+    mkdir -p ~/.local/share/autojump; true
+    run brew linkapps
+}
 
-    brew install caskroom/cask/brew-cask
-    brew cask install google-chrome
-    brew cask install alfred
-    brew cask install dropbox
-    brew cask install caffeine
-    brew cask install sublime-text
-    brew cask install appcode
-    brew cask install hopper-disassembler
-    brew cask install virtualbox
-    brew cask install shiftit
-    brew cask install xquartz
-    brew cask install skype
-    brew cask install dropbox
-    brew cask install onepassword
-    brew cask install evernote
-    brew cask install steam
-    brew cask install flux
-
+function fish_as_default {
     echo "Switch default to fish shell. Requires sudo. Abort to skip"
     if [ "$(cat /etc/shells | grep -q $(which fish))" = "0" ]; then
         echo "Fish shell already in /etc/shells"
@@ -126,7 +123,7 @@ function help {
     echo
     echo "Commands:"
     echo "  install   Symlinks files to home directory (overwrites existing)."
-    echo "  osx       Installs various OSX Applications"
+    echo "  osx       Installs various dependencies for OS X"
     echo "  update    Updates all submodules & gocode. Changes the repository."
     echo "  help      This help"
 }

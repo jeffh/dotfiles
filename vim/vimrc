@@ -94,8 +94,8 @@ Plugin 'plasticboy/vim-markdown'
 " Mustache
 Plugin 'juvenn/mustache.vim'
 
-" Google Go
-Plugin 'nsf/gocode',  {'rtp': 'vim/'}
+" Google Go (golang)
+Plugin 'fatih/vim-go'
 
 " Clojure
 Plugin 'git://github.com/vim-scripts/paredit.vim.git'
@@ -229,6 +229,9 @@ noremap Y <esc>yyp
 " NERDTree toggle
 noremap \ :NERDTreeToggle<CR>
 
+" Compile ctags
+nmap <leader>c :!ctags -R .<CR>
+
 """""""""""""""""""""""""""""""""""""""""""""""
 "                CORE CONFIG                  "
 """""""""""""""""""""""""""""""""""""""""""""""
@@ -237,7 +240,7 @@ if $TMUX == ''
     set clipboard=unnamed  " System-like clipboard behavior if not in TMUX
 endif
 
-set tags=./.tags;$HOME " Search path for ctags
+set tags=tags;$HOME " Search path for ctags
 
 set notimeout          " Don't wait for timeout between command combinations
 
@@ -595,6 +598,7 @@ augroup language_customizations
 " 		                 inside testing.tRunner
 " 		             /Users/jeff/.gvm/gos/go1.1/src/pkg/runtime/proc.c:1223
 
+
     autocmd FileType html setlocal tabstop=2
     autocmd FileType html setlocal softtabstop=2
     autocmd FileType html setlocal shiftwidth=2
@@ -701,6 +705,15 @@ nmap <Leader>a <Plug>(EasyAlign)
 " vim-markdown "
 """"""""""""""""
 let g:vim_markdown_initial_foldlevel=99
+
+""""""""""
+" vim-go "
+""""""""""
+autocmd FileType go nmap <Leader>i <Plug>(go-implements)
+autocmd FileType go nmap <Leader>r <Plug>(go-rename)
+autocmd FileType go nmap <Leader>c :!gotags -R $GOPATH > $GOPATH/tags<cr>
+let g:go_fmt_command = "goimports"
+let g:go_fmt_autosave = 1
 
 """""""""""""""""
 " experimental  "
