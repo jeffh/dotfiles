@@ -65,7 +65,7 @@ function symlink_to_home {
 }
 
 function setup_vim {
-    vim +BundleInstall +qall
+    vim +PlugInstall +qall
     vim +GoInstallBinaries +qall
 }
 

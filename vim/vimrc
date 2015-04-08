@@ -17,110 +17,110 @@ set shell=/bin/bash
 """""""""""""""""""""""""""""""""""""""""""""""
 filetype off
 
-set rtp+=~/.vim/bundle/Vundle.vim/
-call vundle#begin()
-
-Plugin 'gmarik/Vundle.vim'
+call plug#begin('~/.vim/plugged')
 
 " Theme
-Plugin 'w0ng/vim-hybrid'
+Plug 'w0ng/vim-hybrid'
 
 """""""""""
 " Plugins "
 """""""""""
 
+" Sensible
+Plug 'tpope/vim-sensible'
+
 " Autocomplete
-Plugin 'Shougo/neocomplete.vim'
+Plug 'Shougo/neocomplete.vim'
 
 " Ag / Silver Searcher
-Plugin 'rking/ag.vim'
+Plug 'rking/ag.vim'
 
-" Repeat (Plugin for plugins to use .)
-Plugin 'tpope/vim-repeat'
+" Repeat (Plug for plugins to use .)
+Plug 'tpope/vim-repeat'
 
 " gcc to (un)comment lines
-Plugin 'tpope/vim-commentary'
+Plug 'tpope/vim-commentary'
 
 " Textmate-styled snippets
-Plugin 'Shougo/neosnippet'
-Plugin 'Shougo/neosnippet-snippets'
+Plug 'Shougo/neosnippet'
+Plug 'Shougo/neosnippet-snippets'
 
 " File finding
-Plugin 'kien/ctrlp.vim'
+Plug 'kien/ctrlp.vim'
 
 " Paren, quotes, bracket editing
-Plugin 'tpope/vim-surround'
+Plug 'tpope/vim-surround'
 
 " AutoSave
-Plugin 'vim-auto-save'
+Plug 'vim-auto-save'
 
 " NERD tree
-Plugin 'scrooloose/nerdtree'
+Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 
 " Syntastic (syntax check)
-Plugin 'scrooloose/syntastic'
+Plug 'scrooloose/syntastic'
 
 " Complementary pairing hotkeys & operations
 " eg - ]q jumps to next in quicklist, [q for other way
 "      ]space adds a new line below, [space adds new line above
-Plugin 'tpope/vim-unimpaired'
+Plug 'tpope/vim-unimpaired'
 
 " Git
-Plugin 'tpope/vim-fugitive'
+Plug 'tpope/vim-fugitive'
 
 " Git-gutter
-" Plugin 'airblade/vim-gitgutter'
+" Plug 'airblade/vim-gitgutter'
 
 " status line
-Plugin 'bling/vim-airline'
+Plug 'bling/vim-airline'
 
 " Tabular alignment
-Plugin 'vim-easy-align'
+Plug 'vim-easy-align'
 
 " Vipe
-Plugin 'luan/vipe'
+Plug 'luan/vipe'
 
 """""""""""""
 " Languages "
 """""""""""""
 
 " Ansible YAML
-Plugin 'chase/vim-ansible-yaml'
+Plug 'chase/vim-ansible-yaml'
 
 " Markdown
-Plugin 'godlygeek/tabular'
-Plugin 'plasticboy/vim-markdown'
+Plug 'godlygeek/tabular'
+Plug 'plasticboy/vim-markdown'
 
 " Terraform
-Plugin 'markcornick/vim-terraform'
+Plug 'markcornick/vim-terraform'
 
 " Mustache
-Plugin 'juvenn/mustache.vim'
+Plug 'juvenn/mustache.vim'
 
 " Google Go (golang)
-Plugin 'fatih/vim-go'
+Plug 'fatih/vim-go'
 
 " Clojure
-" Plugin 'git://github.com/vim-scripts/paredit.vim.git'
-Plugin 'guns/vim-sexp'
-Plugin 'guns/vim-clojure-static'
-Plugin 'guns/vim-clojure-highlight'
-Plugin 'tpope/vim-fireplace'
-Plugin 'kien/rainbow_parentheses.vim'
+" Plug 'git://github.com/vim-scripts/paredit.vim.git'
+Plug 'guns/vim-sexp', { 'for': 'clojure' } 
+Plug 'guns/vim-clojure-static', { 'for': 'clojure' } 
+Plug 'guns/vim-clojure-highlight', { 'for': 'clojure' }
+Plug 'tpope/vim-fireplace', { 'for': 'clojure' }
+Plug 'kien/rainbow_parentheses.vim'
 
 " Python
-Plugin 'jmcantrell/vim-virtualenv'
-Plugin 'klen/python-mode'
-Plugin 'saltstack/salt-vim'
+Plug 'jmcantrell/vim-virtualenv'
+Plug 'klen/python-mode'
+Plug 'saltstack/salt-vim'
 
 " Javascript
-Plugin 'pangloss/vim-javascript'
+Plug 'pangloss/vim-javascript'
 
 " Ruby
-Plugin 'tpope/vim-rvm'
-Plugin 'vim-ruby/vim-ruby'
+Plug 'tpope/vim-rvm'
+Plug 'vim-ruby/vim-ruby'
 
-call vundle#end()
+call plug#end()
 
 filetype plugin indent on
 syntax enable
@@ -675,6 +675,13 @@ autocmd Syntax * RainbowParenthesesLoadBraces
 let g:ctrlp_map = '<leader>f'
 let g:ctrlp_cmd = 'CtrlP' " 'CtrlPMixed'
 let g:ctrlp_working_path_mode = 'ra'
+let g:ctrlp_user_command = 'ag %s -i --nocolor --nogroup --hidden
+      \ --ignore .git
+      \ --ignore .svn
+      \ --ignore .hg
+      \ --ignore .DS_Store
+      \ --ignore "**/*.pyc"
+      \ -g ""'
 
 """""""""""""""""
 " vim-auto-save "
