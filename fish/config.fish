@@ -16,3 +16,8 @@ set PATH $GOPATH/bin $PATH
 
 fzf_key_bindings
 
+
+# Set prompt
+. ~/.config/fish/fish_prompt.fish
+. ~/.config/fish/fish_right_prompt.fish
+
