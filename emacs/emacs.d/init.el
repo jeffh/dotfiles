@@ -1,81 +1,135 @@
-(require 'package)
-(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
-(add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/"))
-(package-initialize)
+;;; init.el --- Prelude's configuration entry point.
+;;
+;; Copyright (c) 2011 Bozhidar Batsov
+;;
+;; Author: Bozhidar Batsov <bozhidar@batsov.com>
+;; URL: http://batsov.com/prelude
+;; Version: 1.0.0
+;; Keywords: convenience
 
-(defvar packages '(;; General
-                   fiplr
-                   auto-complete
-                   zenburn-theme
-                   ;; Clojure
-                   starter-kit
-                   starter-kit-lisp
-                   starter-kit-bindings
-                   starter-kit-eshell
-                   clojure-mode
-                   clojure-test-mode
-                   cider
-                   cider-nrepl
-                   ;; Python
-                   python-mode
-                   django-mode
-                   ;; JavaScript
-                   js2-mode))
+;; This file is not part of GNU Emacs.
 
-(when (not package-archive-contents)
-  (package-refresh-contents))
+;;; Commentary:
 
-(dolist (p packages)
-  (when (and (not (package-installed-p p))
-             (assoc p package-archive-contents))
-    (package-install p)))
+;; This file simply sets up the default load path and requires
+;; the various modules defined within Emacs Prelude.
 
-(defun package-list-unaccounted-packages ()
-  "Like `package-list-packages', but shows only the packages that
-  are installed and are not in `packages'.  Useful for
-  cleaning out unwanted packages."
-  (interactive)
-  (package-show-package-list
-   (remove-if-not (lambda (x) (and (not (memq x packages))
-                                   (not (package-built-in-p x))
-                                   (package-installed-p x)))
-                                    (mapcar 'car package-archive-contents))))
+;;; License:
 
-;; fiplr
-(global-set-key (kbd "C-x f") 'fiplr-find-file)
+;; This program is free software; you can redistribute it and/or
+;; modify it under the terms of the GNU General Public License
+;; as published by the Free Software Foundation; either version 3
+;; of the License, or (at your option) any later version.
+;;
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+;;
+;; You should have received a copy of the GNU General Public License
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+;; Boston, MA 02110-1301, USA.
 
-;; autosave
-(setq auto-save-interval 5
-      auto-save-timeout 5)
+;;; Code:
+(defvar current-user
+      (getenv
+       (if (equal system-type 'windows-nt) "USERNAME" "USER")))
 
-(defun full-auto-save ()
-  (interactive)
-  (save-excursion
-    (dolist (buf (buffer-list))
-      (set-buffer buf)
-      (if (and (buffer-file-name) (buffer-modified-p))
-          (basic-save-buffer)))))
-(add-hook 'auto-save-hook 'full-auto-save)
+(message "Prelude is powering up... Be patient, Master %s!" current-user)
 
-;; delete the current file
-(defun delete-this-buffer-and-file ()
-  "Removes file connected to current buffer and kills buffer."
-  (interactive)
-  (let ((filename (buffer-file-name))
-        (buffer (current-buffer))
-        (name (buffer-name)))
-    (if (not (and filename (file-exists-p filename)))
-        (error "Buffer '%s' is not visiting a file!" name)
-      (when (yes-or-no-p "Are you sure you want to remove this file? ")
-        (delete-file filename)
-        (kill-buffer buffer)
-        (message "File '%s' successfully removed" filename)))))
+(when (version< emacs-version "24.1")
+  (error "Prelude requires at least GNU Emacs 24.1, but you're running %s" emacs-version))
 
-(global-set-key (kbd "C-c k") 'delete-this-buffer-and-file)
+;; Always load newest byte code
+(setq load-prefer-newer t)
 
-;; themes & fonts
-(add-to-list 'default-frame-alist
-             '(font . "Monaco-14"))
-(set-frame-parameter nil 'font "Monaco-14")
+(defvar prelude-dir (file-name-directory load-file-name)
+  "The root dir of the Emacs Prelude distribution.")
+(defvar prelude-core-dir (expand-file-name "core" prelude-dir)
+  "The home of Prelude's core functionality.")
+(defvar prelude-modules-dir (expand-file-name  "modules" prelude-dir)
+  "This directory houses all of the built-in Prelude modules.")
+(defvar prelude-personal-dir (expand-file-name "personal" prelude-dir)
+  "This directory is for your personal configuration.
 
-(load-theme 'zenburn t)
+Users of Emacs Prelude are encouraged to keep their personal configuration
+changes in this directory.  All Emacs Lisp files there are loaded automatically
+by Prelude.")
+(defvar prelude-personal-preload-dir (expand-file-name "preload" prelude-personal-dir)
+  "This directory is for your personal configuration, that you want loaded before Prelude.")
+(defvar prelude-vendor-dir (expand-file-name "vendor" prelude-dir)
+  "This directory houses packages that are not yet available in ELPA (or MELPA).")
+(defvar prelude-savefile-dir (expand-file-name "savefile" prelude-dir)
+  "This folder stores all the automatically generated save/history-files.")
+(defvar prelude-modules-file (expand-file-name "prelude-modules.el" prelude-dir)
+  "This files contains a list of modules that will be loaded by Prelude.")
+
+(unless (file-exists-p prelude-savefile-dir)
+  (make-directory prelude-savefile-dir))
+
+(defun prelude-add-subfolders-to-load-path (parent-dir)
+ "Add all level PARENT-DIR subdirs to the `load-path'."
+ (dolist (f (directory-files parent-dir))
+   (let ((name (expand-file-name f parent-dir)))
+     (when (and (file-directory-p name)
+                (not (string-prefix-p "." f)))
+       (add-to-list 'load-path name)
+       (prelude-add-subfolders-to-load-path name)))))
+
+;; add Prelude's directories to Emacs's `load-path'
+(add-to-list 'load-path prelude-core-dir)
+(add-to-list 'load-path prelude-modules-dir)
+(add-to-list 'load-path prelude-vendor-dir)
+(prelude-add-subfolders-to-load-path prelude-vendor-dir)
+
+;; reduce the frequency of garbage collection by making it happen on
+;; each 50MB of allocated data (the default is on every 0.76MB)
+(setq gc-cons-threshold 50000000)
+
+;; warn when opening files bigger than 100MB
+(setq large-file-warning-threshold 100000000)
+
+;; preload the personal settings from `prelude-personal-preload-dir'
+(when (file-exists-p prelude-personal-preload-dir)
+  (message "Loading personal configuration files in %s..." prelude-personal-preload-dir)
+  (mapc 'load (directory-files prelude-personal-preload-dir 't "^[^#].*el$")))
+
+(message "Loading Prelude's core...")
+
+;; the core stuff
+(require 'prelude-packages)
+(require 'prelude-custom)  ;; Needs to be loaded before core, editor and ui
+(require 'prelude-ui)
+(require 'prelude-core)
+(require 'prelude-mode)
+(require 'prelude-editor)
+(require 'prelude-global-keybindings)
+
+;; OSX specific settings
+(when (eq system-type 'darwin)
+  (require 'prelude-osx))
+
+(message "Loading Prelude's modules...")
+
+;; the modules
+(if (file-exists-p prelude-modules-file)
+    (load prelude-modules-file)
+  (message "Missing modules file %s" prelude-modules-file)
+  (message "You can get started by copying the bundled example file"))
+
+;; config changes made through the customize UI will be store here
+(setq custom-file (expand-file-name "custom.el" prelude-personal-dir))
+
+;; load the personal settings (this includes `custom-file')
+(when (file-exists-p prelude-personal-dir)
+  (message "Loading personal configuration files in %s..." prelude-personal-dir)
+  (mapc 'load (directory-files prelude-personal-dir 't "^[^#].*el$")))
+
+(message "Prelude is ready to do thy bidding, Master %s!" current-user)
+
+(prelude-eval-after-init
+ ;; greet the use with some useful tip
+ (run-at-time 5 nil 'prelude-tip-of-the-day))
+
+;;; init.el ends here
