@@ -91,6 +91,9 @@ Plugin 'chase/vim-ansible-yaml'
 Plugin 'godlygeek/tabular'
 Plugin 'plasticboy/vim-markdown'
 
+" Terraform
+Plugin 'markcornick/vim-terraform'
+
 " Mustache
 Plugin 'juvenn/mustache.vim'
 
@@ -98,7 +101,8 @@ Plugin 'juvenn/mustache.vim'
 Plugin 'fatih/vim-go'
 
 " Clojure
-Plugin 'git://github.com/vim-scripts/paredit.vim.git'
+" Plugin 'git://github.com/vim-scripts/paredit.vim.git'
+Plugin 'guns/vim-sexp'
 Plugin 'guns/vim-clojure-static'
 Plugin 'guns/vim-clojure-highlight'
 Plugin 'tpope/vim-fireplace'
@@ -424,6 +428,12 @@ set equalalways
 " highlight the line the cursor is on (can be slow for large files)
 set nocursorline
 
+" Experiemental performance improvements
+set regexpengine=1
+set scrolljump=3
+syntax sync minlines=256
+set norelativenumber
+
 """""""""
 " Theme "
 """""""""
@@ -580,6 +590,11 @@ augroup language_customizations
 
     autocmd FileType javascript setlocal noexpandtab
     autocmd FileType yaml setlocal expandtab
+    autocmd FileType yaml setlocal tabstop=2
+    autocmd FileType yaml setlocal softtabstop=2
+    autocmd FileType yaml setlocal shiftwidth=2
+    autocmd FileType yaml setlocal expandtab
+
     autocmd FileType sls setlocal tabstop=4
     autocmd FileType sls setlocal softtabstop=4
     autocmd FileType sls setlocal shiftwidth=4
@@ -665,6 +680,8 @@ let g:ctrlp_working_path_mode = 'ra'
 " vim-auto-save "
 """""""""""""""""
 let g:auto_save = 1 " enable
+let g:auto_save_in_insert_mode = 0 " don't autosave in insert mode
+set updatetime=1000 " wait 1 second before saving
 
 """""""""""""""
 " neocomplete "
