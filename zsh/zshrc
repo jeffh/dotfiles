@@ -174,4 +174,3 @@ zle -N zle-line-init
 bindkey '^T' autosuggest-toggle
 
 #### END
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
