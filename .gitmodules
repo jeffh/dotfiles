@@ -13,3 +13,6 @@
 [submodule "fzf"]
 	path = fzf
 	url = https://github.com/junegunn/fzf.git
+[submodule "external/sheelc-dotfiles"]
+	path = external/sheelc-dotfiles
+	url = git@github.com:sheelc/dotfiles.git

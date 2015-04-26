@@ -50,14 +50,23 @@ function symlink_to_home {
     rm $HOME/.config/fish 2> /dev/null || true
     ln -fs $PWD/fish $HOME/.config/fish
 
-    echo " - fzf: Fuzzy File Find (ctrl-t in shell)"
-    ln -fs $PWD/fzf $HOME/.fzf
-
     echo " - emacs (.emacs.d)"
     rm $HOME/.emacs.d 2> /dev/null || true
     ln -fs $PWD/emacs/emacs.d $HOME/.emacs.d
     mkdir -p $HOME/Library/Preferences/Aquamacs\ Emacs; true
     ln -fs $PWD/emacs/emacs.d/init.el $HOME/Library/Preferences/Aquamacs\ Emacs/Preferences.el
+
+    echo " - booting emacs server"
+    ln -sfv /usr/local/opt/emacs/*.plist ~/Library/LaunchAgents
+    launchctl load ~/Library/LaunchAgents/homebrew.mxcl.emacs.plist
+
+    echo " - adding emacs client aliases"
+    local written_emacs_alias=`grep -q emacsclient ~/.bash_profile`
+    if [ ! -f ~/.bash_profile ] || [ $? -ne 0 ]; then
+        echo " - ~/.bash_profile"
+        echo "alias e='emacsclient -n -c -a \"\"'" >> ~/.bash_profile
+        echo "alias et='emacsclient -nw -a \"\"'" >> ~/.bash_profile
+    fi
 
     echo " - scripts (bin)"
     rm $HOME/bin 2> /dev/null || true
@@ -101,7 +110,7 @@ function osx {
     fi
     run brew install rbenv --HEAD
     run brew install macvim --with-cscope --with-lua --override-system-vim
-    run brew install emacs --cocoa --srgb
+    run brew install emacs --with-cocoa --srgb
     run brew install hg
     run brew install fish
     run brew install autojump
