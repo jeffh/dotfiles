@@ -12,6 +12,10 @@ alias trim_tree="ack --print0 -l '[ \t]+\$' --known-types | xargs -0 -n1 perl -p
 
 set PATH $HOME/.rbenv/bin $PATH
 set PATH $GOPATH/bin $PATH
+set PATH ~/.rbenv/shims/ $PATH
+setenv RBENV_SHELL fish
+
+set -gx RBENV_ROOT /usr/local/var/rbenv
 . (rbenv init -|psub)
 
 fzf_key_bindings
