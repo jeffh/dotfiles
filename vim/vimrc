@@ -13,7 +13,7 @@ set nocompatible
 set shell=/bin/bash
 
 """""""""""""""""""""""""""""""""""""""""""""""
-"                  VUNDLE                     "
+"                   Plug                      "
 """""""""""""""""""""""""""""""""""""""""""""""
 filetype off
 
@@ -25,9 +25,6 @@ Plug 'w0ng/vim-hybrid'
 """""""""""
 " Plugins "
 """""""""""
-
-" Sensible
-Plug 'tpope/vim-sensible'
 
 " Autocomplete
 Plug 'Shougo/neocomplete.vim'
@@ -51,9 +48,6 @@ Plug 'kien/ctrlp.vim'
 " Paren, quotes, bracket editing
 Plug 'tpope/vim-surround'
 
-" AutoSave
-Plug 'vim-auto-save'
-
 " NERD tree
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 
@@ -69,7 +63,7 @@ Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-fugitive'
 
 " Git-gutter
-" Plug 'airblade/vim-gitgutter'
+Plug 'airblade/vim-gitgutter'
 
 " status line
 Plug 'bling/vim-airline'
@@ -86,6 +80,9 @@ Plug 'luan/vipe'
 
 " Ansible YAML
 Plug 'chase/vim-ansible-yaml'
+
+" Carthage
+Plug 'cfdrake/vim-carthage'
 
 " Markdown
 Plug 'godlygeek/tabular'
@@ -119,6 +116,10 @@ Plug 'pangloss/vim-javascript'
 " Ruby
 Plug 'tpope/vim-rvm'
 Plug 'vim-ruby/vim-ruby'
+
+
+" Swift
+Plug 'toyamarinyon/vim-swift'
 
 call plug#end()
 
@@ -682,13 +683,6 @@ let g:ctrlp_user_command = 'ag %s -i --nocolor --nogroup --hidden
       \ --ignore .DS_Store
       \ --ignore "**/*.pyc"
       \ -g ""'
-
-"""""""""""""""""
-" vim-auto-save "
-"""""""""""""""""
-let g:auto_save = 1 " enable
-let g:auto_save_in_insert_mode = 0 " don't autosave in insert mode
-set updatetime=1000 " wait 1 second before saving
 
 """""""""""""""
 " neocomplete "
