@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+if [ "$1" == "beta" ]; then
+    echo "Switching to Xcode beta"
+    sudo xcode-select -s /Applications/Xcode-beta.app
+else
+    echo "Switching to Xcode final"
+    sudo xcode-select -s /Applications/Xcode.app
+fi
