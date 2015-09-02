@@ -13,7 +13,8 @@ alias trim_tree="ack --print0 -l '[ \t]+\$' --known-types | xargs -0 -n1 perl -p
 
 set PATH $HOME/.rbenv/bin $PATH
 set PATH $GOPATH/bin $PATH
-set PATH ~/.rbenv/shims/ $PATH
+set PATH ~/.rbenv/shims $PATH
+set CAPSTAN_QEMU_PATH /usr/local/bin/qemu-system-x86_64
 setenv RBENV_SHELL fish
 
 set -gx RBENV_ROOT /usr/local/var/rbenv
