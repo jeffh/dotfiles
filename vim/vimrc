@@ -27,7 +27,7 @@ Plug 'w0ng/vim-hybrid'
 """""""""""
 
 " Autocomplete
-Plug 'Shougo/neocomplete.vim'
+" Plug 'Shougo/neocomplete.vim'
 
 " Ag / Silver Searcher
 Plug 'rking/ag.vim'
@@ -99,11 +99,14 @@ Plug 'fatih/vim-go'
 
 " Clojure
 " Plug 'git://github.com/vim-scripts/paredit.vim.git'
-Plug 'guns/vim-sexp', { 'for': 'clojure' } 
-Plug 'guns/vim-clojure-static', { 'for': 'clojure' } 
+Plug 'guns/vim-sexp', { 'for': 'clojure' }
+Plug 'guns/vim-clojure-static', { 'for': 'clojure' }
 Plug 'guns/vim-clojure-highlight', { 'for': 'clojure' }
 Plug 'tpope/vim-fireplace', { 'for': 'clojure' }
 Plug 'kien/rainbow_parentheses.vim'
+
+" Haskell
+Plug 'dag/vim2hs'
 
 " Python
 Plug 'jmcantrell/vim-virtualenv'
@@ -117,6 +120,8 @@ Plug 'pangloss/vim-javascript'
 Plug 'tpope/vim-rvm'
 Plug 'vim-ruby/vim-ruby'
 
+" Rust
+Plug 'rust-lang/rust.vim'
 
 " Swift
 Plug 'toyamarinyon/vim-swift'
@@ -687,26 +692,26 @@ let g:ctrlp_user_command = 'ag %s -i --nocolor --nogroup --hidden
 """""""""""""""
 " neocomplete "
 """""""""""""""
-inoremap <expr><C-g> neocomplete#cancel_popup()
-
-let g:neocomplete#enable_at_startup = 1
-let g:neocomplete#enable_smart_case = 1
-let g:neocomplete#sources#syntax#min_keyword_length = 3
-let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
-let g:neocomplete#force_overwrite_completefunc = 1
-
-autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-
-if !exists('g:neocomplete#sources#omni#input_patterns')
-  let g:neocomplete#sources#omni#input_patterns = {}
-endif
-let g:neocomplete#sources#omni#input_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
-let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
-let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
+" inoremap <expr><C-g> neocomplete#cancel_popup()
+"
+" let g:neocomplete#enable_at_startup = 1
+" let g:neocomplete#enable_smart_case = 1
+" let g:neocomplete#sources#syntax#min_keyword_length = 3
+" let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
+" let g:neocomplete#force_overwrite_completefunc = 1
+"
+" autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+" autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+" autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+" autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+" autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+"
+" if !exists('g:neocomplete#sources#omni#input_patterns')
+"   let g:neocomplete#sources#omni#input_patterns = {}
+" endif
+" let g:neocomplete#sources#omni#input_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
+" let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
+" let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
 
 """""""""""""""
 " neosnippet  "
