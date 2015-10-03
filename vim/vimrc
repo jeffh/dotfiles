@@ -129,6 +129,7 @@ Plug 'toyamarinyon/vim-swift'
 call plug#end()
 
 filetype plugin indent on
+set regexpengine=1
 syntax enable
 
 """""""""""""""""""""""""""""""""""""""""""""""
