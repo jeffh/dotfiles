@@ -109,7 +109,7 @@ function osx {
         run brew install python
     fi
     run brew install rbenv --HEAD
-    run brew install macvim --with-cscope --with-lua --override-system-vim
+    run brew install macvim --with-cscope --with-lua --with-override-system-vim
     run brew install emacs --with-cocoa --srgb
     run brew install hg
     run brew install fish
