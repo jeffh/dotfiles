@@ -115,6 +115,7 @@ Plug 'saltstack/salt-vim'
 
 " Javascript
 Plug 'pangloss/vim-javascript'
+Plug 'elzr/vim-json'
 
 " Ruby
 Plug 'tpope/vim-rvm'
@@ -739,6 +740,12 @@ autocmd FileType go nmap <Leader>c :!gotags -R $GOPATH > $GOPATH/tags<cr>
 let g:go_fmt_command = "goimports"
 let g:go_fmt_autosave = 1
 
+""""""""""""
+" vim-json "
+""""""""""""
+
+let g:vim_json_syntax_conceal = 0
+
 """""""""""""""""
 " experimental  "
 """""""""""""""""
@@ -747,5 +754,4 @@ let g:go_fmt_autosave = 1
 if has('conceal')
     set conceallevel=2 concealcursor=i
 endif
-
 
