@@ -447,6 +447,7 @@ set norelativenumber
 """""""""
 let &t_Co=256
 colorscheme Hybrid
+set background=dark
 
 augroup color_customizations
     autocmd!
