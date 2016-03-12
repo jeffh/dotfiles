@@ -101,16 +101,24 @@ function osx {
         run brew install python
     fi
     run brew install rbenv --HEAD
-    run brew install macvim --with-cscope --with-lua --with-override-system-vim
 
-    brew tap railwaycat/homebrew-emacsmacport railwaycat/emacsmacport
+    if [ ! -f /usr/local/bin/mvim ]; then
+        run brew install macvim --with-cscope --with-lua --with-override-system-vim
+    fi
+
+    brew tap railwaycat/homebrew-emacsmacport
     brew install emacs-mac --with-spacemacs-icon
-    brew linkapps emacs-mac
 
-    run brew install hg
-    run brew install fish
-    run brew install autojump
-    mkdir -p ~/.local/share/autojump; true
+    if [ ! -f /usr/local/bin/hg ]; then
+        run brew install hg
+    fi
+    if [ ! -f /usr/local/bin/fish ]; then
+        run brew install fish
+    fi
+    if [ ! -f /usr/local/bin/autojump ]; then
+        run brew install autojump
+        mkdir -p ~/.local/share/autojump; true
+    fi
     run brew linkapps
 }
 
