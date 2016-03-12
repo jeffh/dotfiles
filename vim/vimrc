@@ -424,9 +424,9 @@ if has("gui_running")
         " alt key jumps to menu
         set winaltkeys=menu
     end
+
     if has('macunix')
         set guifont=Monaco:h14
-        set transparency=5
     end
 endif
 
@@ -446,6 +446,7 @@ set norelativenumber
 " Theme "
 """""""""
 let &t_Co=256
+set background=dark
 colorscheme Hybrid
 set background=dark
 
