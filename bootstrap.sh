@@ -52,21 +52,13 @@ function symlink_to_home {
 
     echo " - emacs (.emacs.d)"
     rm $HOME/.emacs.d 2> /dev/null || true
-    ln -fs $PWD/emacs/emacs.d $HOME/.emacs.d
-    mkdir -p $HOME/Library/Preferences/Aquamacs\ Emacs; true
-    ln -fs $PWD/emacs/emacs.d/init.el $HOME/Library/Preferences/Aquamacs\ Emacs/Preferences.el
+    ln -fs $PWD/emacs $HOME/.emacs.d
 
-    echo " - booting emacs server"
-    ln -sfv /usr/local/opt/emacs/*.plist ~/Library/LaunchAgents
-    launchctl load ~/Library/LaunchAgents/homebrew.mxcl.emacs.plist
+    echo " - emacs mayvenn layer"
+    rm $HOME/.emacs.d/private/mayvenn 2> /dev/null || true
+    ln -fs $PWD/external/mayvenn-layer $HOME/.emacs.d/private/mayvenn
 
-    echo " - adding emacs client aliases"
-    local written_emacs_alias=`grep -q emacsclient ~/.bash_profile`
-    if [ ! -f ~/.bash_profile ] || [ $? -ne 0 ]; then
-        echo " - ~/.bash_profile"
-        echo "alias e='emacsclient -n -c -a \"\"'" >> ~/.bash_profile
-        echo "alias et='emacsclient -nw -a \"\"'" >> ~/.bash_profile
-    fi
+    echo "*** Don't forget to configure your .spacemacs layers.  The simplest option is to use the 'mayvenn' layer."
 
     echo " - scripts (bin)"
     rm $HOME/bin 2> /dev/null || true
@@ -110,7 +102,11 @@ function osx {
     fi
     run brew install rbenv --HEAD
     run brew install macvim --with-cscope --with-lua --with-override-system-vim
-    run brew install emacs --with-cocoa --srgb
+
+    brew tap railwaycat/homebrew-emacsmacport railwaycat/emacsmacport
+    brew install emacs-mac --with-spacemacs-icon
+    brew linkapps emacs-mac
+
     run brew install hg
     run brew install fish
     run brew install autojump

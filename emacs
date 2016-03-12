@@ -1,1 +1,1 @@
-external/sheelc-dotfiles/emacs/
+external/spacemacs

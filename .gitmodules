@@ -13,6 +13,9 @@
 [submodule "fzf"]
 	path = fzf
 	url = https://github.com/junegunn/fzf.git
-[submodule "external/sheelc-dotfiles"]
-	path = external/sheelc-dotfiles
-	url = git@github.com:sheelc/dotfiles.git
+[submodule "external/spacemacs"]
+	path = external/spacemacs
+	url = https://github.com/syl20bnr/spacemacs
+[submodule "external/mayvenn-layer"]
+	path = external/mayvenn-layer
+	url = https://github.com/corey/mayvenn-layer
