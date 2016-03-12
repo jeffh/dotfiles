@@ -27,3 +27,5 @@ fzf_key_bindings
 . ~/.config/fish/fish_prompt.fish
 . ~/.config/fish/fish_right_prompt.fish
 
+setenv PATH '/Users/jeff/.swiftenv/shims' $PATH
+. '/usr/local/Cellar/swiftenv/0.5.0/bin/../libexec/../completions/swiftenv.fish'
