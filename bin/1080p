@@ -1,0 +1,6 @@
+#!/bin/bash
+
+echo "Setting $1 bounds to 1080p"
+
+osascript -e "tell application \"$1\" to set the bounds of the first window to {250, 220, 2170, 1300}"
+osascript -e "tell application \"$1\" to activate"
