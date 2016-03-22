@@ -1,0 +1,228 @@
+#!/usr/bin/env python
+import os
+import argparse
+import logging
+
+logger = logging.getLogger(__name__)
+__textchars = bytearray({7, 8, 9, 10, 12, 13, 27} |
+                        set(range(0x20, 0x100)) - {0x7f})
+
+
+def where_basename_is(pred):
+    def basename_matcher(path):
+        return pred(os.path.basename(os.path.abspath(path)))
+    return basename_matcher
+
+
+def endswith(postfix):
+    return where_basename_is(lambda path: path.endswith(postfix))
+
+
+def startswith(prefix):
+    return where_basename_is(lambda path: path.startswith(prefix))
+
+
+def is_dir(path):
+    return os.path.isdir(path)
+
+
+def requires(*matchers):
+    def requires_matcher(path):
+        for matcher in matchers:
+            if not matcher(path):
+                return False
+        return True
+    return requires_matcher
+
+
+def one_of(*matchers):
+    def one_of_matcher(path):
+        for matcher in matchers:
+            if matcher(path):
+                return True
+        return False
+    return one_of_matcher
+
+
+dot_prefixed = startswith('.')
+object_files = one_of(*[endswith(x) for x in ('.o', '.pyo', '.pyc', '.class')])
+cache_files = one_of(where_basename_is(lambda p: p == '.DS_Store'),
+                     endswith('~'))
+dot_dirs = requires(dot_prefixed, is_dir)
+xcode_projects = one_of(endswith('.xcodeproj'), endswith('.xcworkspace'))
+build_dirs = where_basename_is(lambda p: p.lower() in ('build', '_build'))
+scm_files = where_basename_is(lambda p: p.lower() in (
+    '.git',
+    '.gitmodules',
+    '.hg',
+    '.svn',
+    '.cvs'
+))
+default_exclude = one_of(
+    dot_dirs,
+    xcode_projects,
+    build_dirs,
+    object_files,
+    cache_files,
+    scm_files,
+    endswith('.orig'),  # git merge generated files
+)
+
+
+def is_binary(bytes):
+    return bool(bytes.translate(None, __textchars))
+
+
+def resolve_path(filepath):
+    return os.path.abspath(os.path.expandvars(os.path.expanduser(filepath)))
+
+
+def rel_path(filepath):
+    return os.path.relpath(resolve_path(filepath))
+
+
+def trim_string(s, trim_trailing=False, test=False):
+    modified_count = 0
+    lines = []
+    for line in s.splitlines():
+        if is_binary(line):
+            return (0, s)
+        trimmed_line = line.rstrip()
+
+        lines.append(trimmed_line)
+
+        if trimmed_line != line:
+            modified_count += 1
+
+    contents = "\n".join(lines)
+    if contents.endswith('\n') and trim_trailing:
+        contents = contents[0:-1]
+        modified_count += 1
+    elif not contents.endswith('\n') and not trim_trailing:
+        contents += '\n'
+        modified_count += 1
+
+    return (modified_count, contents)
+
+
+def _trim_file(path, trim_trailing=False, test=False):
+    with open(path, 'rb') as h:
+        modified_count, contents = trim_string(h.read(), trim_trailing, test)
+
+    if not test and modified_count > 0:
+        with open(path, 'wb') as h:
+            h.write(contents)
+    return modified_count
+
+
+def trim_file(path, trim_trailing=False, test=False):
+    try:
+        modified_count = _trim_file(path, trim_trailing, test)
+
+        if modified_count > 0:
+            logger.info('{1:>7} {2:>5}: {0}'.format(
+                rel_path(path), modified_count,
+                'line' if modified_count == 1 else 'lines',
+            ))
+        else:
+            logger.debug('{1:>7} {2:>5}: {0}'.format(
+                rel_path(path), modified_count,
+                'line' if modified_count == 1 else 'lines',
+            ))
+    except IOError:
+        logger.error('Failed to process: {0}'.format(rel_path(path)))
+    return modified_count
+
+
+def trim_in_dir(directory, exclude_path=default_exclude, trim_trailing=False,
+                test=False):
+    logger.debug('Search directory: {0}'.format(resolve_path(directory)))
+
+    files_modified = 0
+    files_visited = 0
+    for (dirpath, dirnames, filenames) in os.walk(resolve_path(directory)):
+        for dirname in dirnames[:]:
+            fullpath = os.path.join(dirpath, dirname)
+            if exclude_path(fullpath):
+                dirnames.remove(dirname)
+                logger.debug(" Excluded dir: {0}".format(
+                    rel_path(fullpath)
+                ))
+
+        for filepath in filenames:
+            fullpath = os.path.join(dirpath, filepath)
+
+            if exclude_path(fullpath):
+                logger.debug("Excluded file: {0}".format(rel_path(fullpath)))
+                continue
+
+            files_visited += 1
+            if trim_file(fullpath, trim_trailing, test) > 0:
+                files_modified += 1
+
+    logger.info("---------------")
+    logger.info("{0} / {3} file{1} {2}".format(
+        files_modified,
+        '' if files_modified == 1 else 's',
+        'would be modified' if test else 'modified',
+        files_visited
+    ))
+
+    return files_modified
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Trims trailing whitespace in files."
+    )
+    parser.add_argument(
+        'directory', metavar='DIR', type=str, nargs='?',
+        default=os.getcwd(),
+        help='The directory to search recursively'
+    )
+    parser.add_argument(
+        '--debug',
+        dest='LEVEL', action='store_const', const=logging.DEBUG,
+        default=logging.INFO,
+        help='Prints debugging information'
+    )
+    parser.add_argument(
+        '--quiet', '-q',
+        dest='LEVEL', action='store_const', const=logging.CRITICAL,
+        default=logging.INFO,
+        help='Silences printing to only error cases'
+    )
+    parser.add_argument(
+        '--test', dest='is_test',
+        action='store_true', default=False,
+        help='No-op instead of actually trimming whitespace'
+    )
+    parser.add_argument(
+        '--trim-trailing', '-t', dest='trim_trailing',
+        action='store_true', default=False,
+        help='Trims newlines at end of files, otherwise ensures ending newline'
+    )
+
+    args = parser.parse_args()
+
+    logger.setLevel(args.LEVEL)
+    handler = logging.StreamHandler()
+    handler.setLevel(args.LEVEL)
+    formatter = logging.Formatter('%(message)s')
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
+    if os.path.isdir(args.directory):
+        count = trim_in_dir(args.directory, trim_trailing=args.trim_trailing,
+                            test=args.is_test)
+    else:
+        count = trim_file(args.directory, trim_trailing=args.trim_trailing,
+                          test=args.is_test)
+
+    if args.is_test:
+        return count
+    return 0
+
+if __name__ == '__main__':
+    import sys
+    sys.exit(main())
