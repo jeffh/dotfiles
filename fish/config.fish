@@ -8,7 +8,6 @@ set -x RUST_SRC_PATH $HOME/workspace/rust-1.7.0/src
 . $HOME/.config/fish/plugins/virtualfish/virtual.fish
 . $HOME/.config/fish/plugins/virtualfish/auto_activation.fish
 . $HOME/.config/fish/plugins/virtualfish/global_requirements.fish
-. /usr/local/etc/autojump.fish
 
 alias trim_tree="ack --print0 -l '[ \t]+\$' --known-types | xargs -0 -n1 perl -pi -e 's/[ \t]+\$//'"
 
@@ -29,5 +28,6 @@ fzf_key_bindings
 . ~/.config/fish/fish_prompt.fish
 . ~/.config/fish/fish_right_prompt.fish
 
-setenv PATH '/Users/jeff/.swiftenv/shims' $PATH
-. '/usr/local/Cellar/swiftenv/0.5.0/bin/../libexec/../completions/swiftenv.fish'
+setenv SWIFTENV_ROOT "$HOME/.swiftenv"
+setenv PATH "$SWIFTENV_ROOT/bin" $PATH
+status --is-interactive; and . (swiftenv init -|psub)

@@ -63,6 +63,17 @@ function symlink_to_home {
     echo " - scripts (bin)"
     rm $HOME/bin 2> /dev/null || true
     ln -fs $PWD/bin $HOME/bin
+
+    if [ ! -d ~/.swiftenv ]; then
+        echo " - Installing swiftenv"
+        git clone https://github.com/kylef/swiftenv.git ~/.swiftenv
+    fi
+
+    echo " - making dirs"
+    mkdir -p ~/.rbenv/bin; true
+    mkdir -p ~/workspace/gopath/bin; true
+    mkdir -p ~/.cargo/bin; true
+    mkdir -p ~/.swiftenv/shims; true
 }
 
 function setup_vim {
@@ -114,10 +125,6 @@ function osx {
     fi
     if [ ! -f /usr/local/bin/fish ]; then
         run brew install fish
-    fi
-    if [ ! -f /usr/local/bin/autojump ]; then
-        run brew install autojump
-        mkdir -p ~/.local/share/autojump; true
     fi
     run brew linkapps
 }
