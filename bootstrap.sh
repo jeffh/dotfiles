@@ -108,6 +108,10 @@ function update_submodules {
 
 function osx {
     run brew install ctags
+
+    # for emoji in git diff
+    run brew install homebrew/dupes/less
+
     if [ ! -f /usr/local/bin/python ]; then
         run brew install python
     fi
