@@ -1,9 +1,9 @@
 set PATH $HOME/bin /usr/local/bin $PATH
 
-set -x EDITOR $HOME/bin/vim
-set -x GOPATH $HOME/workspace/gopath
-set -x ALTERNATIVE_EDITOR ""
-set -x RUST_SRC_PATH $HOME/workspace/rust-1.7.0/src
+setenv EDITOR $HOME/bin/vim
+setenv GOPATH $HOME/workspace/gopath
+setenv ALTERNATIVE_EDITOR ""
+setenv RUST_SRC_PATH $HOME/workspace/rust-1.7.0/src
 
 . $HOME/.config/fish/plugins/virtualfish/virtual.fish
 . $HOME/.config/fish/plugins/virtualfish/auto_activation.fish
@@ -22,7 +22,6 @@ set -gx RBENV_ROOT /usr/local/var/rbenv
 . (rbenv init -|psub)
 
 fzf_key_bindings
-
 
 # Set prompt
 . ~/.config/fish/fish_prompt.fish
