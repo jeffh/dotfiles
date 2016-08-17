@@ -129,10 +129,10 @@ def trim_file(path, trim_trailing=False, test=False):
                 rel_path(path), modified_count,
                 'line' if modified_count == 1 else 'lines',
             ))
+        return modified_count
     except IOError:
         logger.error('Failed to process: {0}'.format(rel_path(path)))
-    return modified_count
-
+    return 0
 
 def trim_in_dir(directory, exclude_path=default_exclude, trim_trailing=False,
                 test=False):
