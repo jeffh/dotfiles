@@ -26,6 +26,9 @@ Plug 'w0ng/vim-hybrid'
 " Plugins "
 """""""""""
 
+" easymotion
+Plug 'easymotion/vim-easymotion'
+
 " Autocomplete
 " Plug 'Shougo/neocomplete.vim'
 
@@ -426,7 +429,7 @@ if has("gui_running")
     end
 
     if has('macunix')
-        set guifont=Monaco:h14
+        set guifont=SF_Mono_Light:h16
     end
 endif
 
