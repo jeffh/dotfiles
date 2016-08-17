@@ -1,9 +1,0 @@
-#!/bin/sh
-
-set -x -e
-
-./bosh-lite/make_manifest
-bosh -n cleanup
-bosh create release --force
-bosh -n upload release
-bosh -n deploy
