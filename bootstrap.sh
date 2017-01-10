@@ -69,6 +69,10 @@ function symlink_to_home {
         git clone https://github.com/kylef/swiftenv.git ~/.swiftenv
     fi
 
+    echo " - gpg (.gnupg)"
+    mkdir -p $HOME/.gnupg; true
+    ln -fs $PWD/gnupg/gpg-agent.conf $HOME/.gnupg/gpg-agent.conf
+
     echo " - making dirs"
     mkdir -p ~/.rbenv/bin; true
     mkdir -p ~/workspace/gopath/bin; true
@@ -111,6 +115,11 @@ function osx {
 
     # for emoji in git diff
     run brew install homebrew/dupes/less
+
+    if [ ! -f /usr/local/bin/gpg2 ]; then
+        run brew install gpg2
+        run brew install pinentry-mac
+    fi
 
     if [ ! -f /usr/local/bin/python ]; then
         run brew install python
