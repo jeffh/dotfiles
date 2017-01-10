@@ -751,6 +751,13 @@ let g:go_fmt_autosave = 1
 
 let g:vim_json_syntax_conceal = 0
 
+"""""""""""""
+" Syntastic "
+"""""""""""""
+
+let g:syntastic_cpp_compiler = 'clang++'
+let g:syntastic_cpp_compiler_options = ' -std=c++11 -stdlib=libc++'
+
 """""""""""""""""
 " experimental  "
 """""""""""""""""
