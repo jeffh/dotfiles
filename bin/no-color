@@ -1,0 +1,7 @@
+#!/bin/bash
+
+if [ $# == 0 ]; then
+    perl -pe 's/\x1b\[[0-9;]*m//g'
+else
+    $@ | perl -pe 's/\x1b\[[0-9;]*m//g'
+fi
