@@ -7,6 +7,9 @@ setenv RUST_SRC_PATH $HOME/workspace/rust-1.7.0/src
 
 # needed for gpg-agent
 setenv GPG_TTY (tty)
+gpg-agent --daemon >/dev/null 2>&1
+set -e SSH_AUTH_SOCK
+set -U -x SSH_AUTH_SOCK ~/.gnupg/S.gpg-agent.ssh
 
 . $HOME/.config/fish/plugins/virtualfish/virtual.fish
 . $HOME/.config/fish/plugins/virtualfish/auto_activation.fish
