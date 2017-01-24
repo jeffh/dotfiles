@@ -118,6 +118,9 @@ function osx {
 
     if [ ! -f /usr/local/bin/gpg2 ]; then
         run brew install gpg2
+    fi
+
+    if [ ! -f /usr/local/bin/pinentry-mac ]; then
         run brew install pinentry-mac
     fi
 
