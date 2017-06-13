@@ -111,6 +111,9 @@ function update_submodules {
 }
 
 function osx {
+    if [ -z "`which brew`" ]; then
+        /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    fi
     run brew install ctags
 
     # for emoji in git diff
@@ -122,6 +125,10 @@ function osx {
 
     if [ ! -f /usr/local/bin/pinentry-mac ]; then
         run brew install pinentry-mac
+    fi
+
+    if [ ! -f /usr/local/bin/go ]; then
+        run brew install go
     fi
 
     if [ ! -f /usr/local/bin/python ]; then
