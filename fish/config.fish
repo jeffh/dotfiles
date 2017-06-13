@@ -34,9 +34,8 @@ set -gx RBENV_ROOT /usr/local/var/rbenv
 . ~/.config/fish/fish_prompt.fish
 . ~/.config/fish/fish_right_prompt.fish
 
-setenv SWIFTENV_ROOT "$HOME/.swiftenv"
-setenv SWIFTENV_ROOT "$HOME/.swiftenv"
-setenv PATH "$SWIFTENV_ROOT/bin" $PATH
+set SWIFTENV_ROOT "$HOME/.swiftenv"
+set PATH "$SWIFTENV_ROOT/bin" $PATH
 status --is-interactive; and . (swiftenv init -|psub)
 
 test -e {$HOME}/.iterm2_shell_integration.fish ; and source {$HOME}/.iterm2_shell_integration.fish

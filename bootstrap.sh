@@ -27,42 +27,52 @@ function download_plugins {
     run git submodule update --init --recursive
 }
 
+function link {
+    if [ -L "$2" ]; then
+        rm "$2"
+    fi
+    if [ -d "$2" ]; then
+        rm -r "$2"
+    fi
+    ln -fs "$1" "$2"
+}
+
 function symlink_to_home {
     echo
     echo "Symlinking configuration to $HOME"
     echo " - vim (.vim, .vimrc)"
-    ln -fs $PWD/vim/vim $HOME/.vim
-    ln -fs $PWD/vim/vimrc $HOME/.vimrc
+    link $PWD/vim/vim $HOME/.vim
+    link $PWD/vim/vimrc $HOME/.vimrc
 
     echo " - ctags (.ctags)"
-    ln -fs $PWD/ctags/ctags $HOME/.ctags
+    link $PWD/ctags/ctags $HOME/.ctags
 
     echo " - zsh (.zshrc, .zsh)"
-    ln -fs $PWD/zsh/zshrc $HOME/.zshrc
+    link $PWD/zsh/zshrc $HOME/.zshrc
     rm $HOME/.zsh 2> /dev/null || true
-    ln -fs $PWD/zsh/zsh $HOME/.zsh
+    link $PWD/zsh/zsh $HOME/.zsh
 
     echo " - tmux (.tmux.conf)"
-    ln -fs $PWD/tmux/.tmux.conf $HOME/.tmux.conf
+    link $PWD/tmux/.tmux.conf $HOME/.tmux.conf
 
     echo " - fish (.config/fish)"
     mkdir $HOME/.config > /dev/null 2> /dev/null || true
     rm $HOME/.config/fish 2> /dev/null || true
-    ln -fs $PWD/fish $HOME/.config/fish
+    link $PWD/fish $HOME/.config/fish
 
     echo " - emacs (.emacs.d)"
     rm $HOME/.emacs.d 2> /dev/null || true
-    ln -fs $PWD/emacs $HOME/.emacs.d
+    link $PWD/emacs $HOME/.emacs.d
 
     echo " - emacs mayvenn layer"
     rm $HOME/.emacs.d/private/mayvenn 2> /dev/null || true
-    ln -fs $PWD/external/mayvenn-layer $HOME/.emacs.d/private/mayvenn
+    link $PWD/external/mayvenn-layer $HOME/.emacs.d/private/mayvenn
 
     echo "*** Don't forget to configure your .spacemacs layers.  The simplest option is to use the 'mayvenn' layer."
 
     echo " - scripts (bin)"
     rm $HOME/bin 2> /dev/null || true
-    ln -fs $PWD/bin $HOME/bin
+    link $PWD/bin $HOME/bin
 
     if [ ! -d ~/.swiftenv ]; then
         echo " - Installing swiftenv"
@@ -71,10 +81,11 @@ function symlink_to_home {
 
     echo " - gpg (.gnupg)"
     mkdir -p $HOME/.gnupg; true
-    ln -fs $PWD/gnupg/gpg-agent.conf $HOME/.gnupg/gpg-agent.conf
+    link $PWD/gnupg/gpg-agent.conf $HOME/.gnupg/gpg-agent.conf
 
     echo " - making dirs"
     mkdir -p ~/.rbenv/bin; true
+    mkdir -p ~/.rbenv/shims; true
     mkdir -p ~/workspace/gopath/bin; true
     mkdir -p ~/.cargo/bin; true
     mkdir -p ~/.swiftenv/shims; true
