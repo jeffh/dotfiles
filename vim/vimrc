@@ -26,9 +26,6 @@ Plug 'w0ng/vim-hybrid'
 " Plugins "
 """""""""""
 
-" easymotion
-Plug 'easymotion/vim-easymotion'
-
 " Autocomplete
 " Plug 'Shougo/neocomplete.vim'
 
@@ -71,9 +68,6 @@ Plug 'airblade/vim-gitgutter'
 " status line
 Plug 'bling/vim-airline'
 
-" Tabular alignment
-Plug 'vim-easy-align'
-
 " Vipe
 Plug 'luan/vipe'
 
@@ -98,7 +92,7 @@ Plug 'markcornick/vim-terraform'
 Plug 'juvenn/mustache.vim'
 
 " Google Go (golang)
-Plug 'fatih/vim-go'
+Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
 
 " Clojure
 " Plug 'git://github.com/vim-scripts/paredit.vim.git'
