@@ -85,6 +85,9 @@ Plug 'cfdrake/vim-carthage'
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
 
+" Elm
+Plug 'elmcast/elm-vim'
+
 " Terraform
 Plug 'markcornick/vim-terraform'
 
