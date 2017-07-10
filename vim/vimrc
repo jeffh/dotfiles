@@ -69,13 +69,16 @@ Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
 
 " status line
-Plug 'bling/vim-airline'
+"Plug 'bling/vim-airline'
 
 " Vipe
 Plug 'luan/vipe'
 
 " Abolish
 Plug 'tpope/tpope-vim-abolish'
+"
+" Tagbar
+Plug 'majutsushi/tagbar'
 
 """""""""""""
 " Languages "
@@ -95,7 +98,7 @@ Plug 'plasticboy/vim-markdown'
 Plug 'elmcast/elm-vim'
 
 " Terraform
-Plug 'markcornick/vim-terraform'
+Plug 'hashivim/vim-terraform'
 
 " Mustache
 Plug 'juvenn/mustache.vim'
@@ -177,6 +180,9 @@ inoremap <c-k> <esc>Da
 "noremap <c-a> <esc>^i
 inoremap <c-e> <esc>$a
 inoremap <c-bs> <c-w>
+
+" tagbar
+nmap <leader>s :TagbarToggle<cr>
 
 " quickfix hotkeys
 noremap <leader>j :cn<cr>
@@ -657,10 +663,12 @@ augroup END
 " Python "
 """"""""""
 let python_highlight_all = 1
-let python_slow_sync = 1
+let python_syntax_slow_sync = 0
 let python_highlight_builtin_objs = 1
 let python_highlight_builtin_funcs = 1
-let g:pymode_lint_write = 0
+let g:pymode_doc = 0
+let g:pymode_lint = 0
+let g:pymode_lint_on_write = 0
 let g:pymode_rope = 1
 let g:pymode_rope_auto_project = 1
 

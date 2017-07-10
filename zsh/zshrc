@@ -174,3 +174,6 @@ zle -N zle-line-init
 bindkey '^T' autosuggest-toggle
 
 #### END
+
+# added by travis gem
+[ -f /Users/jeff/.travis/travis.sh ] && source /Users/jeff/.travis/travis.sh

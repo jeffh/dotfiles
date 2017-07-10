@@ -151,8 +151,11 @@ function osx {
         run brew install macvim --with-cscope --with-lua --with-override-system-vim
     fi
 
-    brew tap railwaycat/homebrew-emacsmacport
-    brew install emacs-mac --with-spacemacs-icon
+    brew tap d12frosted/emacs-plus
+    brew install emacs-plus
+    if [ ! -f /usr/local/bin/ag ]; then
+        brew install ag
+    fi
 
     if [ ! -f /usr/local/bin/hg ]; then
         run brew install hg
