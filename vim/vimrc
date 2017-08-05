@@ -42,6 +42,9 @@ Plug 'tpope/vim-commentary'
 Plug 'Shougo/neosnippet'
 Plug 'Shougo/neosnippet-snippets'
 
+" Proc running
+Plug 'Shougo/vimproc.vim', { 'do': 'make' }
+
 " File finding
 Plug 'kien/ctrlp.vim'
 
@@ -70,6 +73,9 @@ Plug 'bling/vim-airline'
 
 " Vipe
 Plug 'luan/vipe'
+
+" Abolish
+Plug 'tpope/tpope-vim-abolish'
 
 """""""""""""
 " Languages "
@@ -106,7 +112,9 @@ Plug 'tpope/vim-fireplace', { 'for': 'clojure' }
 Plug 'kien/rainbow_parentheses.vim'
 
 " Haskell
-Plug 'dag/vim2hs'
+" Plug 'dag/vim2hs'
+Plug 'eagletmt/ghcmod-vim'
+Plug 'eagletmt/neco-ghc'
 
 " Python
 Plug 'jmcantrell/vim-virtualenv'
@@ -288,6 +296,7 @@ set wrapscan   " and the search wraps around the file
 
 " make tab completion for files/buffers act like bash, but ignore sets of files
 set wildignore=*.o,*.obj,*/.git/*,.svn,.cvs,*.rbc,*.pyc,*.class,*.jar,*.a
+set wildignore+=*/.stack-work/*
 set wildignore+=*/build/*
 set wildignore+=*/dist/*
 set wildignore+=*/.ropeproject/*
@@ -662,7 +671,12 @@ let g:pymode_rope_auto_project = 1
 augroup googlego_customizations
     autocmd!
     autocmd Filetype go autocmd BufWritePre <buffer> Fmt
+    autocmd FileType go nmap <Leader>i <Plug>(go-implements)
+    autocmd FileType go nmap <Leader>r <Plug>(go-rename)
+    autocmd FileType go nmap <Leader>c :!gotags -R $GOPATH > $GOPATH/tags<cr>
 augroup END
+let g:go_fmt_command = "goimports"
+let g:go_fmt_autosave = 1
 
 """""""""""
 " Clojure "
@@ -678,6 +692,23 @@ autocmd VimEnter * RainbowParenthesesToggle
 autocmd Syntax * RainbowParenthesesLoadRound
 autocmd Syntax * RainbowParenthesesLoadSquare
 autocmd Syntax * RainbowParenthesesLoadBraces
+
+"""""""""""
+" Haskell "
+"""""""""""
+" Disable haskell-vim omnifunc
+let g:haskellmode_completion_ghc = 0
+augroup haskell_customizations
+    autocmd!
+    autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
+    autocmd FileType haskell nmap <Leader>c :GhcModCheck<cr>
+    autocmd FileType haskell nmap <Leader>l :GhcModLint<cr>
+    autocmd FileType haskell nmap <Leader>e :GhcModType<cr>
+    autocmd FileType haskell nmap <Leader>i :GhcModTypeInsert<cr>
+    autocmd FileType haskell nmap <Leader>g :GhcModSigCodegen<cr>
+    autocmd FileType haskell nmap <Leader>C :GhcModCheckClear<cr>
+    autocmd FileType haskell nnoremap <CR> :silent! GhcModTypeClear<cr>:nohlsearch<cr><cr>
+augroup END
 
 """""""""
 " CtrlP "
@@ -733,15 +764,6 @@ nmap <Leader>a <Plug>(EasyAlign)
 """"""""""""""""
 let g:vim_markdown_initial_foldlevel=99
 
-""""""""""
-" vim-go "
-""""""""""
-autocmd FileType go nmap <Leader>i <Plug>(go-implements)
-autocmd FileType go nmap <Leader>r <Plug>(go-rename)
-autocmd FileType go nmap <Leader>c :!gotags -R $GOPATH > $GOPATH/tags<cr>
-let g:go_fmt_command = "goimports"
-let g:go_fmt_autosave = 1
-
 """"""""""""
 " vim-json "
 """"""""""""
@@ -759,7 +781,7 @@ let g:syntastic_cpp_compiler_options = ' -std=c++11 -stdlib=libc++'
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:elm_syntastic_show_warnings = 1
-let g:elm_format_autosave = 0
+let g:elm_format_autosave = 1
 
 """""""""""""""""
 " experimental  "
