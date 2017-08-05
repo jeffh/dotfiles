@@ -1,4 +1,4 @@
-set PATH $HOME/bin /usr/local/bin $PATH
+set PATH $HOME/.local/bin $HOME/bin /usr/local/bin $PATH
 
 setenv EDITOR /usr/local/bin/vim
 setenv GOPATH $HOME/workspace/gopath
