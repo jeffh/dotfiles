@@ -772,6 +772,18 @@ nmap <Leader>a <Plug>(EasyAlign)
 """"""""""""""""
 let g:vim_markdown_initial_foldlevel=99
 
+""""""""""
+" vim-go "
+""""""""""
+augroup vim_go
+    autocmd!
+    autocmd FileType go nmap <Leader>i <Plug>(go-implements)
+    autocmd FileType go nmap <Leader>r <Plug>(go-rename)
+    autocmd FileType go nmap <Leader>c :!gotags -R $GOPATH > $GOPATH/tags<cr>
+augroup END
+let g:go_fmt_command = "goimports"
+let g:go_fmt_autosave = 1
+
 """"""""""""
 " vim-json "
 """"""""""""
@@ -782,6 +794,12 @@ let g:vim_json_syntax_conceal = 0
 " Syntastic "
 """""""""""""
 
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_c_checkers = []
+let g:syntastic_cpp_checkers = []
 let g:syntastic_cpp_compiler = 'clang++'
 let g:syntastic_cpp_compiler_options = ' -std=c++11 -stdlib=libc++'
 
