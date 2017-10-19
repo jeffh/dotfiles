@@ -1,6 +1,6 @@
-set -x PATH $HOME/.local/bin $HOME/bin /usr/local/bin $PATH
+set -x PATH $HOME/.local/bin $HOME/bin /usr/local/bin /usr/local/sbin $PATH
 
-setenv EDITOR /usr/local/bin/vim
+setenv EDITOR (which vim)
 set -x GOPATH $HOME/workspace/gopath
 setenv ALTERNATIVE_EDITOR ""
 set -x RUST_SRC_PATH $HOME/workspace/rust-1.7.0/src
@@ -11,7 +11,7 @@ gpg-agent --daemon >/dev/null 2>&1
 set -e SSH_AUTH_SOCK
 set -U -x SSH_AUTH_SOCK ~/.gnupg/S.gpg-agent.ssh
 
-ssh-add -K 2> /dev/null
+#ssh-add -K 2> /dev/null
 
 . $HOME/.config/fish/plugins/virtualfish/virtual.fish
 . $HOME/.config/fish/plugins/virtualfish/auto_activation.fish
