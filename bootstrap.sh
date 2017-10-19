@@ -128,7 +128,7 @@ function osx {
     run brew install ctags
 
     # for emoji in git diff
-    run brew install homebrew/dupes/less
+    run brew install less
 
     if [ ! -f /usr/local/bin/gpg2 ]; then
         run brew install gpg2
