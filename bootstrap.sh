@@ -145,7 +145,10 @@ function osx {
     if [ ! -f /usr/local/bin/python ]; then
         run brew install python
     fi
-    run brew install rbenv --HEAD
+
+    if [ ! -f /usr/local/bin/rbenv ]; then
+        run brew install rbenv --HEAD
+    fi
 
     if [ ! -f /usr/local/bin/mvim ]; then
         run brew install macvim --with-cscope --with-lua --with-override-system-vim
