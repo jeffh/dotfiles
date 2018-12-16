@@ -21,7 +21,7 @@ set -U -x SSH_AUTH_SOCK ~/.gnupg/S.gpg-agent.ssh
 set -x PATH $GOPATH/bin $PATH
 set -x PATH /usr/local/opt/go/libexec/bin $PATH
 # rust
-set -x PATH /Users/jeff/.cargo/bin $PATH
+set -x PATH $HOME/.cargo/bin $PATH
 # capstan
 set CAPSTAN_QEMU_PATH /usr/local/bin/qemu-system-x86_64
 
