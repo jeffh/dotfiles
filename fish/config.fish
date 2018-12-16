@@ -1,6 +1,6 @@
-test -d $HOME/.local/bin; and set -x PATH $HOME/.local/bin
-test -d $HOME/bin; and set -x PATH $HOME/bin
 set -x PATH /usr/local/bin /usr/local/sbin $PATH
+test -d $HOME/.local/bin; and set -x PATH $HOME/.local/bin $PATH
+test -d $HOME/bin; and set -x PATH $HOME/bin $PATH
 
 setenv EDITOR (which vim)
 setenv ALTERNATIVE_EDITOR ""
@@ -34,7 +34,7 @@ if test -d $HOME/.rbenv/bin
     set -x PATH $HOME/.rbenv/bin $PATH
     set -x PATH ~/.rbenv/shims $PATH
     set -x RBENV_SHELL fish
-    set -gx RBENV_ROOT /usr/local/var/rbenv
+#set -gx RBENV_ROOT /usr/local/var/rbenv
     . (rbenv init -|psub)
 end
 
