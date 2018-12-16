@@ -1,9 +1,9 @@
-set -x PATH $HOME/.local/bin $HOME/bin /usr/local/bin /usr/local/sbin $PATH
+test -d $HOME/.local/bin; and set -x PATH $HOME/.local/bin
+test -d $HOME/bin; and set -x PATH $HOME/bin
+set -x PATH /usr/local/bin /usr/local/sbin $PATH
 
 setenv EDITOR (which vim)
-set -x GOPATH $HOME/workspace/gopath
 setenv ALTERNATIVE_EDITOR ""
-set -x RUST_SRC_PATH $HOME/workspace/rust-1.7.0/src
 
 # needed for gpg-agent
 setenv GPG_TTY (tty)
@@ -13,31 +13,41 @@ set -U -x SSH_AUTH_SOCK ~/.gnupg/S.gpg-agent.ssh
 
 #ssh-add -K 2> /dev/null
 
+# python
 . $HOME/.config/fish/plugins/virtualfish/virtual.fish
 . $HOME/.config/fish/plugins/virtualfish/auto_activation.fish
 . $HOME/.config/fish/plugins/virtualfish/global_requirements.fish
 
 # golang 
-set -x PATH $GOPATH/bin $PATH
-set -x PATH /usr/local/opt/go/libexec/bin $PATH
+set -x GOPATH $HOME/workspace/gopath
+test -d $GOPATH/bin; and set -x PATH $GOPATH/bin $PATH
+test -d /usr/local/opt/go/libexec/bin; and set -x PATH /usr/local/opt/go/libexec/bin $PATH
+
 # rust
-set -x PATH $HOME/.cargo/bin $PATH
+test -d $HOME/.cargo/bin; and set -x PATH $HOME/.cargo/bin $PATH
+
 # capstan
-set CAPSTAN_QEMU_PATH /usr/local/bin/qemu-system-x86_64
+test -d /usr/local/bin/qeum-system-x86_64; and set CAPSTAN_QEMU_PATH /usr/local/bin/qemu-system-x86_64
 
 # ruby
-set -x PATH $HOME/.rbenv/bin $PATH
-set -x PATH ~/.rbenv/shims $PATH
-set -x RBENV_SHELL fish
-set -gx RBENV_ROOT /usr/local/var/rbenv
-. (rbenv init -|psub)
+if test -d $HOME/.rbenv/bin
+    set -x PATH $HOME/.rbenv/bin $PATH
+    set -x PATH ~/.rbenv/shims $PATH
+    set -x RBENV_SHELL fish
+    set -gx RBENV_ROOT /usr/local/var/rbenv
+    . (rbenv init -|psub)
+end
+
+# swift
+set -x SWIFTENV_ROOT "$HOME/.swiftenv"
+if test -d "$SWIFTENV_ROOT/bin"
+    set -x PATH "$SWIFTENV_ROOT/bin" $PATH
+    status --is-interactive; and . (swiftenv init -|psub)
+end
 
 # Set prompt
 . ~/.config/fish/fish_prompt.fish
 . ~/.config/fish/fish_right_prompt.fish
 
-set -x SWIFTENV_ROOT "$HOME/.swiftenv"
-set -x PATH "$SWIFTENV_ROOT/bin" $PATH
-status --is-interactive; and . (swiftenv init -|psub)
-
+# iterm2
 test -e {$HOME}/.iterm2_shell_integration.fish ; and source {$HOME}/.iterm2_shell_integration.fish
