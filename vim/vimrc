@@ -38,15 +38,12 @@ Plug 'tpope/vim-repeat'
 " gcc to (un)comment lines
 Plug 'tpope/vim-commentary'
 
-" Textmate-styled snippets
-Plug 'Shougo/neosnippet'
-Plug 'Shougo/neosnippet-snippets'
-
 " Proc running
 Plug 'Shougo/vimproc.vim', { 'do': 'make' }
 
 " File finding
 Plug 'kien/ctrlp.vim'
+Plug 'FelikZ/ctrlp-py-matcher'
 
 " Paren, quotes, bracket editing
 Plug 'tpope/vim-surround'
@@ -54,8 +51,8 @@ Plug 'tpope/vim-surround'
 " NERD tree
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 
-" Syntastic (syntax check)
-Plug 'scrooloose/syntastic'
+" Find Replace
+Plug 'brooth/far.vim'
 
 " Complementary pairing hotkeys & operations
 " eg - ]q jumps to next in quicklist, [q for other way
@@ -112,7 +109,7 @@ Plug 'guns/vim-sexp', { 'for': 'clojure' }
 Plug 'guns/vim-clojure-static', { 'for': 'clojure' }
 Plug 'guns/vim-clojure-highlight', { 'for': 'clojure' }
 Plug 'tpope/vim-fireplace', { 'for': 'clojure' }
-Plug 'kien/rainbow_parentheses.vim'
+" Plug 'kien/rainbow_parentheses.vim'
 
 " Haskell
 " Plug 'dag/vim2hs'
@@ -138,10 +135,13 @@ Plug 'rust-lang/rust.vim'
 " Swift
 Plug 'toyamarinyon/vim-swift'
 
+" Nim
+Plug 'zah/nim.vim'
+
 call plug#end()
 
 filetype plugin indent on
-set regexpengine=1
+set regexpengine=1 " for ruby
 syntax enable
 
 """""""""""""""""""""""""""""""""""""""""""""""
@@ -182,7 +182,7 @@ inoremap <c-e> <esc>$a
 inoremap <c-bs> <c-w>
 
 " tagbar
-nmap <leader>s :TagbarToggle<cr>
+nmap <leader>S :TagbarToggle<cr>
 
 " quickfix hotkeys
 noremap <leader>j :cn<cr>
@@ -226,9 +226,6 @@ endif
 
 " Smart tabbing behavior
 function! CleverTab()
-    if neosnippet#expandable_or_jumpable()
-        return "\<Plug>(neosnippet_expand_or_jump)"
-    endif
     if pumvisible()
         return "\<C-N>"
     endif
@@ -284,7 +281,7 @@ set magic              " Set for regular expressions' backslashes
 
 " visualize invisible characters. Show spaces at the end of lines and tabs.
 set list
-set listchars=tab:▸\ ,trail:·
+set listchars=tab:→\ ,trail:·
 
 set foldmethod=syntax  " code folding is determined by syntax
 set foldlevel=99  " default fold level
@@ -377,7 +374,7 @@ set autowrite
 " remember marks & undos for background buffers
 set hidden
 
-set number " enable line numbers
+" set number " enable line numbers
 "set numberwidth=5
 
 " Set encoding and language
@@ -419,6 +416,7 @@ set tm=500
 
 set lazyredraw      " don't redraw when running macros
 set shortmess=aOstT " shortens messages to avoid 'press a key' prompt
+set ttyfast
 
 " show matching parens, brackets and braces
 set showmatch
@@ -441,7 +439,7 @@ if has("gui_running")
     end
 
     if has('macunix')
-        set guifont=SF_Mono_Light:h16
+        set guifont=SF_Mono_Light:h13
     end
 endif
 
@@ -449,12 +447,11 @@ endif
 set equalalways
 
 " highlight the line the cursor is on (can be slow for large files)
-set nocursorline
+set cursorline
 
 " Experiemental performance improvements
-set regexpengine=1
 set scrolljump=3
-syntax sync minlines=256
+syntax sync minlines=50
 set norelativenumber
 
 """""""""
@@ -493,6 +490,7 @@ function! RenameFile()
     endif
 endfunction
 map <leader>r :call RenameFile()<cr>
+map <leader>R :call RenameFile()<cr>
 
 function! DeleteFile()
     call inputsave()
@@ -505,10 +503,24 @@ function! DeleteFile()
 endfunction
 map <leader>d :call DeleteFile()<cr>
 
+function! FindSymbol()
+    call inputsave()
+    let curr = expand("<cword>")
+    let symbol = input('Find Symbol (default: ' . curr . '): ')
+    call inputrestore()
+    if symbol == ""
+        let query = curr
+    else
+        let query = symbol
+    endif
+    exec ':cs find s ' . query
+endfunction
+nmap <leader>g :call FindSymbol()<cr>
+
 """""""""""""""""
 " Running Tests "
 """""""""""""""""
-function! RunIfMatchesFile(command, file_ext_regex)
+function! RunIfMatchesFile(command, file_ext_regex, append_file_as_arg)
     let in_runnable_file = match(expand("%"), a:file_ext_regex) != -1
     if in_runnable_file
         let t:last_ran_file=@%
@@ -519,7 +531,11 @@ function! RunIfMatchesFile(command, file_ext_regex)
     end
 
     :silent w
-    return RunCommand(a:command . t:last_ran_file)
+    if a:append_file_as_arg
+        return RunCommand(a:command . t:last_ran_file)
+    else
+        return RunCommand(a:command)
+    endif
 endfunction
 
 function! RunCommand(command)
@@ -529,7 +545,7 @@ function! RunCommand(command)
     " :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
     " :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
     " exec ":!" . a:command
-    exec ":Vipe " . a:command
+    exec a:command
     return 1
 endfunction
 
@@ -537,16 +553,25 @@ function! RunTestFileIfPossible()
     let t:skip_file_check=0
     let has_ran=0
     " Ruby
-    if filereadable("Gemfile")
-        let has_ran = RunIfMatchesFile("bundle exec rspec ", '\(.feature|_spec.rb\)$')
-    elseif executable('rspec')
-        let has_ran = RunIfMatchesFile("rspec ", '\(.feature|_spec.rb\)$')
+    if !has_ran && filereadable("Gemfile")
+        let has_ran = RunIfMatchesFile(":Vipe bundle exec rspec ", '\(.feature|_spec.rb\)$', 1)
+    elseif !has_ran && executable('rspec')
+        let has_ran = RunIfMatchesFile(":Vipe rspec ", '\(.feature|_spec.rb\)$', 1)
     endif
     " Python
-    if executable('py.test') == 1
-        let has_ran = RunIfMatchesFile("py.test ", '.*test.*.py$')
-    elseif executable('nosetests') == 1
-        let has_ran = RunIfMatchesFile("nosetests ", '.*test.*.py$')
+    if !has_ran && executable('py.test') == 1
+        let has_ran = RunIfMatchesFile(":Vipe py.test ", '.*test.*.py$', 1)
+    elseif !has_ran && executable('nosetests') == 1
+        let has_ran = RunIfMatchesFile(":Vipe nosetests ", '.*test.*.py$', 1)
+    endif
+
+    if !has_ran && executable("go") == 1
+        let has_ran = RunIfMatchesFile(':GoTestFunc', '.*test\.go$', 0)
+    endif
+
+    if !has_ran && (filereadable("Makefile") || filereadable("makefile"))
+        :!clear && make test
+        let has_ran = 1
     endif
 
     if !has_ran
@@ -559,15 +584,24 @@ function! RunTestsIfPossible()
     let has_ran=0
     " Ruby
     if filereadable("Gemfile")
-        let has_ran = RunCommand("bundle exec rspec")
+        let has_ran = RunCommand(":Vipe bundle exec rspec")
     elseif executable('rspec')
-        let has_ran = RunCommand("rspec")
+        let has_ran = RunCommand(":Vipe rspec")
     endif
     " Python
     if executable('py.test') == 1
-        let has_ran = RunCommand("py.test")
+        let has_ran = RunCommand(":Vipe py.test")
     elseif executable('nosetests') == 1
-        let has_ran = RunCommand("nosetests")
+        let has_ran = RunCommand(":Vipe nosetests")
+    endif
+
+    if !has_ran && executable("go") == 1
+        let has_ran = RunCommand(':GoTest')
+    endif
+
+    if !has_ran && (filereadable("Makefile") || filereadable("makefile"))
+        :!clear && make test
+        let has_ran = 1
     endif
 
     if !has_ran
@@ -625,11 +659,12 @@ augroup language_customizations
     autocmd FileType sls setlocal shiftwidth=4
     autocmd FileType sls setlocal expandtab
 
+    " golang
     autocmd FileType go setlocal tabstop=4
     autocmd FileType go setlocal softtabstop=4
     autocmd FileType go setlocal shiftwidth=4
 
-    autocmd FileType go setlocal efm=%E%.%#FAIL:\ %m,%C%.%#:[0-9]%#:\ %m,%C%.%#\ %f:%l,%Z%.%#stacktrace:\ %#%f:%l,%-G%.%#,#E%f:%l:\ %m
+    " autocmd FileType go setlocal efm=%E%.%#FAIL:\ %m,%C%.%#:[0-9]%#:\ %m,%C%.%#\ %f:%l,%Z%.%#stacktrace:\ %#%f:%l,%-G%.%#,#E%f:%l:\ %m
 " --- FAIL: TestCanNegotiateEncryptedSessionConnection (0.06 seconds)
 " 	expectations.go:71: expected &protocol.packetBuffer{packets:[]interface {}{}, wUpgrader:(protocol.WriterFactory)(nil), rUpgrader:(protocol.ReaderFactory<...>ol.packetBuffer{packets:[]interface {}{}, wUpgrader:(protocol.WriterFactory)(nil), rUpgrader:(protocol.ReaderFactory)(nil)} (*protocol.packetBuffer) No packets to read!
 " 		 stacktrace: /Users/jeff/workspace/mc/src/mc/protocol/connection_test.go:246
@@ -678,13 +713,13 @@ let g:pymode_rope_auto_project = 1
 
 augroup googlego_customizations
     autocmd!
-    autocmd Filetype go autocmd BufWritePre <buffer> Fmt
+    autocmd Filetype go nmap <Leader>p :Fmt
     autocmd FileType go nmap <Leader>i <Plug>(go-implements)
     autocmd FileType go nmap <Leader>r <Plug>(go-rename)
     autocmd FileType go nmap <Leader>c :!gotags -R $GOPATH > $GOPATH/tags<cr>
 augroup END
 let g:go_fmt_command = "goimports"
-let g:go_fmt_autosave = 1
+let g:go_fmt_autosave = 0
 
 """""""""""
 " Clojure "
@@ -696,10 +731,10 @@ augroup clojure_customizations
 augroup END
 
 " Rainbow parens
-autocmd VimEnter * RainbowParenthesesToggle
-autocmd Syntax * RainbowParenthesesLoadRound
-autocmd Syntax * RainbowParenthesesLoadSquare
-autocmd Syntax * RainbowParenthesesLoadBraces
+" autocmd VimEnter * RainbowParenthesesToggle
+" autocmd Syntax * RainbowParenthesesLoadRound
+" autocmd Syntax * RainbowParenthesesLoadSquare
+" autocmd Syntax * RainbowParenthesesLoadBraces
 
 """""""""""
 " Haskell "
@@ -724,13 +759,22 @@ augroup END
 let g:ctrlp_map = '<leader>f'
 let g:ctrlp_cmd = 'CtrlP' " 'CtrlPMixed'
 let g:ctrlp_working_path_mode = 'ra'
-let g:ctrlp_user_command = 'ag %s -i --nocolor --nogroup --hidden
-      \ --ignore .git
-      \ --ignore .svn
-      \ --ignore .hg
-      \ --ignore .DS_Store
-      \ --ignore "**/*.pyc"
-      \ -g ""'
+" let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
+let g:ctrlp_lazy_update = 75
+let g:ctrlp_max_files = 0
+let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\'
+if executable("ag")
+    set grepprg=ag\ --nogroup\ --nocolor
+    let g:ctrlp_user_command = 'ag %s -i --nocolor --nogroup --hidden
+                \ --ignore .git
+                \ --ignore .svn
+                \ --ignore .hg
+                \ --ignore .DS_Store
+                \ --ignore "**/*.pyc"
+                \ -g ""'
+endif
+
+nmap <Leader>s :CtrlPTag<cr>
 
 """""""""""""""
 " neocomplete "
@@ -756,11 +800,6 @@ let g:ctrlp_user_command = 'ag %s -i --nocolor --nogroup --hidden
 " let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
 " let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
 
-"""""""""""""""
-" neosnippet  "
-"""""""""""""""
-let g:neosnippet#snippets_directory = "$HOME/.vim/snippets/"
-
 """"""""""""""""""
 " vim-easy-align "
 """"""""""""""""""
@@ -781,6 +820,7 @@ augroup vim_go
     autocmd FileType go nmap <Leader>r <Plug>(go-rename)
     autocmd FileType go nmap <Leader>c :!gotags -R $GOPATH > $GOPATH/tags<cr>
 augroup END
+
 " let g:go_fmt_command = "goimports"
 let g:go_fmt_autosave = 1
 
@@ -789,28 +829,3 @@ let g:go_fmt_autosave = 1
 """"""""""""
 
 let g:vim_json_syntax_conceal = 0
-
-"""""""""""""
-" Syntastic "
-"""""""""""""
-
-let g:syntastic_c_checkers = []
-let g:syntastic_cpp_checkers = []
-let g:syntastic_cpp_compiler = 'clang++'
-let g:syntastic_cpp_compiler_options = ' -std=c++11 -stdlib=libc++'
-
-" Recommended for Elm
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:elm_syntastic_show_warnings = 1
-let g:elm_format_autosave = 1
-
-"""""""""""""""""
-" experimental  "
-"""""""""""""""""
-
-" For snippet_complete marker.
-if has('conceal')
-    set conceallevel=2 concealcursor=i
-endif
-
