@@ -13,10 +13,7 @@ set -U -x SSH_AUTH_SOCK ~/.gnupg/S.gpg-agent.ssh
 
 #ssh-add -K 2> /dev/null
 
-# python
-. $HOME/.config/fish/plugins/virtualfish/virtual.fish
-. $HOME/.config/fish/plugins/virtualfish/auto_activation.fish
-. $HOME/.config/fish/plugins/virtualfish/global_requirements.fish
+eval (python3 -m virtualfish)
 
 # golang 
 set -x GOPATH $HOME/workspace/gopath
