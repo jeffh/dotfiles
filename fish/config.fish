@@ -43,11 +43,11 @@ if test -d "$SWIFTENV_ROOT/bin"
 end
 
 # graalvm
-if test -d "/usr/local/opt/graalvm/1.0.0-rc11/Contents/Home/"
-    set -x GRAALVM_HOME "/usr/local/opt/graalvm/1.0.0-rc11/Contents/Home/"
+if test -d "/usr/local/opt/graalvm/1.0.0-rc12/Contents/Home/"
+    set -x GRAALVM_HOME "/usr/local/opt/graalvm/1.0.0-rc12/Contents/Home/"
 end
-if test -d "/opt/graalvm/1.0.0-rc11/Contents/Home/"
-    set -x GRAALVM_HOME "/opt/graalvm/1.0.0-rc11/Contents/Home/"
+if test -d "/opt/graalvm/1.0.0-rc12/Contents/Home/"
+    set -x GRAALVM_HOME "/opt/graalvm/1.0.0-rc12/Contents/Home/"
 end
 
 # Set prompt
