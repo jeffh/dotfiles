@@ -5,15 +5,34 @@ test -d $HOME/bin; and set -x PATH $HOME/bin $PATH
 setenv EDITOR (which vim)
 setenv ALTERNATIVE_EDITOR ""
 
+begin # SSH Agent
+    if test -z "$SSH_ENV"
+        set -xg SSH_ENV $HOME/.ssh/environment
+    end
+    if begin; test -f $SSH_ENV; and test -z "$SSH_AGENT_PID"; end
+        source $SSH_ENV > /dev/null
+    end
+    if not test -z "$SSH_AGENT_PID"
+        ps -ef | grep $SSH_AGENT_PID | grep -v grep | grep -q ssh-agent
+
+        if not $status
+            ssh-agent -c | sed 's/^echo/#echo/' > $SSH_ENV
+            chmod 600 "$SSH_ENV"
+            source "$SSH_ENV" > /dev/null
+        end
+    end
+end
+
 # needed for gpg-agent
-setenv GPG_TTY (tty)
-gpg-agent --daemon >/dev/null 2>&1
-set -e SSH_AUTH_SOCK
-set -U -x SSH_AUTH_SOCK ~/.gnupg/S.gpg-agent.ssh
+# setenv GPG_TTY (tty)
+# gpg-agent --daemon >/dev/null 2>&1
+
+#set -e SSH_AUTH_SOCK
+#set -U -x SSH_AUTH_SOCK ~/.gnupg/S.gpg-agent.ssh
 
 #ssh-add -K 2> /dev/null
 
-eval (python3 -m virtualfish)
+eval (python3 -m virtualfish 2>/dev/null)
 
 # golang 
 set -x GOPATH $HOME/workspace/gopath
@@ -56,3 +75,8 @@ end
 
 # iterm2
 test -e {$HOME}/.iterm2_shell_integration.fish ; and source {$HOME}/.iterm2_shell_integration.fish
+
+if test -d "/nix"
+    eval (~/.config/fish/nix.sh)
+    set -x NIX_SSL_CERT_FILE /etc/ssl/cert.pem
+end

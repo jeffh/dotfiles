@@ -44,9 +44,6 @@ function symlink_to_home {
     link $PWD/vim/vim $HOME/.vim
     link $PWD/vim/vimrc $HOME/.vimrc
 
-    echo " - ctags (.ctags)"
-    link $PWD/ctags/ctags $HOME/.ctags
-
     echo " - zsh (.zshrc, .zsh)"
     link $PWD/zsh/zshrc $HOME/.zshrc
     rm $HOME/.zsh 2> /dev/null || true
@@ -125,7 +122,6 @@ function osx {
     if [ -z "`which brew`" ]; then
         /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
     fi
-    run brew install ctags
 
     # for emoji in git diff
     run brew install less
@@ -151,7 +147,7 @@ function osx {
     fi
 
     if [ ! -f /usr/local/bin/mvim ]; then
-        run brew install macvim --with-cscope --with-lua --with-override-system-vim
+        run brew install macvim
     fi
 
     brew tap d12frosted/emacs-plus
@@ -166,7 +162,26 @@ function osx {
     if [ ! -f /usr/local/bin/fish ]; then
         run brew install fish
     fi
-    run brew linkapps
+
+    if [ ! -d /nix ]; then
+        echo " >> curl https://nixos.org/nix/install | sh"
+	curl https://nixos.org/nix/install | sh
+	export NIX_SSL_CERT_FILE=/etc/ssl/cert.pem
+
+	run nix-channel --add https://nixos.org/channels/nixpkgs-19.03-darwin
+	run nix-channel --update
+
+	run nix-env -i mercurial-full
+	run nix-env -i python3
+	run nix-env -i go
+	run nix-env -i ruby-2.6.3
+	run nix-env -i macvim
+	run nix-env -i emacs-mac
+	run nix-env -i silver-searcher
+	run nix-env -i fish
+	run nix-env -i graal-1.0.0-rc15
+	run nix-env -i rustup
+    fi
 }
 
 function fish_as_default {
