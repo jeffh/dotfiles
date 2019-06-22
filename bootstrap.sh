@@ -165,22 +165,27 @@ function osx {
 
     if [ ! -d /nix ]; then
         echo " >> curl https://nixos.org/nix/install | sh"
-	curl https://nixos.org/nix/install | sh
-	export NIX_SSL_CERT_FILE=/etc/ssl/cert.pem
+        curl https://nixos.org/nix/install | sh
+        export NIX_SSL_CERT_FILE=/etc/ssl/cert.pem
 
-	run nix-channel --add https://nixos.org/channels/nixpkgs-19.03-darwin
-	run nix-channel --update
+        run nix-channel --add https://nixos.org/channels/nixpkgs-19.03-darwin
+        run nix-channel --update
 
-	run nix-env -i mercurial-full
-	run nix-env -i python3
-	run nix-env -i go
-	run nix-env -i ruby-2.6.3
-	run nix-env -i macvim
-	run nix-env -i emacs-mac
-	run nix-env -i silver-searcher
-	run nix-env -i fish
-	run nix-env -i graal-1.0.0-rc15
-	run nix-env -i rustup
+        run nix-env -i mercurial-full
+        run nix-env -i python3
+        run nix-env -i go
+        run nix-env -i ruby-2.6.3
+        run nix-env -i macvim
+        run nix-env -i emacs-mac
+        run nix-env -i silver-searcher
+        run nix-env -i fish
+        run nix-env -i graal-1.0.0-rc15
+        run nix-env -i rustup
+
+        pushd nix
+            run nix-env -f custom-packages -iA openjdk12
+            run nix-env -f custom-packages -iA clojure
+        popd
     fi
 }
 
