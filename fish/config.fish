@@ -48,6 +48,8 @@ test -d /usr/local/bin/qeum-system-x86_64; and set CAPSTAN_QEMU_PATH /usr/local/
 # ruby
 if test -d $HOME/.rbenv/bin
     set -x PATH $HOME/.rbenv/bin $PATH
+end
+if test -d $HOME/.rbenv/shims
     set -x PATH ~/.rbenv/shims $PATH
     set -x RBENV_SHELL fish
 #set -gx RBENV_ROOT /usr/local/var/rbenv
