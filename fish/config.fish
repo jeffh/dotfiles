@@ -35,8 +35,7 @@ end
 eval (python3 -m virtualfish 2>/dev/null)
 
 # golang 
-set -x GOPATH $HOME/workspace/gopath
-test -d $GOPATH/bin; and set -x PATH $GOPATH/bin $PATH
+test -d /usr/local/go/bin; and set -x PATH /usr/local/go/bin $PATH
 test -d /usr/local/opt/go/libexec/bin; and set -x PATH /usr/local/opt/go/libexec/bin $PATH
 
 # rust
