@@ -163,30 +163,50 @@ function osx {
         run brew install fish
     fi
 
-    if [ ! -d /nix ]; then
-        echo " >> curl https://nixos.org/nix/install | sh"
-        curl https://nixos.org/nix/install | sh
-        export NIX_SSL_CERT_FILE=/etc/ssl/cert.pem
-
-        run nix-channel --add https://nixos.org/channels/nixpkgs-19.03-darwin
-        run nix-channel --update
-
-        run nix-env -i mercurial-full
-        run nix-env -i python3
-        run nix-env -i go
-        run nix-env -i ruby-2.6.3
-        run nix-env -i macvim
-        run nix-env -i emacs-mac
-        run nix-env -i silver-searcher
-        run nix-env -i fish
-        run nix-env -i graal-1.0.0-rc15
-        run nix-env -i rustup
-
-        pushd nix
-            run nix-env -f custom-packages -iA openjdk12
-            run nix-env -f custom-packages -iA clojure
-        popd
+    if [ ! -f /usr/local/bin/python3 ]; then
+        run brew install python3
     fi
+
+    if [ ! -f /usr/local/bin/go ]; then
+        run brew install go
+    fi
+
+    if [ ! -f /usr/local/bin/fish ]; then
+        run brew install fish
+    fi
+
+    if [ ! -f /usr/local/bin/ag ]; then
+        run brew install the_silver_searcher
+    fi
+
+    if [ ! -f /usr/local/bin/javac ]; then
+        run brew cask install java
+    fi
+
+#    if [ ! -d /nix ]; then
+#        echo " >> curl https://nixos.org/nix/install | sh"
+#        curl https://nixos.org/nix/install | sh
+#        export NIX_SSL_CERT_FILE=/etc/ssl/cert.pem
+#
+#        run nix-channel --add https://nixos.org/channels/nixpkgs-19.03-darwin
+#        run nix-channel --update
+#
+#        run nix-env -i mercurial-full
+#        run nix-env -i python3
+#        run nix-env -i go
+#        run nix-env -i ruby-2.6.3
+#        run nix-env -i macvim
+#        run nix-env -i emacs-mac
+#        run nix-env -i silver-searcher
+#        run nix-env -i fish
+#        run nix-env -i graal-1.0.0-rc15
+#        run nix-env -i rustup
+#
+#        pushd nix
+#            run nix-env -f custom-packages -iA openjdk12
+#            run nix-env -f custom-packages -iA clojure
+#        popd
+#    fi
 }
 
 function fish_as_default {
