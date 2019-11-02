@@ -15,7 +15,7 @@ begin # SSH Agent
     if not test -z "$SSH_AGENT_PID"
         ps -ef | grep $SSH_AGENT_PID | grep -v grep | grep -q ssh-agent
 
-        if not $status
+        if test $status -ne 0
             ssh-agent -c | sed 's/^echo/#echo/' > $SSH_ENV
             chmod 600 "$SSH_ENV"
             source "$SSH_ENV" > /dev/null
@@ -52,7 +52,10 @@ if test -d $HOME/.rbenv/shims
     set -x PATH ~/.rbenv/shims $PATH
     set -x RBENV_SHELL fish
 #set -gx RBENV_ROOT /usr/local/var/rbenv
-    . (rbenv init -|psub)
+    which rbenv
+    if test $status -eq 0
+        source (rbenv init -|psub)
+    end
 end
 
 # swift
