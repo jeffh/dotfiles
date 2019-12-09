@@ -179,7 +179,7 @@ function osx {
         run brew install the_silver_searcher
     fi
 
-    if [ ! -f /usr/local/bin/javac ]; then
+    if [ ! -f /usr/bin/javac ]; then
         run brew cask install java
     fi
 
