@@ -252,9 +252,6 @@ noremap Y <esc>yyp
 " NERDTree toggle
 noremap \ :NERDTreeToggle<CR>
 
-" Compile ctags
-nmap <leader>c :!ctags -R .<CR>
-
 """""""""""""""""""""""""""""""""""""""""""""""
 "                CORE CONFIG                  "
 """""""""""""""""""""""""""""""""""""""""""""""
@@ -263,7 +260,7 @@ if $TMUX == ''
     set clipboard=unnamed  " System-like clipboard behavior if not in TMUX
 endif
 
-set tags=tags;$HOME " Search path for ctags
+set tags=tags,$HOME/tags " Search path for ctags
 
 set notimeout          " Don't wait for timeout between command combinations
 
@@ -299,12 +296,14 @@ set wrapscan   " and the search wraps around the file
 
 " make tab completion for files/buffers act like bash, but ignore sets of files
 set wildignore=*.o,*.obj,*/.git/*,.svn,.cvs,*.rbc,*.pyc,*.class,*.jar,*.a
-set wildignore+=*/.stack-work/*
-set wildignore+=*/build/*
-set wildignore+=*/dist/*
-set wildignore+=*/.ropeproject/*
+set wildignore+=**/.stack-work/**
+set wildignore+=**/build/**
+set wildignore+=**/dist/**
+set wildignore+=**/.ropeproject/**
+set wildignore+=**/node_modules/**
 set wildmode=longest:full:list
 set wildmenu
+set path=**
 
 " where <C-P> should get it's completion list
 " . => current buffer
@@ -319,7 +318,7 @@ set wildmenu
 " d => scan current & included files for defined name or macro
 " ] => tag completion
 " t => alias for ]
-set complete=.,w,b,t,d,i,t
+set complete=.,w,b,d,i,t
 
 " menu => Show menu when multiple autocomplete items are available
 " preview => Show extra info about the currently selected completion in menu
@@ -516,6 +515,9 @@ function! FindSymbol()
     exec ':cs find s ' . query
 endfunction
 nmap <leader>g :call FindSymbol()<cr>
+
+" Build tags
+map <leader>c !ctags -R .
 
 """""""""""""""""
 " Running Tests "
@@ -716,7 +718,6 @@ augroup googlego_customizations
     autocmd Filetype go nmap <Leader>p :Fmt
     autocmd FileType go nmap <Leader>i <Plug>(go-implements)
     autocmd FileType go nmap <Leader>r <Plug>(go-rename)
-    autocmd FileType go nmap <Leader>c :!gotags -R $GOPATH > $GOPATH/tags<cr>
 augroup END
 let g:go_fmt_command = "goimports"
 let g:go_fmt_autosave = 0
@@ -818,7 +819,8 @@ augroup vim_go
     autocmd!
     autocmd FileType go nmap <Leader>i <Plug>(go-implements)
     autocmd FileType go nmap <Leader>r <Plug>(go-rename)
-    autocmd FileType go nmap <Leader>c :!gotags -R $GOPATH > $GOPATH/tags<cr>
+    " sort isn't working for gotags
+    autocmd FileType go nmap <Leader>c :!gotags -f tags -sort=0 -R $GOPATH .<cr>
 augroup END
 
 " let g:go_fmt_command = "goimports"
