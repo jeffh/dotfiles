@@ -53,7 +53,7 @@ if test -d $HOME/.rbenv/shims
     set -x PATH ~/.rbenv/shims $PATH
     set -x RBENV_SHELL fish
 #set -gx RBENV_ROOT /usr/local/var/rbenv
-    which rbenv
+    which rbenv > /dev/null
     if test $status -eq 0
         source (rbenv init -|psub)
     end
