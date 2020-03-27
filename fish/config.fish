@@ -2,7 +2,9 @@ set -x PATH /usr/local/bin /usr/local/sbin $PATH
 test -d $HOME/.local/bin; and set -x PATH $HOME/.local/bin $PATH
 test -d $HOME/bin; and set -x PATH $HOME/bin $PATH
 
-setenv EDITOR (which vim)
+if test -e which
+    setenv EDITOR (which vim)
+end
 setenv ALTERNATIVE_EDITOR ""
 
 begin # SSH Agent
@@ -53,17 +55,21 @@ if test -d $HOME/.rbenv/shims
     set -x PATH ~/.rbenv/shims $PATH
     set -x RBENV_SHELL fish
 #set -gx RBENV_ROOT /usr/local/var/rbenv
-    which rbenv > /dev/null
-    if test $status -eq 0
-        source (rbenv init -|psub)
+    if test -e which
+        which rbenv > /dev/null
+        if test $status -eq 0
+            source (rbenv init -|psub)
+        end
     end
 end
 
 # swift
-set -x SWIFTENV_ROOT "$HOME/.swiftenv"
-if test -d "$SWIFTENV_ROOT/bin"
-    set -x PATH "$SWIFTENV_ROOT/bin" $PATH
-    status --is-interactive; and . (swiftenv init -|psub)
+if type -q swiftenv
+    set -x SWIFTENV_ROOT "$HOME/.swiftenv"
+    if test -d "$SWIFTENV_ROOT/bin"
+        set -x PATH "$SWIFTENV_ROOT/bin" $PATH
+        status --is-interactive; and . (swiftenv init -|psub)
+    end
 end
 
 # graalvm

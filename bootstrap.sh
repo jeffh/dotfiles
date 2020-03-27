@@ -118,6 +118,56 @@ function update_submodules {
     cd $CWD
 }
 
+function install_nix {
+    if ! grep nix /etc/synthetic.conf > /dev/null 2>&1; then
+        echo "nix missing from /etc/synthetic.conf. Adding it (will request sudo)"
+        echo "nix" | sudo tee -a /etc/synthetic.conf > /dev/null
+        echo "Rebooting system in 10 seconds... Please return bootstrap script to continue nix install"
+        sleep 10
+        run sudo reboot
+        exit 0
+    fi
+
+    if [ ! -d "/nix" ]; then
+        echo "/nix directory not created yet. Please reboot to get the proper changes."
+        exit 0
+    else
+        echo "/nix exists!"
+    fi
+
+    if ! diskutil info Nix > /dev/null 2>&1; then
+        echo "nix volume missing."
+        PASSPHRASE=$(openssl rand -base64 32)
+        echo "Creating encrypted APFS volume with passphrase: $PASSPHRASE"
+        run sudo diskutil apfs addVolume disk1 APFSX Nix -mountpoint /nix -passphrase "$PASSPHRASE"
+
+        UUID=$(diskutil info -plist /nix | plutil -extract VolumeUUID xml1 - -o - | plutil -p - | sed -e 's/"//g')
+        echo "writing nix passphrase to your keychain"
+        run security add-generic-password -l Nix -a "$UUID" -s "$UUID" -D '"Encrypted Volume Password"' -w "$PASSPHRASE" \
+            -T "/System/Library/CoreServices/APFSUserAgent" -T "/System/Library/CoreServices/CSUserAgent"
+
+        echo "nix volume created. Rebooting in 10 seconds to get the changes and run this script again."
+        sleep 10
+        run sudo reboot
+    else
+        echo "nix volume already created"
+    fi
+
+    if ! grep nix /etc/fstab > /dev/null; then
+          echo "enabling automount of nix volume"
+          # we explicitly want unescaped in this printf, so ignore shellcheck
+          # shellcheck disable=SC2016
+          printf '$a\nLABEL=Nix /nix apfs rw\n.\nwq\n' | EDITOR='ed' sudo vifs >/dev/null
+    else
+          echo "automount of nix volume already enabled"
+    fi
+
+    if [ ! -d /nix/store ]; then
+        echo "Installing NIX"
+        curl https://nixos.org/nix/install | sh
+    fi
+}
+
 function osx {
     if [ -z "`which brew`" ]; then
         /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
@@ -183,7 +233,8 @@ function osx {
         run brew cask install java
     fi
 
-#    if [ ! -d /nix ]; then
+   # if [ ! -d /nix ]; then
+   #      install_nix
 #        echo " >> curl https://nixos.org/nix/install | sh"
 #        curl https://nixos.org/nix/install | sh
 #        export NIX_SSL_CERT_FILE=/etc/ssl/cert.pem
@@ -206,7 +257,7 @@ function osx {
 #            run nix-env -f custom-packages -iA openjdk12
 #            run nix-env -f custom-packages -iA clojure
 #        popd
-#    fi
+   # fi
 }
 
 function fish_as_default {
@@ -224,12 +275,14 @@ function help {
     echo "Commands:"
     echo "  install   Symlinks files to home directory (overwrites existing)."
     echo "  osx       Installs various dependencies for OS X"
+    echo "  osx_nix   Installs NIX on OS X (requires several reboots)"
     echo "  update    Updates all submodules & gocode. Changes the repository."
     echo "  help      This help"
 }
 
 case "$1" in
     "install") main;;
+    "osx_nix") install_nix;;
     "osx") osx;;
     "upgrade"|"update") update;;
     "help") help;;

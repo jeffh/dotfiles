@@ -31,6 +31,11 @@ function fish_prompt
   # Add a newline
   echo -e ""
 
+  # Display [nix] if in a nix shell
+  if test -n "$IN_NIX_SHELL"
+     echo -n -s (set_color -o green) 'nix: ' $normal
+  end
+
   # Display the current directory name
   echo -n -s $cwd $normal
 
