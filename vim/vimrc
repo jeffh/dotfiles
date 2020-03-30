@@ -91,6 +91,9 @@ Plug 'cfdrake/vim-carthage'
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
 
+" Nix
+Plug 'LnL7/vim-nix'
+
 " Elm
 Plug 'elmcast/elm-vim'
 
