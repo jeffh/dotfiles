@@ -158,6 +158,9 @@ function install_nix {
           # we explicitly want unescaped in this printf, so ignore shellcheck
           # shellcheck disable=SC2016
           printf '$a\nLABEL=Nix /nix apfs rw\n.\nwq\n' | EDITOR='ed' sudo vifs >/dev/null
+          echo "nix fstab settings created. Rebooting in 10 seconds to get the changes and run this script again."
+          sleep 10
+          run sudo reboot
     else
           echo "automount of nix volume already enabled"
     fi
