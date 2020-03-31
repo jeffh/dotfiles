@@ -58,7 +58,7 @@ if test -d $HOME/.rbenv/shims
     if test -e which
         which rbenv > /dev/null
         if test $status -eq 0
-            source (rbenv init -|psub)
+            rbenv init - | source
         end
     end
 end
@@ -68,7 +68,7 @@ if type -q swiftenv
     set -x SWIFTENV_ROOT "$HOME/.swiftenv"
     if test -d "$SWIFTENV_ROOT/bin"
         set -x PATH "$SWIFTENV_ROOT/bin" $PATH
-        status --is-interactive; and . (swiftenv init -|psub)
+        status --is-interactive; and swiftenv init - | source
     end
 end
 
