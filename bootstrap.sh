@@ -143,7 +143,7 @@ function install_nix {
 
         UUID=$(diskutil info -plist /nix | plutil -extract VolumeUUID xml1 - -o - | plutil -p - | sed -e 's/"//g')
         echo "writing nix passphrase to your keychain"
-        run security add-generic-password -l Nix -a "$UUID" -s "$UUID" -D '"Encrypted Volume Password"' -w "$PASSPHRASE" \
+        security add-generic-password -l Nix -a "$UUID" -s "$UUID" -D '"Encrypted Volume Password"' -w "$PASSPHRASE" \
             -T "/System/Library/CoreServices/APFSUserAgent" -T "/System/Library/CoreServices/CSUserAgent"
 
         echo "nix volume created. Rebooting in 10 seconds to get the changes and run this script again."
