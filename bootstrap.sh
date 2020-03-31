@@ -233,6 +233,10 @@ function osx {
         run brew cask install java
     fi
 
+    defaults write -g InitialKeyRepeat -int 10
+    defaults write -g KeyRepeat -int 1
+    echo 'key repeat settings will only apply on restart'
+
    # if [ ! -d /nix ]; then
    #      install_nix
 #        echo " >> curl https://nixos.org/nix/install | sh"
