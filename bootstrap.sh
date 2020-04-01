@@ -236,7 +236,7 @@ function osx {
         run brew cask install java
     fi
 
-    defaults write -g InitialKeyRepeat -int 10
+    defaults write -g InitialKeyRepeat -int 15
     defaults write -g KeyRepeat -int 1
     echo 'key repeat settings will only apply on restart'
 
