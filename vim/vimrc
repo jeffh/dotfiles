@@ -391,10 +391,7 @@ set hidden
 
 " Set encoding and language
 set encoding=utf8
-try
-    lang en_US
-catch
-endtry
+set fileencoding=utf-8
 
 autocmd BufReadPost *
     \ if line("'\"") > 0 && line("'\"") <= line("$") |
