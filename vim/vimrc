@@ -97,6 +97,9 @@ Plug 'LnL7/vim-nix'
 " Elm
 Plug 'elmcast/elm-vim'
 
+" Elixir
+Plug 'elixir-editors/vim-elixir'
+
 " Terraform
 Plug 'hashivim/vim-terraform'
 
@@ -288,7 +291,7 @@ set magic              " Set for regular expressions' backslashes
 
 " visualize invisible characters. Show spaces at the end of lines and tabs.
 set list
-set listchars=tab:→\ ,trail:·
+set listchars=tab:\|\ ,trail:·
 
 set foldmethod=syntax  " code folding is determined by syntax
 set foldlevel=99  " default fold level
@@ -313,7 +316,7 @@ set wildignore+=**/.ropeproject/**
 set wildignore+=**/node_modules/**
 set wildmode=longest:full:list
 set wildmenu
-set path=**
+set path+=**
 
 " where <C-P> should get it's completion list
 " . => current buffer
@@ -532,6 +535,24 @@ map <leader>c !ctags -R .
 """""""""""""""""
 " Running Tests "
 """""""""""""""""
+function! RunIfMatchesFileOrVipe(command, file_ext_regex, append_file_as_arg)
+    let in_runnable_file = match(expand("%"), a:file_ext_regex) != -1
+    if in_runnable_file
+        let t:last_ran_file=@%
+    elseif !exists("t:last_ran_file")
+        return 0
+    elseif match(expand("%"), a:file_ext_regex) == -1
+        return 0
+    end
+
+    :silent w
+    if a:append_file_as_arg
+        return RunCommandOrVipe(a:command . t:last_ran_file)
+    else
+        return RunCommandOrVipe(a:command)
+    endif
+endfunction
+
 function! RunIfMatchesFile(command, file_ext_regex, append_file_as_arg)
     let in_runnable_file = match(expand("%"), a:file_ext_regex) != -1
     if in_runnable_file
@@ -550,13 +571,22 @@ function! RunIfMatchesFile(command, file_ext_regex, append_file_as_arg)
     endif
 endfunction
 
+function! RunCommandOrVipe(command)
+    " :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
+    " :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
+    " :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
+    " :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
+    " :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
+    if filereadable(vipe#pipe_path())
+        exec ":Vipe " . a:command
+        return 1
+    else
+        exec ":!" . a:command
+        return 1
+    end
+endfunction
+
 function! RunCommand(command)
-    " :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
-    " :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
-    " :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
-    " :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
-    " :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo
-    " exec ":!" . a:command
     exec a:command
     return 1
 endfunction
@@ -566,15 +596,15 @@ function! RunTestFileIfPossible()
     let has_ran=0
     " Ruby
     if !has_ran && filereadable("Gemfile")
-        let has_ran = RunIfMatchesFile(":Vipe bundle exec rspec ", '\(.feature|_spec.rb\)$', 1)
+        let has_ran = RunIfMatchesFileOrVipe("bundle exec rspec ", '\(.feature|_spec.rb\)$', 1)
     elseif !has_ran && executable('rspec')
-        let has_ran = RunIfMatchesFile(":Vipe rspec ", '\(.feature|_spec.rb\)$', 1)
+        let has_ran = RunIfMatchesFileOrVipe("rspec ", '\(.feature|_spec.rb\)$', 1)
     endif
     " Python
     if !has_ran && executable('py.test') == 1
-        let has_ran = RunIfMatchesFile(":Vipe py.test ", '.*test.*.py$', 1)
+        let has_ran = RunIfMatchesFile("py.test ", '.*test.*.py$', 1)
     elseif !has_ran && executable('nosetests') == 1
-        let has_ran = RunIfMatchesFile(":Vipe nosetests ", '.*test.*.py$', 1)
+        let has_ran = RunIfMatchesFile("nosetests ", '.*test.*.py$', 1)
     endif
 
     if !has_ran && executable("go") == 1
@@ -582,38 +612,8 @@ function! RunTestFileIfPossible()
     endif
 
     if !has_ran && (filereadable("Makefile") || filereadable("makefile"))
-        :!clear && make test
-        let has_ran = 1
-    endif
-
-    if !has_ran
-        echom "Failed to discover test runner. Please bind manually."
-    endif
-endfunction
-
-function! RunTestsIfPossible()
-    let t:skip_file_check=0
-    let has_ran=0
-    " Ruby
-    if filereadable("Gemfile")
-        let has_ran = RunCommand(":Vipe bundle exec rspec")
-    elseif executable('rspec')
-        let has_ran = RunCommand(":Vipe rspec")
-    endif
-    " Python
-    if executable('py.test') == 1
-        let has_ran = RunCommand(":Vipe py.test")
-    elseif executable('nosetests') == 1
-        let has_ran = RunCommand(":Vipe nosetests")
-    endif
-
-    if !has_ran && executable("go") == 1
-        let has_ran = RunCommand(':GoTest')
-    endif
-
-    if !has_ran && (filereadable("Makefile") || filereadable("makefile"))
-        :!clear && make test
-        let has_ran = 1
+        " :!clear && make test
+        let has_ran = RunCommandOrVipe('make test')
     endif
 
     if !has_ran
@@ -659,7 +659,7 @@ augroup language_customizations
     autocmd FileType ruby setlocal shiftwidth=2
     autocmd BufRead,BufNewFile Podfile set filetype=ruby
 
-    autocmd FileType javascript setlocal noexpandtab
+    autocmd FileType javascript setlocal expandtab
     autocmd FileType yaml setlocal expandtab
     autocmd FileType yaml setlocal tabstop=2
     autocmd FileType yaml setlocal softtabstop=2
@@ -731,6 +731,7 @@ augroup googlego_customizations
 augroup END
 let g:go_fmt_command = "goimports"
 let g:go_fmt_autosave = 0
+let g:go_rename_command = 'gopls'
 
 """""""""""
 " Clojure "

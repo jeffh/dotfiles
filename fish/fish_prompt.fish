@@ -4,11 +4,15 @@
 # * Git branch and dirty state (if inside a git repo)
 
 function _git_branch_name
-  echo (git symbolic-ref HEAD ^/dev/null | sed -e 's|^refs/heads/||')
+  if type -q git
+    echo (git symbolic-ref HEAD ^/dev/null | sed -e 's|^refs/heads/||')
+  end
 end
 
 function _is_git_dirty
-  echo (git status -s --ignore-submodules=dirty ^/dev/null)
+  if type -q git
+    echo (git status -s --ignore-submodules=dirty ^/dev/null)
+  end
 end
 
 function fish_prompt

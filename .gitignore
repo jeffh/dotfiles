@@ -17,4 +17,5 @@ fish/fish_read_history
 elpa
 emacs/emacs.d/places
 vim/vim/view
-nix/result
+nix/**/result
+nix/**/result-2

@@ -34,7 +34,9 @@ end
 
 #ssh-add -K 2> /dev/null
 
-eval (python3 -m virtualfish 2>/dev/null)
+if type -q python3
+    eval (python3 -m virtualfish 2>/dev/null)
+end
 
 # golang 
 test -d ~/go/bin; and set -x PATH ~/go/bin $PATH

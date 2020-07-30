@@ -3,11 +3,14 @@
 let
     nixpkgs = import <nixpkgs> { inherit system; };
     allPkgs = nixpkgs // pkgs;
+    maintainers = import ./maintainers;
+
     callPackage = path: overrides:
         let f = import path;
-        in f ((builtins.intersectAttrs (builtins.functionArgs f) allPkgs) // overrides);
+        in f ((builtins.intersectAttrs (builtins.functionArgs f) allPkgs) // { maintainers = maintainers; } // overrides);
+
     pkgs = with nixpkgs; {
-        openjdk12 = callPackage ./pkgs/openjdk { };
-        clojure = callPackage ./pkgs/clojure { };
+      apptivate = callPackage ./pkgs/apptivate { };
+      clojure = callPackage ./pkgs/clojure { };
     };
 in pkgs
