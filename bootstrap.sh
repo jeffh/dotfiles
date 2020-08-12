@@ -118,6 +118,15 @@ function update_submodules {
     cd $CWD
 }
 
+function fish_as_default {
+    echo "Switch default to fish shell. Requires sudo. Abort to skip"
+    if [ "$(cat /etc/shells | grep -q $(which fish))" = "0" ]; then
+        echo "Fish shell already in /etc/shells"
+    else
+        which fish | sudo tee -a /etc/shells > /dev/null
+    fi
+}
+
 function install_nix {
     if ! grep nix /etc/synthetic.conf > /dev/null 2>&1; then
         echo "nix missing from /etc/synthetic.conf. Adding it (will request sudo)"
@@ -177,9 +186,11 @@ function osx {
     fi
 
     # for emoji in git diff
-    run brew install less
+    if [ ! -f /usr/local/bin/less ]; then
+        run brew install less
+    fi
 
-    if [ ! -f /usr/local/bin/gpg2 ]; then
+    if [ ! -f /usr/local/bin/gpg ]; then
         run brew install gpg2
     fi
 
@@ -191,8 +202,9 @@ function osx {
         run brew install go
     fi
 
-    if [ ! -f /usr/local/bin/python ]; then
+    if [ ! -f /usr/local/bin/python3 ]; then
         run brew install python
+	yes | /usr/local/bin/pip3 install virtualenv virtualfish
     fi
 
     if [ ! -f /usr/local/bin/rbenv ]; then
@@ -214,6 +226,7 @@ function osx {
     fi
     if [ ! -f /usr/local/bin/fish ]; then
         run brew install fish
+	fish_as_default
     fi
 
     if [ ! -f /usr/local/bin/python3 ]; then
@@ -235,6 +248,63 @@ function osx {
     if [ ! -f /usr/bin/javac ]; then
         run brew cask install java
     fi
+
+    if [ ! -e /Applications/SizeUp.app ]; then
+	run brew cask install sizeup
+    fi
+
+    if [ ! -e "/Applications/Google Chrome.app" ]; then
+        run brew cask install google-chrome
+    fi
+
+    if [ ! -e /Applications/Docker.app ]; then
+	run brew cask install docker
+    fi
+
+    if [ ! -e "/Applications/Alfred 4.app" ]; then
+	run brew cask install alfred
+    fi
+
+    if [ ! -e /Applications/iTerm.app ]; then
+	run brew cask install iterm2
+    fi
+
+    # Mac App Store CLI tool
+    if [ ! -e /usr/local/bin/mas ]; then
+	run brew install mas
+    fi
+
+    local MAS=/usr/local/bin/mas
+    run $MAS install 904280696  # Things 3
+    run $MAS install 497799835  # Xcode
+
+
+    if [ ! -z "$WORK" ]; then
+        echo 'Installing WORK applications'
+
+	if [ ! -e /Applications/Slack.app ]; then
+	    run brew cask install slack
+	fi
+    fi
+
+    if [ ! -z "$PERSONAL" ]; then
+        echo 'Installing PERSONAL applications'
+
+	if [ ! -e /Applications/Discord.app ]; then
+	    run brew cask install discord
+	fi
+
+	if [ ! -e "/Applications/Basecamp 3.app" ]; then
+	    run brew cask install basecamp
+	fi
+
+        run $MAS install 1107421413 # 1Blocker for Safari
+        run $MAS install 924726344  # Deliveries
+        run $MAS install 1449412482 # Reeder 4
+        run $MAS install 1481302432 # Instapaper Save
+    fi
+
+    $MAS upgrade
 
     defaults write -g InitialKeyRepeat -int 15
     defaults write -g KeyRepeat -int 1
@@ -267,15 +337,6 @@ function osx {
    # fi
 }
 
-function fish_as_default {
-    echo "Switch default to fish shell. Requires sudo. Abort to skip"
-    if [ "$(cat /etc/shells | grep -q $(which fish))" = "0" ]; then
-        echo "Fish shell already in /etc/shells"
-    else
-        which fish | sudo tee -a /etc/shells > /dev/null
-    fi
-}
-
 function help {
     echo "Usage: $0 COMMAND"
     echo
@@ -285,6 +346,10 @@ function help {
     echo "  osx_nix   Installs NIX on OS X (requires several reboots)"
     echo "  update    Updates all submodules & gocode. Changes the repository."
     echo "  help      This help"
+    echo
+    echo "Environment Variables for `osx`:"
+    echo "  WORK      Set this variable with a value to install work apps
+    echo "  PERSONAL  Set this variable with a value to install personal apps
 }
 
 case "$1" in
