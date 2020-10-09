@@ -57,6 +57,10 @@ function symlink_to_home {
     rm $HOME/.config/fish 2> /dev/null || true
     link $PWD/fish $HOME/.config/fish
 
+    echo " - alacritty (.config/alacritty)"
+    rm $HOME/.config/alacritty 2> /dev/null || true
+    link $PWD/alacritty $HOME/.config/alacritty
+
     echo " - emacs (.emacs.d)"
     rm $HOME/.emacs.d 2> /dev/null || true
     link $PWD/emacs $HOME/.emacs.d
