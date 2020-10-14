@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, darwin, openjdk, rlwrap, makeWrapper, maintainers }:
+{ stdenv, fetchurl, openjdk, rlwrap, makeWrapper, maintainers }:
 
 stdenv.mkDerivation rec {
     pname = "clojure";
