@@ -12,6 +12,7 @@ let
     pkgs = with nixpkgs; {
       apptivate = callPackage ./pkgs/apptivate { };
       hey-email = callPackage ./pkgs/hey-email { };
+      basecamp = callPackage ./pkgs/basecamp { };
       clojure = callPackage ./pkgs/clojure { };
     };
 in pkgs
