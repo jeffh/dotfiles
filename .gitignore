@@ -18,4 +18,4 @@ elpa
 emacs/emacs.d/places
 vim/vim/view
 nix/**/result
-nix/**/result-2
+nix/**/result-*
