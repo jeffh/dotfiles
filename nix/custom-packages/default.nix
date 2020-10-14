@@ -14,5 +14,6 @@ let
       hey-email = callPackage ./pkgs/hey-email { };
       basecamp = callPackage ./pkgs/basecamp { };
       clojure = callPackage ./pkgs/clojure { };
+      activemq-artemis = callPackage ./pkgs/activemq-artemis { };
     };
 in pkgs
