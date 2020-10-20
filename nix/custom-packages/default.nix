@@ -15,5 +15,6 @@ let
       basecamp = callPackage ./pkgs/basecamp { };
       clojure = callPackage ./pkgs/clojure { };
       activemq-artemis = callPackage ./pkgs/activemq-artemis { };
+      zig-master = callPackage ./pkgs/zig-master { };
     };
 in pkgs
