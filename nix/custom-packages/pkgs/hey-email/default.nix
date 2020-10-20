@@ -1,11 +1,12 @@
 { stdenv, fetchurl, undmg, maintainers, config }:
 
-stdenv.mkDerivation {
+stdenv.mkDerivation rec {
   pname = "hey-email";
-  version = "1.0.11";
+  version = "1.1.0";
 
   src = fetchurl {
-    url = "https://hey-desktop.s3.amazonaws.com/HEY.dmg";
+    name = "HEY-${version}.dmg";
+    url = "https://hey-desktop.s3.amazonaws.com/HEY.dmg?version=${version}";
     sha256 = "0p2qdj7n3f1ld56cgjf7nsb13j66825ngdx36910w5lxss1g5vw7";
   };
 
