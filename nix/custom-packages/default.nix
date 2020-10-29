@@ -3,7 +3,7 @@
 let
     nixpkgs = import <nixpkgs> { inherit system; };
     allPkgs = nixpkgs // pkgs;
-    maintainers = import ./maintainers;
+    maintainers = nixpkgs.stdenv.lib.mkMerge(nixpkgs.stdenv.lib.maintainers (import ./maintainers));
 
     callPackage = path: overrides:
         let f = import path;
@@ -16,5 +16,7 @@ let
       clojure = callPackage ./pkgs/clojure { };
       activemq-artemis = callPackage ./pkgs/activemq-artemis { };
       zig-master = callPackage ./pkgs/zig-master { };
+      nomad = nixpkgs.callPackage ./pkgs/nomad { };
+      doctl = nixpkgs.callPackage ./pkgs/doctl { };
     };
 in pkgs
