@@ -93,3 +93,12 @@ if test -d "/nix"
     eval (~/.config/fish/nix.sh)
     set -x NIX_SSL_CERT_FILE /etc/ssl/cert.pem
 end
+
+if test -d "/run/current-system/sw/bin"
+    for p in /run/current-system/sw/bin ~/bin
+        if not contains $p $fish_user_paths
+            set -g fish_user_paths $p $fish_user_paths
+        end
+    end
+# set -x NIX_PATH "darwin-config=$HOME/.nixpkgs/darwin-configuration.nix" $NIX_PATH
+end
