@@ -27,7 +27,7 @@ Plug 'w0ng/vim-hybrid'
 """""""""""
 
 " Autocomplete
-" Plug 'Shougo/neocomplete.vim'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " Ag / Silver Searcher
 Plug 'rking/ag.vim'
