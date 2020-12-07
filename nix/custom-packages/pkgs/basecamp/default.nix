@@ -2,7 +2,7 @@
 
 stdenv.mkDerivation {
   pname = "basecamp";
-  version = "2.1.0";
+  version = "2.2.0";
 
   src = fetchurl {
     url = "https://bc3-desktop.s3.amazonaws.com/mac/basecamp3.dmg";
