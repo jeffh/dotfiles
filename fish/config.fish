@@ -100,5 +100,7 @@ if test -d "/run/current-system/sw/bin"
             set -g fish_user_paths $p $fish_user_paths
         end
     end
-# set -x NIX_PATH "darwin-config=$HOME/.nixpkgs/darwin-configuration.nix" $NIX_PATH
+    set -x NIX_PATH "darwin-config=$HOME/.nixpkgs/darwin-configuration.nix" $NIX_PATH
+    set -x NIX_USER_PROFILE_DIR "/nix/var/nix/profiles/per-user/$USER"
+    set -x NIX_PROFILES "/nix/var/nix/profiles/default /run/current-system/sw $HOME/.nix-profile"
 end
