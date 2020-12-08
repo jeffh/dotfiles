@@ -1,8 +1,29 @@
+# nix
+if test -d "/nix"
+    eval (~/.config/fish/nix.sh)
+    set -x NIX_SSL_CERT_FILE /etc/ssl/cert.pem
+end
+
+# nix-darwin
+if test -f "/etc/static/bashrc"
+    bass source /etc/static/bashrc
+end
+#if test -d "/run/current-system/sw/bin"
+#    for p in /run/current-system/sw/bin ~/bin
+#        if not contains $p $fish_user_paths
+#            set -g fish_user_paths $p $fish_user_paths
+#        end
+#    end
+#    set -x NIX_PATH "darwin-config=$HOME/.nixpkgs/darwin-configuration.nix" $NIX_PATH
+#    set -x NIX_USER_PROFILE_DIR "/nix/var/nix/profiles/per-user/$USER"
+#    set -x NIX_PROFILES "/nix/var/nix/profiles/default /run/current-system/sw $HOME/.nix-profile"
+#end
+
 set -x PATH /usr/local/bin /usr/local/sbin $PATH
 test -d $HOME/.local/bin; and set -x PATH $HOME/.local/bin $PATH
 test -d $HOME/bin; and set -x PATH $HOME/bin $PATH
 
-if test -e which
+if test -e (which vim)
     setenv EDITOR (which vim)
 end
 setenv ALTERNATIVE_EDITOR ""
@@ -88,19 +109,3 @@ end
 
 # iterm2
 test -e {$HOME}/.iterm2_shell_integration.fish ; and source {$HOME}/.iterm2_shell_integration.fish
-
-if test -d "/nix"
-    eval (~/.config/fish/nix.sh)
-    set -x NIX_SSL_CERT_FILE /etc/ssl/cert.pem
-end
-
-if test -d "/run/current-system/sw/bin"
-    for p in /run/current-system/sw/bin ~/bin
-        if not contains $p $fish_user_paths
-            set -g fish_user_paths $p $fish_user_paths
-        end
-    end
-    set -x NIX_PATH "darwin-config=$HOME/.nixpkgs/darwin-configuration.nix" $NIX_PATH
-    set -x NIX_USER_PROFILE_DIR "/nix/var/nix/profiles/per-user/$USER"
-    set -x NIX_PROFILES "/nix/var/nix/profiles/default /run/current-system/sw $HOME/.nix-profile"
-end

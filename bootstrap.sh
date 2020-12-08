@@ -183,7 +183,8 @@ function install_nix {
         curl https://nixos.org/nix/install | sh
 
         rm -rf ~/.nixpkgs/; mkdir -p ~/.nixpkgs/; true
-        ln -s "$PWD/nix/darwin.nix" "$HOME/.nixpkgs"
+        ln -s "$PWD/nix/darwin.nix" "$HOME/.nixpkgs/darwin-configuration.nix"
+        ln -s "$PWD/nix/files/" "$HOME/.nixpkgs/files"
 
         nix-build https://github.com/LnL7/nix-darwin/archive/master.tar.gz -A installer
         ./result/bin/darwin-installer
