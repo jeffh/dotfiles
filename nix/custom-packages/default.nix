@@ -3,7 +3,8 @@
 let
     nixpkgs = import <nixpkgs> { inherit system; };
     allPkgs = nixpkgs // pkgs;
-    maintainers = nixpkgs.stdenv.lib.mkMerge(nixpkgs.stdenv.lib.maintainers (import ./maintainers));
+    # maintainers = nixpkgs.stdenv.lib.mkMerge(nixpkgs.stdenv.lib.maintainers (import ./maintainers));
+    maintainers = nixpkgs.stdenv.lib.maintainers // (import ./maintainers);
 
     callPackage = path: overrides:
         let f = import path;
@@ -18,5 +19,6 @@ let
       zig-master = callPackage ./pkgs/zig-master { };
       nomad = nixpkgs.callPackage ./pkgs/nomad { };
       doctl = nixpkgs.callPackage ./pkgs/doctl { };
+      odin = callPackage ./pkgs/odin { };
     };
 in pkgs
