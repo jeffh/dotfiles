@@ -181,6 +181,16 @@ function install_nix {
     if [ ! -d /nix/store ]; then
         echo "Installing NIX"
         curl https://nixos.org/nix/install | sh
+
+        rm -rf ~/.nixpkgs/; mkdir -p ~/.nixpkgs/; true
+        ln -s "$PWD/nix/darwin.nix" "$HOME/.nixpkgs"
+
+        nix-build https://github.com/LnL7/nix-darwin/archive/master.tar.gz -A installer
+        ./result/bin/darwin-installer
+        rm result
+
+        nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
+        nix-channel --update
     fi
 }
 
@@ -198,14 +208,6 @@ function osx {
         run brew install gpg2
     fi
 
-    if [ ! -f /usr/local/bin/pinentry-mac ]; then
-        run brew install pinentry-mac
-    fi
-
-    if [ ! -f /usr/local/bin/go ]; then
-        run brew install go
-    fi
-
     if [ ! -f /usr/local/bin/python3 ]; then
         run brew install python
 	yes | /usr/local/bin/pip3 install virtualenv virtualfish
@@ -221,10 +223,6 @@ function osx {
 
     brew tap d12frosted/emacs-plus
     brew install emacs-plus
-    if [ ! -f /usr/local/bin/ag ]; then
-        brew install ag
-    fi
-
     if [ ! -f /usr/local/bin/hg ]; then
         run brew install hg
     fi
@@ -235,10 +233,6 @@ function osx {
 
     if [ ! -f /usr/local/bin/python3 ]; then
         run brew install python3
-    fi
-
-    if [ ! -f /usr/local/bin/go ]; then
-        run brew install go
     fi
 
     if [ ! -f /usr/local/bin/fish ]; then
