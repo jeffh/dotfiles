@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, llvmPackages, libiconv, maintainers }:
+{ stdenv, fetchurl, llvmPackages, libiconv, makeWrapper, maintainers }:
 stdenv.mkDerivation rec {
   pname = "odin";
   version = "0.13.0";
@@ -8,19 +8,25 @@ stdenv.mkDerivation rec {
     sha256 = "1w6dahfk4npqw1ii1rsvyrq84ajbzfa1sw5w3bskgpwgpgfc925f";
   };
 
+  nativeBuildInputs = [ makeWrapper ];
+
   buildInputs = [
     llvmPackages.clang-unwrapped
+    llvmPackages.bintools
   ] ++ stdenv.lib.optionals stdenv.isDarwin [ libiconv ];
 
   buildPhase = ''
-      make all release
+      make release
     '';
 
-  installPhase = ''
+    installPhase = let
+      binPath = stdenv.lib.makeBinPath [ llvmPackages.bintools ];
+    in ''
       mkdir -p "$out/bin"
+      cp -r core "$out"
 
-      cp odin "$out/bin/odin"
-      chmod +x "$out/bin/odin"
+      install -Dt $out/bin odin
+      wrapProgram $out/bin/odin --prefix PATH : $out/bin:${binPath}
   '';
 
   meta = {
