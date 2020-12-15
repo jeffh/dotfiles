@@ -6,7 +6,7 @@ stdenv.mkDerivation {
 
   src = fetchurl {
     url = "https://bc3-desktop.s3.amazonaws.com/mac/basecamp3.dmg";
-    sha256 = "10cnhw21hykyazndfdvmdivb2i2vw16i89mz2jg15bkdylx7r9pk";
+    sha256 = "0pgiqc1gxk86lp30cbvlfdjz9v7m25mra3ayhb1vx5561fd878ln";
   };
 
   buildInputs = [ undmg ];

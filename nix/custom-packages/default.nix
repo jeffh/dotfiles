@@ -20,5 +20,6 @@ let
       nomad = nixpkgs.callPackage ./pkgs/nomad { };
       doctl = nixpkgs.callPackage ./pkgs/doctl { };
       odin = callPackage ./pkgs/odin { };
+      virtualfish = callPackage ./pkgs/virtualfish { };
     };
 in pkgs
