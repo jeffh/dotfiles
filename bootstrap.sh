@@ -65,10 +65,6 @@ function symlink_to_home {
     rm $HOME/.emacs.d 2> /dev/null || true
     link $PWD/emacs $HOME/.emacs.d
 
-    echo " - emacs mayvenn layer"
-    rm $HOME/.emacs.d/private/mayvenn 2> /dev/null || true
-    link $PWD/external/mayvenn-layer $HOME/.emacs.d/private/mayvenn
-
     echo "*** Don't forget to configure your .spacemacs layers.  The simplest option is to use the 'mayvenn' layer."
 
     echo " - scripts (bin)"
@@ -149,10 +145,11 @@ function install_nix {
     fi
 
     if ! diskutil info Nix > /dev/null 2>&1; then
+        DISK=`diskutil list | grep 'APFS Container Scheme' | awk '{print $8}'`
         echo "nix volume missing."
         PASSPHRASE=$(openssl rand -base64 32)
         echo "Creating encrypted APFS volume with passphrase: $PASSPHRASE"
-        run sudo diskutil apfs addVolume disk1 APFSX Nix -mountpoint /nix -passphrase "$PASSPHRASE"
+        run sudo diskutil apfs addVolume "$DISK" APFSX Nix -mountpoint /nix -passphrase "$PASSPHRASE"
 
         UUID=$(diskutil info -plist /nix | plutil -extract VolumeUUID xml1 - -o - | plutil -p - | sed -e 's/"//g')
         echo "writing nix passphrase to your keychain"
@@ -180,11 +177,12 @@ function install_nix {
 
     if [ ! -d /nix/store ]; then
         echo "Installing NIX"
-        curl https://nixos.org/nix/install | sh
+        curl -L "https://nixos.org/nix/install" | sh
 
         rm -rf ~/.nixpkgs/; mkdir -p ~/.nixpkgs/; true
         ln -s "$PWD/nix/darwin.nix" "$HOME/.nixpkgs/darwin-configuration.nix"
         ln -s "$PWD/nix/files/" "$HOME/.nixpkgs/files"
+	. $HOME/.nix-profile/etc/profile.d/nix.sh
 
         nix-build https://github.com/LnL7/nix-darwin/archive/master.tar.gz -A installer
         ./result/bin/darwin-installer
@@ -197,7 +195,7 @@ function install_nix {
 
 function osx {
     if [ -z "`which brew`" ]; then
-        /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+	/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
     fi
 
     # for emoji in git diff
