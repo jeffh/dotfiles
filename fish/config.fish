@@ -56,7 +56,10 @@ end
 #ssh-add -K 2> /dev/null
 
 if type -q python3
-    eval (python3 -m virtualfish 2>/dev/null)
+    python3 -m virtualfish 2>/dev/null >/dev/null
+    if test $status -eq 0
+        eval (python3 -m virtualfish 2>/dev/null)
+    end
 end
 
 # golang 

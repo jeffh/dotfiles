@@ -49,8 +49,8 @@ function symlink_to_home {
     rm $HOME/.zsh 2> /dev/null || true
     link $PWD/zsh/zsh $HOME/.zsh
 
-    echo " - tmux (.tmux.conf)"
-    link $PWD/tmux/.tmux.conf $HOME/.tmux.conf
+    # echo " - tmux (.tmux.conf)"
+    # link $PWD/tmux/.tmux.conf $HOME/.tmux.conf
 
     echo " - fish (.config/fish)"
     mkdir $HOME/.config > /dev/null 2> /dev/null || true
@@ -199,22 +199,22 @@ function osx {
     fi
 
     # for emoji in git diff
-    if [ ! -f /usr/local/bin/less ]; then
-        run brew install less
-    fi
+    # if [ ! -f /usr/local/bin/less ]; then
+    #     run brew install less
+    # fi
 
-    if [ ! -f /usr/local/bin/gpg ]; then
-        run brew install gpg2
-    fi
+    # if [ ! -f /usr/local/bin/gpg ]; then
+    #     run brew install gpg2
+    # fi
 
-    if [ ! -f /usr/local/bin/python3 ]; then
-        run brew install python
-	yes | /usr/local/bin/pip3 install virtualenv virtualfish
-    fi
+    # if [ ! -f /usr/local/bin/python3 ]; then
+    #     run brew install python
+	# yes | /usr/local/bin/pip3 install virtualenv virtualfish
+    # fi
 
-    if [ ! -f /usr/local/bin/rbenv ]; then
-        run brew install rbenv --HEAD
-    fi
+    # if [ ! -f /usr/local/bin/rbenv ]; then
+    #     run brew install rbenv --HEAD
+    # fi
 
     if [ ! -f /usr/local/bin/mvim ]; then
         run brew install macvim
@@ -222,53 +222,49 @@ function osx {
 
     brew tap d12frosted/emacs-plus
     brew install emacs-plus
-    if [ ! -f /usr/local/bin/hg ]; then
-        run brew install hg
-    fi
+    # if [ ! -f /usr/local/bin/hg ]; then
+    #     run brew install hg
+    # fi
     if [ ! -f /usr/local/bin/fish ]; then
         run brew install fish
 	fish_as_default
     fi
 
-    if [ ! -f /usr/local/bin/python3 ]; then
-        run brew install python3
-    fi
+    # if [ ! -f /usr/local/bin/python3 ]; then
+    #     run brew install python3
+    # fi
 
-    if [ ! -f /usr/local/bin/fish ]; then
-        run brew install fish
-    fi
-
-    if [ ! -f /usr/local/bin/ag ]; then
-        run brew install the_silver_searcher
-    fi
+    # if [ ! -f /usr/local/bin/ag ]; then
+    #     run brew install the_silver_searcher
+    # fi
 
     if [ ! -f /usr/bin/javac ]; then
         run brew cask install java
     fi
 
     if [ ! -e /Applications/SizeUp.app ]; then
-	run brew cask install sizeup
+        run brew cask install sizeup
     fi
 
-    if [ ! -e "/Applications/Google Chrome.app" ]; then
-        run brew cask install google-chrome
-    fi
+    # if [ ! -e "/Applications/Google Chrome.app" ]; then
+    #     run brew cask install google-chrome
+    # fi
 
     if [ ! -e /Applications/Docker.app ]; then
 	run brew cask install docker
     fi
 
     if [ ! -e "/Applications/Alfred 4.app" ]; then
-	run brew cask install alfred
+        run brew cask install alfred
     fi
 
     if [ ! -e /Applications/iTerm.app ]; then
-	run brew cask install iterm2
+        run brew cask install iterm2
     fi
 
     # Mac App Store CLI tool
     if [ ! -e /usr/local/bin/mas ]; then
-	run brew install mas
+        run brew install mas
     fi
 
     local MAS=/usr/local/bin/mas
@@ -279,9 +275,9 @@ function osx {
     if [ ! -z "$WORK" ]; then
         echo 'Installing WORK applications'
 
-	if [ ! -e /Applications/Slack.app ]; then
-	    run brew cask install slack
-	fi
+        if [ ! -e /Applications/Slack.app ]; then
+            run brew cask install slack
+        fi
     fi
 
     if [ ! -z "$PERSONAL" ]; then
@@ -291,14 +287,14 @@ function osx {
 	    run brew cask install discord
 	fi
 
-	if [ ! -e "/Applications/Basecamp 3.app" ]; then
-	    run brew cask install basecamp
-	fi
+	# if [ ! -e "/Applications/Basecamp 3.app" ]; then
+	#     run brew cask install basecamp
+	# fi
 
-        run $MAS install 1107421413 # 1Blocker for Safari
-        run $MAS install 924726344  # Deliveries
-        run $MAS install 1449412482 # Reeder 4
-        run $MAS install 1481302432 # Instapaper Save
+    run $MAS install 1107421413 # 1Blocker for Safari
+    run $MAS install 924726344  # Deliveries
+    run $MAS install 1449412482 # Reeder 4
+    # run $MAS install 1481302432 # Instapaper Save
     fi
 
     $MAS upgrade

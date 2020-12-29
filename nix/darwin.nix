@@ -13,6 +13,7 @@
     zookeeper
     kubectl
     go
+    nodejs
     kubernetes-helm
     terraform_0_13
     terraform-providers.digitalocean
@@ -61,7 +62,7 @@
           "st" = "status";
         };
         extraConfig = {
-          url."ssh://git@github.com:".insteadOf = "https://github.com/";
+          # url."ssh://git@github.com:".insteadOf = "https://github.com/";
         };
       };
 
@@ -1068,3 +1069,4 @@ end
   # $ darwin-rebuild changelog
   system.stateVersion = 4;
 }
+

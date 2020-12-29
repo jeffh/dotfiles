@@ -73,7 +73,9 @@ zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
 #####################################################
 
 if [ -z "$VIRTUALENVWRAPPER_PYTHON" ]; then
-    source /usr/local/bin/virtualenvwrapper_lazy.sh
+    if [ -f "/usr/local/bin/virtualenvwrapper_lazy.sh" ]; then
+        source /usr/local/bin/virtualenvwrapper_lazy.sh
+    fi
 fi
 
 #####################################################
@@ -84,7 +86,7 @@ export PATH=$HOME/.rvm/gems/ruby-1.9.3-p448/bin:$HOME/bin:/usr/local/bin:/usr/bi
 
 export EDITOR=`which vim`
 
-source $HOME/.gvm/scripts/gvm
+# source $HOME/.gvm/scripts/gvm
 #export GOROOT=/usr/local/Cellar/go/1.1.1
 #export GOBIN=$GOROOT/bin
 #export GOPATH=$HOME/workspace/gopath
@@ -94,8 +96,10 @@ source $HOME/.gvm/scripts/gvm
 
 export PYTHONPATH=.:$PYTHONPATH
 
-source /Users/jeff/.rvm/scripts/rvm
-PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
+if [ -f " /Users/jeff/.rvm/scripts/rvm" ]; then
+    source /Users/jeff/.rvm/scripts/rvm
+    PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
+fi
 PATH=$PATH:/usr/local/share/npm/bin # for npm/node
 PATH=$PATH:/usr/local/sbin # for rabbitmq
 #####################################################
@@ -179,5 +183,5 @@ bindkey '^T' autosuggest-toggle
 [ -f /Users/jeff/.travis/travis.sh ] && source /Users/jeff/.travis/travis.sh
 
 # nix
-[ -d /nix ] && source ~/.nix-profile/etc/profile.d/nix.sh
+[ -f ~/.nix-profile/etc/profile.d/nix.sh ] && source ~/.nix-profile/etc/profile.d/nix.sh
 if [ -e /Users/jeff/.nix-profile/etc/profile.d/nix.sh ]; then . /Users/jeff/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
