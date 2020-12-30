@@ -528,6 +528,7 @@ function! FindSymbol()
     exec ':cs find s ' . query
 endfunction
 nmap <leader>g :call FindSymbol()<cr>
+nmap <silent><nowait> <leader>r  :<C-u>CocList -I symbols<CR>
 
 " Build tags
 map <leader>c !ctags -R .
