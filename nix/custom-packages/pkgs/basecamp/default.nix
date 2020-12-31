@@ -2,11 +2,11 @@
 
 stdenv.mkDerivation {
   pname = "basecamp";
-  version = "2.2.0";
+  version = "2.2.3";
 
   src = fetchurl {
     url = "https://bc3-desktop.s3.amazonaws.com/mac/basecamp3.dmg";
-    sha256 = "0pgiqc1gxk86lp30cbvlfdjz9v7m25mra3ayhb1vx5561fd878ln";
+    sha256 = "0v7vq4jswms7ng0g2spd7qk47gnaabbfqf96xwkggc81vxn7fniz";
   };
 
   buildInputs = [ undmg ];
