@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, undmg, maintainers, config }:
+{ stdenv, fetchurl, undmg, maintainers, config, pkgs }:
 
 stdenv.mkDerivation rec {
   pname = "hey-email";
@@ -22,7 +22,7 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Email’s new heyday";
     homepage = https://hey.com/;
-    platforms = stdenv.lib.platforms.darwin;
+    platforms = pkgs.lib.platforms.darwin;
     maintainers = [ maintainers.jeffh ];
   };
 }

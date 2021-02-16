@@ -1,5 +1,5 @@
 # nix
-if test -d "/nix"
+if test -d "~/.config/fish/nix.sh"
     eval (~/.config/fish/nix.sh)
     set -x NIX_SSL_CERT_FILE /etc/ssl/cert.pem
 end

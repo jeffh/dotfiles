@@ -87,6 +87,9 @@ Plug 'chase/vim-ansible-yaml'
 " Carthage
 Plug 'cfdrake/vim-carthage'
 
+" Dart
+Plug 'dart-lang/dart-vim-plugin'
+
 " Markdown
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
@@ -507,11 +510,15 @@ map <leader>R :call RenameFile()<cr>
 function! DeleteFile()
     call inputsave()
     let file_name = input('Delete: ', expand('%'), "file")
-    call inputrestore()
-    exec ':silent !rm ' . file_name
-    exec ':silent bw'
-    redraw!
-    exec ":echom \"Deleted " . file_name . "\""
+    if empty(file_name)
+        echo "Canceled"
+    else
+        call inputrestore()
+        exec ':silent !rm ' . file_name
+        exec ':silent bw'
+        redraw!
+        exec ":echom \"Deleted " . file_name . "\""
+    endif
 endfunction
 map <leader>d :call DeleteFile()<cr>
 

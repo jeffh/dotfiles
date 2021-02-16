@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, llvmPackages, libiconv, makeWrapper, maintainers }:
+{ stdenv, fetchurl, llvmPackages, libiconv, makeWrapper, maintainers, pkgs }:
 stdenv.mkDerivation rec {
   pname = "odin";
   version = "0.13.0";
@@ -13,14 +13,14 @@ stdenv.mkDerivation rec {
   buildInputs = [
     llvmPackages.clang-unwrapped
     llvmPackages.bintools
-  ] ++ stdenv.lib.optionals stdenv.isDarwin [ libiconv ];
+  ] ++ pkgs.lib.optionals stdenv.isDarwin [ libiconv ];
 
   buildPhase = ''
       make release
     '';
 
     installPhase = let
-      binPath = stdenv.lib.makeBinPath [ llvmPackages.bintools ];
+      binPath = pkgs.lib.makeBinPath [ llvmPackages.bintools ];
     in ''
       mkdir -p "$out/bin"
       cp -r core "$out"
@@ -32,8 +32,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "The Odin Programming Language (version ${version})";
     homepage = https://odin-lang.org/;
-    license = stdenv.lib.licenses.mit;
-    platforms = stdenv.lib.platforms.unix;
+    license = pkgs.lib.licenses.mit;
+    platforms = pkgs.lib.platforms.unix;
     maintainers = [ maintainers.jeffh ];
   };
 }

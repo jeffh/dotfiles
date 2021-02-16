@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, openjdk, libaio, makeWrapper, maintainers }:
+{ stdenv, fetchurl, openjdk, libaio, makeWrapper, maintainers, pkgs }:
 
 stdenv.mkDerivation rec {
   pname = "activemq-artemis";
@@ -13,7 +13,7 @@ stdenv.mkDerivation rec {
   buildInputs = [ openjdk makeWrapper ] ++ (if stdenv.targetPlatform.isLinux then [ libaio ] else []);
 
   installPhase = let 
-    binPath = stdenv.lib.makeBinPath [ openjdk makeWrapper ];
+    binPath = pkgs.lib.makeBinPath [ openjdk makeWrapper ];
   in ''
     mkdir -p $prefix/bin
     mkdir -p $prefix/lib
@@ -37,8 +37,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "ActiveMQ Artemis (version ${version})";
     homepage = https://activemq.apache.org/components/artemis/;
-    license = stdenv.lib.licenses.asl20;
-    platforms = stdenv.lib.platforms.unix; # TODO: test linux?
+    license = pkgs.lib.licenses.asl20;
+    platforms = pkgs.lib.platforms.unix; # TODO: test linux?
     maintainers = [ maintainers.jeffh ];
   };
 }

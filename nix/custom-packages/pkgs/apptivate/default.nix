@@ -1,4 +1,4 @@
-{ stdenv, fetchzip, maintainers, config }:
+{ stdenv, fetchzip, maintainers, config, pkgs }:
 
 let
   cfg = config.applications.apptivate;
@@ -21,7 +21,7 @@ in
     meta = {
       description = "A simple, beautiful way to create global hotkeys for your files and applications.";
       homepage = http://www.apptivateapp.com;
-      platforms = stdenv.lib.platforms.darwin;
+      platforms = pkgs.lib.platforms.darwin;
       maintainers = [ maintainers.jeffh ];
     };
   }

@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, openjdk, rlwrap, makeWrapper, maintainers }:
+{ stdenv, fetchurl, openjdk, rlwrap, makeWrapper, maintainers, pkgs }:
 
 stdenv.mkDerivation rec {
     pname = "clojure";
@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
     buildInputs = [ openjdk rlwrap makeWrapper ];
 
     installPhase = let
-        binPath = stdenv.lib.makeBinPath [ rlwrap openjdk ];
+        binPath = pkgs.lib.makeBinPath [ rlwrap openjdk ];
     in
       ''
         mkdir -p $prefix/libexec
@@ -38,8 +38,8 @@ stdenv.mkDerivation rec {
     meta = {
         description = "The Clojure Programming Language (version ${version})";
         homepage = https://clojure.org;
-        license = stdenv.lib.licenses.epl10;
-        platforms = stdenv.lib.platforms.unix;
+        license = pkgs.lib.licenses.epl10;
+        platforms = pkgs.lib.platforms.unix;
         maintainers = [ maintainers.jeffh ];
     };
 }
