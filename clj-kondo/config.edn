@@ -1,0 +1,2 @@
+{:lint-as {io.pedestal.http.route.definition/defroutes clojure.core/def
+           mount.core/defstate clojure.core/def}}

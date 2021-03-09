@@ -17,7 +17,11 @@ set shell=/bin/bash
 """""""""""""""""""""""""""""""""""""""""""""""
 filetype off
 
-call plug#begin('~/.vim/plugged')
+if has('nvim')
+    call plug#begin(stdpath('config') . '/plugged')
+else
+    call plug#begin('~/.vim/plugged')
+end
 
 " Theme
 Plug 'w0ng/vim-hybrid'

@@ -44,6 +44,17 @@ function symlink_to_home {
     link $PWD/vim/vim $HOME/.vim
     link $PWD/vim/vimrc $HOME/.vimrc
 
+    echo " - neovim (.vim, .vimrc)"
+    mkdir -p $HOME/.config/nvim || true
+    link $PWD/vim/vimrc $HOME/.config/nvim/init.vim
+    for FILE in autoload colors ftdetect ftplugin indent plugged plugin skel snippets syntax coc-settings.json
+    do
+        link $PWD/vim/vim/$FILE $HOME/.config/nvim/$FILE
+    done
+
+    echo " - clj-kondo"
+    link $PWD/clj-kondo $HOME/.config/clj-kondo
+
     echo " - zsh (.zshrc, .zsh)"
     link $PWD/zsh/zshrc $HOME/.zshrc
     rm $HOME/.zsh 2> /dev/null || true
@@ -218,6 +229,10 @@ function osx {
 
     if [ ! -f /usr/local/bin/mvim ]; then
         run brew install macvim
+    fi
+
+    if [ ! -f /usr/local/bin/nvim ]; then
+        run brew install --HEAD neovim # need 0.5.0 or newer
     fi
 
     brew tap d12frosted/emacs-plus
