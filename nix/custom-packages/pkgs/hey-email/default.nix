@@ -2,12 +2,12 @@
 
 stdenv.mkDerivation rec {
   pname = "hey-email";
-  version = "1.1.0";
+  version = "1.2.0";
 
   src = fetchurl {
     name = "HEY-${version}.dmg";
     url = "https://hey-desktop.s3.amazonaws.com/HEY.dmg?version=${version}";
-    sha256 = "0p2qdj7n3f1ld56cgjf7nsb13j66825ngdx36910w5lxss1g5vw7";
+    sha256 = "0khg8x2dszjpjsps1y98p2dmlfs2sjqak2yarnc8175i478pyl3f";
   };
 
   buildInputs = [ undmg ];
