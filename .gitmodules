@@ -10,9 +10,6 @@
 [submodule "vim/vim/bundle/Vundle.vim"]
 	path = vim/vim/bundle/Vundle.vim
 	url = https://github.com/gmarik/Vundle.vim.git
-[submodule "fzf"]
-	path = fzf
-	url = https://github.com/junegunn/fzf.git
 [submodule "external/spacemacs"]
 	path = external/spacemacs
 	url = https://github.com/syl20bnr/spacemacs
