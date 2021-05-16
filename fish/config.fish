@@ -5,8 +5,25 @@ if test -d "~/.config/fish/nix.sh"
 end
 
 # nix-darwin
-if test -f "/etc/static/bashrc"
-    bass source /etc/static/bashrc
+if test -f "/etc/bashrc"
+    bass source /etc/bashrc
+    # # Only execute this file once per shell.
+    # if test -n "$__ETC_BASHRC_SOURCED" -o -n "$NOSYSBASHRC"
+    # else
+    #     set __ETC_BASHRC_SOURCED 1
+
+    #     # Don't execute this file when running in a pure nix-shell.
+    #     if test -n "$IN_NIX_SHELL"
+    #     else
+    #         if test -z "$__NIX_DARWIN_SET_ENVIRONMENT_DONE"
+    #             bass source /nix/store/6pp4ar427dglr6fc29b11mz3w4ks42xy-set-environment
+    #         end
+    #     end
+    # end
+end
+# nix
+if test -f "$HOME/.nix-profile/etc/profile.d/nix.sh"
+    bass source "$HOME/.nix-profile/etc/profile.d/nix.sh"
 end
 #if test -d "/run/current-system/sw/bin"
 #    for p in /run/current-system/sw/bin ~/bin
@@ -112,3 +129,12 @@ end
 
 # iterm2
 test -e {$HOME}/.iterm2_shell_integration.fish ; and source {$HOME}/.iterm2_shell_integration.fish
+
+# homebrew
+set CPU (uname -p)
+if test "$CPU" = "arm"
+    eval (/opt/homebrew/bin/brew shellenv)
+else
+    eval (/usr/local/bin/brew shellenv)
+end
+set -e CPU

@@ -139,67 +139,73 @@ function fish_as_default {
 }
 
 function install_nix {
-    if ! grep nix /etc/synthetic.conf > /dev/null 2>&1; then
-        echo "nix missing from /etc/synthetic.conf. Adding it (will request sudo)"
-        echo "nix" | sudo tee -a /etc/synthetic.conf > /dev/null
-        echo "Rebooting system in 10 seconds... Please return bootstrap script to continue nix install"
-        sleep 10
-        run sudo reboot
-        exit 0
-    fi
+    # 1. Remove the entry from fstab using 'sudo vifs'
+    # 2. Destroy the data volume using 'diskutil apfs deleteVolume'
+    # 3. Remove the 'nix' line from /etc/synthetic.conf or the file
 
-    if [ ! -d "/nix" ]; then
-        echo "/nix directory not created yet. Please reboot to get the proper changes."
-        exit 0
-    else
-        echo "/nix exists!"
-    fi
+    # if ! grep nix /etc/synthetic.conf > /dev/null 2>&1; then
+    #     echo "nix missing from /etc/synthetic.conf. Adding it (will request sudo)"
+    #     echo "nix" | sudo tee -a /etc/synthetic.conf > /dev/null
+    #     echo "Rebooting system in 10 seconds... Please return bootstrap script to continue nix install"
+    #     sleep 10
+    #     run sudo reboot
+    #     exit 0
+    # fi
 
-    if ! diskutil info Nix > /dev/null 2>&1; then
-        DISK=`diskutil list | grep 'APFS Container Scheme' | awk '{print $8}'`
-        echo "nix volume missing."
-        PASSPHRASE=$(openssl rand -base64 32)
-        echo "Creating encrypted APFS volume with passphrase: $PASSPHRASE"
-        run sudo diskutil apfs addVolume "$DISK" APFSX Nix -mountpoint /nix -passphrase "$PASSPHRASE"
+    # if [ ! -d "/nix" ]; then
+    #     echo "/nix directory not created yet. Please reboot to get the proper changes."
+    #     exit 0
+    # else
+    #     echo "/nix exists!"
+    # fi
 
-        UUID=$(diskutil info -plist /nix | plutil -extract VolumeUUID xml1 - -o - | plutil -p - | sed -e 's/"//g')
-        echo "writing nix passphrase to your keychain"
-        security add-generic-password -l Nix -a "$UUID" -s "$UUID" -D '"Encrypted Volume Password"' -w "$PASSPHRASE" \
-            -T "/System/Library/CoreServices/APFSUserAgent" -T "/System/Library/CoreServices/CSUserAgent"
+    # if ! diskutil info Nix > /dev/null 2>&1; then
+    #     DISK=`diskutil list | grep 'APFS Container Scheme' | awk '{print $8}'`
+    #     echo "nix volume missing."
+    #     PASSPHRASE=$(openssl rand -base64 32)
+    #     echo "Creating encrypted APFS volume with passphrase: $PASSPHRASE"
+    #     run sudo diskutil apfs addVolume "$DISK" APFSX Nix -mountpoint /nix -passphrase "$PASSPHRASE"
 
-        echo "nix volume created. Rebooting in 10 seconds to get the changes and run this script again."
-        sleep 10
-        run sudo reboot
-    else
-        echo "nix volume already created"
-    fi
+    #     UUID=$(diskutil info -plist /nix | plutil -extract VolumeUUID xml1 - -o - | plutil -p - | sed -e 's/"//g')
+    #     echo "writing nix passphrase to your keychain"
+    #     security add-generic-password -l Nix -a "$UUID" -s "$UUID" -D '"Encrypted Volume Password"' -w "$PASSPHRASE" \
+    #         -T "/System/Library/CoreServices/APFSUserAgent" -T "/System/Library/CoreServices/CSUserAgent"
 
-    if ! grep nix /etc/fstab > /dev/null; then
-          echo "enabling automount of nix volume"
-          # we explicitly want unescaped in this printf, so ignore shellcheck
-          # shellcheck disable=SC2016
-          printf '$a\nLABEL=Nix /nix apfs rw\n.\nwq\n' | EDITOR='ed' sudo vifs >/dev/null
-          echo "nix fstab settings created. Rebooting in 10 seconds to get the changes and run this script again."
-          sleep 10
-          run sudo reboot
-    else
-          echo "automount of nix volume already enabled"
-    fi
+    #     echo "nix volume created. Rebooting in 10 seconds to get the changes and run this script again."
+    #     sleep 10
+    #     run sudo reboot
+    # else
+    #     echo "nix volume already created"
+    # fi
+
+    # if ! grep nix /etc/fstab > /dev/null; then
+    #       echo "enabling automount of nix volume"
+    #       # we explicitly want unescaped in this printf, so ignore shellcheck
+    #       # shellcheck disable=SC2016
+    #       printf '$a\nLABEL=Nix /nix apfs rw\n.\nwq\n' | EDITOR='ed' sudo vifs >/dev/null
+    #       echo "nix fstab settings created. Rebooting in 10 seconds to get the changes and run this script again."
+    #       sleep 10
+    #       run sudo reboot
+    # else
+    #       echo "automount of nix volume already enabled"
+    # fi
 
     if [ ! -d /nix/store ]; then
         echo "Installing NIX"
-        curl -L "https://nixos.org/nix/install" | sh
+        sh <(curl -L https://nixos.org/nix/install) --darwin-use-unencrypted-nix-store-volume
 
         rm -rf ~/.nixpkgs/; mkdir -p ~/.nixpkgs/; true
         ln -s "$PWD/nix/darwin.nix" "$HOME/.nixpkgs/darwin-configuration.nix"
         ln -s "$PWD/nix/files/" "$HOME/.nixpkgs/files"
-	. $HOME/.nix-profile/etc/profile.d/nix.sh
+        . $HOME/.nix-profile/etc/profile.d/nix.sh
+
+        nix-channel --add https://github.com/rycee/home-manager/archive/master.tar.gz home-manager
+        nix-channel --update
 
         nix-build https://github.com/LnL7/nix-darwin/archive/master.tar.gz -A installer
         ./result/bin/darwin-installer
         rm result
 
-        nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
         nix-channel --update
     fi
 }
@@ -229,10 +235,6 @@ function osx {
 
     if [ ! -f /usr/local/bin/mvim ]; then
         run brew install macvim
-    fi
-
-    if [ ! -f /usr/local/bin/nvim ]; then
-        run brew install --HEAD neovim # need 0.5.0 or newer
     fi
 
     brew tap d12frosted/emacs-plus
@@ -306,7 +308,7 @@ function osx {
 	#     run brew cask install basecamp
 	# fi
 
-    run $MAS install 1107421413 # 1Blocker for Safari
+    run $MAS install 1365531024 # 1Blocker for Safari
     run $MAS install 924726344  # Deliveries
     run $MAS install 1449412482 # Reeder 4
     # run $MAS install 1481302432 # Instapaper Save
@@ -355,9 +357,9 @@ function help {
     echo "  update    Updates all submodules & gocode. Changes the repository."
     echo "  help      This help"
     echo
-    echo "Environment Variables for `osx`:"
-    echo "  WORK      Set this variable with a value to install work apps
-    echo "  PERSONAL  Set this variable with a value to install personal apps
+    echo "Environment Variables for 'osx':"
+    echo "  WORK      Set this variable with a value to install work apps"
+    echo "  PERSONAL  Set this variable with a value to install personal apps"
 }
 
 case "$1" in
@@ -368,3 +370,4 @@ case "$1" in
     "help") help;;
     *) echo "Invalid command. Use '$0 help' for help";;
 esac
+
