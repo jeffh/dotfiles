@@ -200,6 +200,7 @@ function install_nix {
         . $HOME/.nix-profile/etc/profile.d/nix.sh
 
         nix-channel --add https://github.com/rycee/home-manager/archive/master.tar.gz home-manager
+        nix-channel --add https://github.com/jeffh/custom-packages/archive/main.tar.gz jeffh
         nix-channel --update
 
         nix-build https://github.com/LnL7/nix-darwin/archive/master.tar.gz -A installer
