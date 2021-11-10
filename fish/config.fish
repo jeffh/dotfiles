@@ -138,3 +138,8 @@ else
     eval (/usr/local/bin/brew shellenv)
 end
 set -e CPU
+
+# Odin
+if test -d "/opt/homebrew/Cellar/llvm@11/11.1.0_2/bin"
+    set -x PATH /opt/homebrew/Cellar/llvm@11/11.1.0_2/bin $PATH
+end
