@@ -40,11 +40,6 @@ set -x PATH /usr/local/bin /usr/local/sbin $PATH
 test -d $HOME/.local/bin; and set -x PATH $HOME/.local/bin $PATH
 test -d $HOME/bin; and set -x PATH $HOME/bin $PATH
 
-if test -e (which vim)
-    setenv EDITOR (which vim)
-end
-setenv ALTERNATIVE_EDITOR ""
-
 begin # SSH Agent
     if test -z "$SSH_ENV"
         set -xg SSH_ENV $HOME/.ssh/environment
@@ -143,3 +138,9 @@ set -e CPU
 if test -d "/opt/homebrew/Cellar/llvm@11/11.1.0_2/bin"
     set -x PATH /opt/homebrew/Cellar/llvm@11/11.1.0_2/bin $PATH
 end
+
+if test -e (which vim)
+    setenv EDITOR (which vim)
+end
+setenv ALTERNATIVE_EDITOR ""
+
