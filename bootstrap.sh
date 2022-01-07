@@ -238,8 +238,16 @@ function osx {
         run brew install macvim
     fi
 
-    brew tap d12frosted/emacs-plus
-    brew install emacs-plus
+    if [ ! -f /usr/local/bin/nvim ]; then
+        run brew install --HEAD neovim # need 0.5.0 or newer
+    fi
+
+    if [ ! -f /usr/local/bin/bb ]; then
+        run brew install borkdude/brew/babashka
+    fi
+
+    brew tap railwaycat/emacsmacport
+    brew install emacs-mac
     # if [ ! -f /usr/local/bin/hg ]; then
     #     run brew install hg
     # fi
@@ -257,27 +265,27 @@ function osx {
     # fi
 
     if [ ! -f /usr/bin/javac ]; then
-        run brew cask install java
+        run brew install --cask java
     fi
 
     if [ ! -e /Applications/SizeUp.app ]; then
-        run brew cask install sizeup
+        run brew install --cask sizeup
     fi
 
     # if [ ! -e "/Applications/Google Chrome.app" ]; then
-    #     run brew cask install google-chrome
+    #     run brew install --cask google-chrome
     # fi
 
     if [ ! -e /Applications/Docker.app ]; then
-	run brew cask install docker
+	run brew install --cask docker
     fi
 
     if [ ! -e "/Applications/Alfred 4.app" ]; then
-        run brew cask install alfred
+        run brew install --cask alfred
     fi
 
     if [ ! -e /Applications/iTerm.app ]; then
-        run brew cask install iterm2
+        run brew install --cask iterm2
     fi
 
     # Mac App Store CLI tool
@@ -294,7 +302,7 @@ function osx {
         echo 'Installing WORK applications'
 
         if [ ! -e /Applications/Slack.app ]; then
-            run brew cask install slack
+            run brew install --cask slack
         fi
     fi
 
@@ -302,11 +310,11 @@ function osx {
         echo 'Installing PERSONAL applications'
 
 	if [ ! -e /Applications/Discord.app ]; then
-	    run brew cask install discord
+	    run brew install --cask discord
 	fi
 
 	# if [ ! -e "/Applications/Basecamp 3.app" ]; then
-	#     run brew cask install basecamp
+	#     run brew install --cask basecamp
 	# fi
 
     run $MAS install 1365531024 # 1Blocker for Safari
