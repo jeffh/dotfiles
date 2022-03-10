@@ -31,7 +31,7 @@ Plug 'w0ng/vim-hybrid'
 """""""""""
 
 " Autocomplete
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " Ag / Silver Searcher
 Plug 'rking/ag.vim'
@@ -84,6 +84,13 @@ Plug 'majutsushi/tagbar'
 """""""""""""
 " Languages "
 """""""""""""
+
+" LSP
+Plug 'prabirshrestha/vim-lsp'
+Plug 'mattn/vim-lsp-settings'
+Plug 'prabirshrestha/asyncomplete.vim'
+Plug 'prabirshrestha/asyncomplete-lsp.vim'
+
 
 " Ansible YAML
 Plug 'chase/vim-ansible-yaml'
@@ -347,7 +354,8 @@ set complete=.,w,b,d,i,t
 " preview => Show extra info about the currently selected completion in menu
 " menuone => Shows menu when only one item is available for autocomplete
 " longest => Only inserts longest common text for matches
-set completeopt=menu,preview
+" set completeopt=menu,preview
+set completeopt=menuone,noinsert,noselect,preview
 
 set noinfercase  " autocomplete without being case sensitive
 
@@ -740,10 +748,25 @@ augroup googlego_customizations
     autocmd Filetype go nmap <Leader>p :Fmt
     autocmd FileType go nmap <Leader>i <Plug>(go-implements)
     autocmd FileType go nmap <Leader>r <Plug>(go-rename)
+
+"     autocmd FileType go nmap <Leader>i <Plug>(go-implements)
+"     autocmd FileType go nmap <Leader>r <Plug>(go-rename)
+"     " sort isn't working for gotags
+"     autocmd FileType go nmap <Leader>c :!gotags -f tags -sort=0 -R $GOPATH .<cr>
 augroup END
 let g:go_fmt_command = "goimports"
-let g:go_fmt_autosave = 0
 let g:go_rename_command = 'gopls'
+" rely on vim-lsp ?
+" let g:go_fmt_autosave = 0
+" let g:go_gopls_enabled = 0
+" let g:go_code_completion_enabled = 0
+" let g:go_auto_sameids = 0
+" let g:go_fmt_autosave = 0
+" let g:go_def_mapping_enabled = 0
+" let g:go_diagnostics_enabled = 0
+" let g:go_echo_go_info = 0
+" let g:go_metalinter_enabled = 0
+" let g:go_doc_popup_window = 0
 
 """""""""""
 " Clojure "
@@ -772,7 +795,7 @@ augroup haskell_customizations
     autocmd FileType haskell nmap <Leader>l :GhcModLint<cr>
     autocmd FileType haskell nmap <Leader>e :GhcModType<cr>
     autocmd FileType haskell nmap <Leader>i :GhcModTypeInsert<cr>
-    autocmd FileType haskell nmap <Leader>g :GhcModSigCodegen<cr>
+    " autocmd FileType haskell nmap <Leader>g :GhcModSigCodegen<cr>
     autocmd FileType haskell nmap <Leader>C :GhcModCheckClear<cr>
     autocmd FileType haskell nnoremap <CR> :silent! GhcModTypeClear<cr>:nohlsearch<cr><cr>
 augroup END
@@ -835,22 +858,60 @@ nmap <Leader>a <Plug>(EasyAlign)
 """"""""""""""""
 let g:vim_markdown_initial_foldlevel=99
 
-""""""""""
-" vim-go "
-""""""""""
-augroup vim_go
-    autocmd!
-    autocmd FileType go nmap <Leader>i <Plug>(go-implements)
-    autocmd FileType go nmap <Leader>r <Plug>(go-rename)
-    " sort isn't working for gotags
-    autocmd FileType go nmap <Leader>c :!gotags -f tags -sort=0 -R $GOPATH .<cr>
-augroup END
-
-" let g:go_fmt_command = "goimports"
-let g:go_fmt_autosave = 1
-
 """"""""""""
 " vim-json "
 """"""""""""
 
 let g:vim_json_syntax_conceal = 0
+
+""""""""""""""""""""
+" asyncomplete.vim "
+""""""""""""""""""""
+
+augroup autocomplete
+    " inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+    " inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+    " inoremap <expr> <cr>    pumvisible() ? asyncomplete#close_popup() : "\<cr>"
+    " imap <c-space> <Plug>(asyncomplete_force_refresh)
+augroup END
+
+
+"""""""""""
+" vim-lsp "
+"""""""""""
+
+function! s:on_lsp_buffer_enabled() abort
+    setlocal omnifunc=lsp#complete
+    setlocal signcolumn=yes
+    if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
+    nmap <buffer> <C-]> <plug>(lsp-definition)
+    " nmap <buffer> <C-]> <plug>(lsp-definition)
+    nmap <buffer> gd <plug>(lsp-definition)
+    nmap <buffer> gs <plug>(lsp-document-symbol-search)
+    nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
+    nmap <buffer> <leader>e <plug>(lsp-references)
+    nmap <buffer> gi <plug>(lsp-implementation)
+    nmap <buffer> gt <plug>(lsp-type-definition)
+    nmap <buffer> <leader>r <plug>(lsp-rename)
+    nmap <buffer> [g <plug>(lsp-previous-diagnostic)
+    nmap <buffer> ]g <plug>(lsp-next-diagnostic)
+    nmap <buffer> K <plug>(lsp-hover)
+    nnoremap <buffer> <expr><c-f> lsp#scroll(+4)
+    nnoremap <buffer> <expr><c-d> lsp#scroll(-4)
+
+    let g:lsp_completion_resolve_timeout = 50
+    let g:lsp_format_sync_timeout = 1000
+    autocmd! BufWritePre *.rs,*.go call execute('LspDocumentFormatSync')
+
+    set foldmethod=expr
+      \ foldexpr=lsp#ui#vim#folding#foldexpr()
+      \ foldtext=lsp#ui#vim#folding#foldtext()
+endfunction
+
+
+augroup lsp_install
+    au!
+    " call s:on_lsp_buffer_enabled only for languages that has the server registered.
+    autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+augroup END
+

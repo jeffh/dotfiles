@@ -11,7 +11,7 @@ end
 
 function _is_git_dirty
   if type -q git
-    echo (git status -s --ignore-submodules=dirty ^/dev/null)
+    echo (git status -s --ignore-submodules=dirty 2>/dev/null)
   end
 end
 
