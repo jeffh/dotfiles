@@ -31,7 +31,7 @@ Plug 'w0ng/vim-hybrid'
 """""""""""
 
 " Autocomplete
-" Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " Ag / Silver Searcher
 Plug 'rking/ag.vim'
@@ -88,7 +88,7 @@ Plug 'majutsushi/tagbar'
 " LSP
 " Plug 'prabirshrestha/vim-lsp'
 " Plug 'mattn/vim-lsp-settings'
-" Plug 'prabirshrestha/asyncomplete.vim'
+Plug 'prabirshrestha/asyncomplete.vim'
 " Plug 'prabirshrestha/asyncomplete-lsp.vim'
 
 
@@ -119,6 +119,9 @@ Plug 'Tetralux/odin.vim'
 
 " Terraform
 Plug 'hashivim/vim-terraform'
+
+" HCL
+Plug 'jvirtanen/vim-hcl'
 
 " Mustache
 Plug 'juvenn/mustache.vim'
@@ -869,10 +872,10 @@ let g:vim_json_syntax_conceal = 0
 """"""""""""""""""""
 
 augroup autocomplete
-    " inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
-    " inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-    " inoremap <expr> <cr>    pumvisible() ? asyncomplete#close_popup() : "\<cr>"
-    " imap <c-space> <Plug>(asyncomplete_force_refresh)
+    inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+    inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+    inoremap <expr> <cr>    pumvisible() ? asyncomplete#close_popup() : "\<cr>"
+    imap <c-space> <Plug>(asyncomplete_force_refresh)
 augroup END
 
 
