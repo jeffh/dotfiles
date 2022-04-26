@@ -96,12 +96,17 @@ export EDITOR=`which vim`
 
 export PYTHONPATH=.:$PYTHONPATH
 
-if [ -f " /Users/jeff/.rvm/scripts/rvm" ]; then
+if [ -f "/Users/jeff/.rvm/scripts/rvm" ]; then
     source /Users/jeff/.rvm/scripts/rvm
     PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 fi
 PATH=$PATH:/usr/local/share/npm/bin # for npm/node
 PATH=$PATH:/usr/local/sbin # for rabbitmq
+PATH=$PATH:/usr/local/bin
+
+if [ -e "/opt/homebrew/bin/" ]; then
+    PATH=$PATH:/opt/homebrew/bin
+fi
 #####################################################
 
 workon_virtualenv() {
