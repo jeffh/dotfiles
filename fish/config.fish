@@ -134,13 +134,11 @@ end
 test -e {$HOME}/.iterm2_shell_integration.fish ; and source {$HOME}/.iterm2_shell_integration.fish
 
 # homebrew
-set CPU (uname -p)
-if test "$CPU" = "arm"
+if test -f /opt/homebrew/bin/brew
     eval (/opt/homebrew/bin/brew shellenv)
 else
     eval (/usr/local/bin/brew shellenv)
 end
-set -e CPU
 
 # Odin
 if test -d "/opt/homebrew/Cellar/llvm@11/11.1.0_2/bin"
