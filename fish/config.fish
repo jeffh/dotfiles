@@ -77,13 +77,6 @@ end
 
 #ssh-add -K 2> /dev/null
 
-if type -q python3
-    python3 -m virtualfish 2>/dev/null >/dev/null
-    if test $status -eq 0
-        eval (python3 -m virtualfish 2>/dev/null)
-    end
-end
-
 # golang 
 test -d ~/go/bin; and set -x PATH ~/go/bin $PATH
 test -d /usr/local/go/bin; and set -x PATH /usr/local/go/bin $PATH
