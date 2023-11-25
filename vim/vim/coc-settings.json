@@ -7,8 +7,12 @@
       "filetypes": ["go"]
     },
     "zls": {
-      "command": "/Users/jeff/workspace/zls/zig-cache/bin/zls",
+      "command": "/Users/jeff/bin/zls",
       "filetypes": ["zig"]
     }
-  }
+  },
+  "zig.enabled": true,
+  "zig.startUpMessage": true,
+  "zig.path": "/Users/jeff/bin/zls",
+  "zig.debugLog": false
 }
