@@ -36,6 +36,8 @@ end
 #    set -x NIX_PROFILES "/nix/var/nix/profiles/default /run/current-system/sw $HOME/.nix-profile"
 #end
 
+test -d "/Library/Java/JavaVirtualMachines/graalvm-ce-java17-22.2.0/Contents/Home/bin"; and set -x PATH "/Library/Java/JavaVirtualMachines/graalvm-ce-java17-22.2.0/Contents/Home/bin" $PATH
+
 set -x PATH /usr/local/bin /usr/local/sbin $PATH
 test -d $HOME/.local/bin; and set -x PATH $HOME/.local/bin $PATH
 test -d $HOME/bin; and set -x PATH $HOME/bin $PATH
