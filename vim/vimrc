@@ -810,10 +810,21 @@ command! -nargs=? Fold :call     CocAction('fold', <f-args>)
 " Add `:OR` command for organize imports of the current buffer
 command! -nargs=0 OR   :call     CocActionAsync('runCommand', 'editor.action.organizeImport')
 
+" Use `[g` and `]g` to navigate diagnostics
+" Use `:CocDiagnostics` to get all diagnostics of current buffer in location list
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
+
 " File Explorer
 noremap <silent> \ <Cmd>CocCommand explorer<CR>
 
 autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+
+function! FormatOnSave()
+    call <SID>StripTrailingWhitespaces()
+    call CocAction('runCommand', 'editor.action.organizeImport')
+    call CocAction('format')
+endfunction
 
 """"""""""
 " Python "
@@ -834,7 +845,8 @@ let g:pymode_rope_auto_project = 1
 
 augroup googlego_customizations
     autocmd!
-    autocmd Filetype go nmap <Leader>p :Fmt
+    autocmd Filetype go nmap <Leader>p :Format
+    autocmd BufWritePre *.go call FormatOnSave()
     " autocmd FileType go nmap <Leader>i <Plug>(go-implements)
     " autocmd FileType go nmap <Leader>r <Plug>(go-rename)
 
@@ -899,8 +911,8 @@ nmap <leader>Fp :GFiles<cr>
 nmap <leader>Fg :GFiles?<cr>
 nmap <leader>b :Buffers<cr>
 nmap <leader>m :Marks<cr>
-nmap <leader>g :Rg 
-nmap <leader>G :RG 
+nmap <leader>g :Rg<space>
+nmap <leader>G :RG<space>
 " nmap <leader>
 
 """"""""""""""""""
