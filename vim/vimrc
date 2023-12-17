@@ -10,7 +10,8 @@
 
 " Don't emulate vi bugs
 set nocompatible
-set shell=/bin/bash
+set shell=/bin/zsh
+let $SHELL="/bin/zsh"
 
 """""""""""""""""""""""""""""""""""""""""""""""
 "                   Plug                      "
@@ -32,9 +33,6 @@ Plug 'w0ng/vim-hybrid'
 
 " Autocomplete
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-
-" Ag / Silver Searcher
-" Plug 'rking/ag.vim'
 
 " Repeat (Plug for plugins to use .)
 Plug 'tpope/vim-repeat'
@@ -761,7 +759,7 @@ augroup END
 """"""""""""""""
 autocmd CursorHold * silent call CocActionAsync('highlight')
 
-let g:coc_global_extensions = [ 'coc-json', 'coc-git', 'coc-go', ]
+let g:coc_global_extensions = [ 'coc-json', 'coc-go', ]
 
 set updatetime=400
 nmap <silent> K :call ShowDocumentation()<CR>
@@ -822,7 +820,7 @@ autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 
 function! FormatOnSave()
     call <SID>StripTrailingWhitespaces()
-    call CocAction('runCommand', 'editor.action.organizeImport')
+    " call CocAction('runCommand', 'editor.action.organizeImport')
     call CocAction('format')
 endfunction
 
@@ -904,8 +902,6 @@ augroup END
 """"""""
 "  FZF "
 """"""""
-set shell=/bin/zsh
-let $SHELL="/bin/zsh"
 nmap <Leader>f :FZF<cr>
 nmap <leader>Fp :GFiles<cr>
 nmap <leader>Fg :GFiles?<cr>
