@@ -77,6 +77,10 @@ Plug 'tpope/tpope-vim-abolish'
 " Tagbar
 Plug 'majutsushi/tagbar'
 
+" Github Copilot
+Plug 'github/copilot.vim'
+" Needs :Copilot setup
+
 """""""""""""
 " Languages "
 """""""""""""
@@ -294,7 +298,7 @@ function! CleverReturn()
     end
 endfunction
 
-inoremap <silent><expr><tab> CleverTab()
+inoremap <silent><expr><tab> copilot#Accept(CleverTab())
 inoremap <silent><expr><s-tab> CleverUnshiftTab()
 
 " disable highlighting when hitting the return or esc key
@@ -676,6 +680,9 @@ nnoremap <leader>T :call RunTestsIfPossible()<cr>
 """""""""""""""""""""""""""""""""""""""""""""""
 "                LANG CONFIG                  "
 """""""""""""""""""""""""""""""""""""""""""""""
+
+" Copilot
+let g:copilot_no_tab_map = v:true
 
 """"""""""""
 " Defaults "
