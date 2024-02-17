@@ -45,11 +45,6 @@ test -d $HOME/bin; and set -x PATH $HOME/bin $PATH
 # for Zig: https://github.com/ziglang/zig/issues/8317
 # setenv ZIG_SYSTEM_LINKER_HACK 1
 
-if test -e (which vim)
-    setenv EDITOR (which vim)
-end
-setenv ALTERNATIVE_EDITOR ""
-
 begin # SSH Agent
     if test -z "$SSH_ENV"
         set -xg SSH_ENV $HOME/.ssh/environment
@@ -140,15 +135,11 @@ if test -d "/opt/homebrew/Cellar/llvm@11/11.1.0_2/bin"
     set -x PATH /opt/homebrew/Cellar/llvm@11/11.1.0_2/bin $PATH
 end
 
-if test -e (which vim)
-    setenv EDITOR (which vim)
-end
-setenv ALTERNATIVE_EDITOR ""
-
 fish_add_path -m /usr/local/opt/llvm@11/bin
 test -d /opt/pkg/bin; and fish_add_path -m /opt/pkg/bin/
 test -d /opt/pkg/bin; and fish_add_path -m /opt/pkg/sbin/
 
-if test -f (which pyenv)
-    pyenv init - | source
-end
+test -f (which pyenv); and pyenv init - | source
+test -e (which nvim); and setenv EDITOR (which nvim)
+test -e (which vim); and setenv ALTERNATIVE_EDITOR (which vim)
+
