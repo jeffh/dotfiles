@@ -52,12 +52,11 @@ Plug 'tpope/vim-surround'
 
 " NERD tree
 " Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
+
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 
 " Find Replace
-" Plug 'nvim-lua/plenary.nvim'
-" Plug 'nvim-pack/nvim-spectre'
 
 " Complementary pairing hotkeys & operations
 " eg - ]q jumps to next in quicklist, [q for other way
@@ -359,6 +358,13 @@ endfunction
 " Duplicate current line
 noremap Y <esc>yyp
 
+let g:netrw_altv = 1
+let g:netrw_banner = 0
+let g:netrw_winsize = 20
+let g:netrw_liststyle = 3
+let g:netrw_browse_split = 0
+nmap <silent> \ :Lexplore<cr>
+nmap <silent> \| :Rexplore<cr>
 " NERDTree toggle
 " noremap \ :NERDTreeToggle<CR>
 

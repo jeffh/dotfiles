@@ -22,3 +22,4 @@ nix/**/result-*
 
 nvim/plugged
 nvim/mason
+nvim/.netrwhist
