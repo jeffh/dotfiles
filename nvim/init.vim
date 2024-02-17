@@ -1,5 +1,5 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"                       General VIM settings                          "
+"                      General NVIM settings                          "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Use ! on function and command definitions to suppress warning
 " on reload.
@@ -18,13 +18,9 @@ let &packpath = &runtimepath
 """""""""""""""""""""""""""""""""""""""""""""""
 "                   Plug                      "
 """""""""""""""""""""""""""""""""""""""""""""""
-filetype off
+" filetype off
 
-if has('nvim')
-    call plug#begin(stdpath('config') . '/plugged')
-else
-    call plug#begin('~/.vim/plugged')
-end
+call plug#begin()
 
 " Theme
 Plug 'w0ng/vim-hybrid'
@@ -33,8 +29,14 @@ Plug 'w0ng/vim-hybrid'
 " Plugins "
 """""""""""
 
-" Autocomplete
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" LSP
+Plug 'williamboman/mason.nvim'
+Plug 'williamboman/mason-lspconfig.nvim'
+Plug 'neovim/nvim-lspconfig'
+Plug 'hrsh7th/nvim-cmp'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'L3MON4D3/LuaSnip'
+Plug 'VonHeikemen/lsp-zero.nvim', {'branch': 'v3.x'}
 
 " Repeat (Plug for plugins to use .)
 Plug 'tpope/vim-repeat'
@@ -54,7 +56,8 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 
 " Find Replace
-Plug 'brooth/far.vim'
+" Plug 'nvim-lua/plenary.nvim'
+" Plug 'nvim-pack/nvim-spectre'
 
 " Complementary pairing hotkeys & operations
 " eg - ]q jumps to next in quicklist, [q for other way
@@ -83,15 +86,16 @@ Plug 'majutsushi/tagbar'
 Plug 'github/copilot.vim'
 " Needs :Copilot setup
 
+" :lua vim.lsp.start({
+"   name = 'my-server-name',
+"   cmd = {'name-of-language-server-executable'},
+"   root_dir = vim.fs.dirname(vim.fs.find({'setup.py', 'pyproject.toml'}, { upward = true })[1]),
+" })
+
+
 """""""""""""
 " Languages "
 """""""""""""
-
-" LSP
-" Plug 'prabirshrestha/vim-lsp'
-" Plug 'mattn/vim-lsp-settings'
-" Plug 'prabirshrestha/asyncomplete.vim'
-" Plug 'prabirshrestha/asyncomplete-lsp.vim'
 
 
 " Ansible YAML
@@ -164,6 +168,9 @@ Plug 'vim-ruby/vim-ruby'
 " Rust
 Plug 'rust-lang/rust.vim'
 
+" SASS
+Plug 'cakebaker/scss-syntax.vim'
+
 " Swift
 Plug 'toyamarinyon/vim-swift'
 
@@ -181,6 +188,9 @@ filetype plugin indent on
 set regexpengine=1 " for ruby
 syntax enable
 
+let g:vimsyn_embed = 'l'
+let g:loaded_perl_provider = 0
+
 """""""""""""""""""""""""""""""""""""""""""""""
 "               KEY BINDINGS                  "
 """""""""""""""""""""""""""""""""""""""""""""""
@@ -191,7 +201,7 @@ let g:mapleader = ","
 
 " fast editing of vimrc file
 " ,v => edits current file
-map <leader>v :e ~/.vimrc<CR>
+map <leader>v :e ~/.config/nvim/init.vim<CR>
 
 " jump to previous buffer
 noremap <leader><leader> <c-^>
@@ -260,9 +270,7 @@ endif
 
 " Smart tabbing behavior
 function! CleverTab()
-    if coc#pum#visible()
-        return coc#pum#next(1)
-    elseif pumvisible()
+    if pumvisible()
         return "\<C-N>"
     else
         let line_to_cursor = strpart( getline('.'), 0, col('.')-1 )
@@ -278,34 +286,75 @@ function! CleverTab()
             return "\<C-N>"
         endif
     endif
+    " if coc#pum#visible()
+    "     return coc#pum#next(1)
+    " elseif pumvisible()
+    "     return "\<C-N>"
+    " else
+    "     let line_to_cursor = strpart( getline('.'), 0, col('.')-1 )
+    "     if strlen( line_to_cursor ) == 0
+    "         return "\<Tab>"
+    "     elseif line_to_cursor =~ '\s\s*$'
+    "         return "\<Tab>"
+    "     elseif line_to_cursor =~ '/$'
+    "         return "\<C-X>\<C-F>"
+    "     elseif exists('&omnifunc') && &omnifunc != ''
+    "         return "\<C-X>\<C-O>"
+    "     else
+    "         return "\<C-N>"
+    "     endif
+    " endif
 endfunction
 
 function! CleverUnshiftTab()
-    if coc#pum#visible()
-        return coc#pum#prev(1)
-    elseif pumvisible()
+    if pumvisible()
         return "\<C-p>"
     else
         return "\<\<"
     end
+    " if coc#pum#visible()
+    "     return coc#pum#prev(1)
+    " elseif pumvisible()
+    "     return "\<C-p>"
+    " else
+    "     return "\<\<"
+    " end
 endfunction
 
 function! CleverReturn()
-    if coc#pum#visible()
-        return coc#pum#confirm()
-    elseif pumvisible()
+    if pumvisible()
         return "\<C-y>"
     else
         return "\<cr>"
     end
+    " if coc#pum#visible()
+    "     return coc#pum#confirm()
+    " elseif pumvisible()
+    "     return "\<C-y>"
+    " else
+    "     return "\<cr>"
+    " end
 endfunction
 
-inoremap <silent><expr><tab> copilot#Accept(CleverTab())
-inoremap <silent><expr><s-tab> CleverUnshiftTab()
+"inoremap <silent><expr><tab> CleverTab()
+"inoremap <silent><expr><s-tab> CleverUnshiftTab()
+noremap <silent> td :tabclose<cr>
 
 " disable highlighting when hitting the return or esc key
-inoremap <silent><expr> <CR> CleverReturn()
+"inoremap <silent><script><expr> <CR> CleverReturn()
+inoremap <silent> <C-q> <Plug>(copilot-dismiss)
 noremap <silent> <CR> :nohlsearch<cr><cr>
+noremap <leader>q :call ToggleCopilot()<CR>
+
+function! ToggleCopilot()
+    if g:copilot_enabled == 1
+        :Copilot disable
+        echo "Disabled copilot"
+    else
+        :Copilot enable
+        echo "Enabled copilot"
+    endif
+endfunction
 
 " Duplicate current line
 noremap Y <esc>yyp
@@ -321,15 +370,11 @@ if $TMUX == ''
     set clipboard=unnamed  " System-like clipboard behavior if not in TMUX
 endif
 
-set tags=tags,$HOME/tags " Search path for ctags
-
 set notimeout          " Don't wait for timeout between command combinations
 
 set nowrap             " no line wrapping
 set textwidth=0        " width of document
 set formatoptions-=t   " don't automatically wrap text when typing
-
-set switchbuf="usetab" " buffer switching behavior - use tab or window if available
 
 set showmatch          " show paren matching
 
@@ -339,7 +384,6 @@ set magic              " Set for regular expressions' backslashes
 
 " visualize invisible characters. Show spaces at the end of lines and tabs.
 set list
-set listchars=tab:\|\ ,trail:·
 
 set foldmethod=syntax  " code folding is determined by syntax
 set foldlevel=99  " default fold level
@@ -349,8 +393,6 @@ set foldlevel=99  " default fold level
 " Search "
 """"""""""
 
-set hlsearch   " highlight search results
-set incsearch  " incremental search
 set ignorecase " that's case insensitive
 set smartcase  " unless you type a capital letter
 set wrapscan   " and the search wraps around the file
@@ -363,8 +405,6 @@ set wildignore+=**/dist/**
 set wildignore+=**/.ropeproject/**
 set wildignore+=**/node_modules/**
 set wildmode=longest:full:list
-set wildmenu
-set path+=**
 
 " where <C-P> should get it's completion list
 " . => current buffer
@@ -379,7 +419,7 @@ set path+=**
 " d => scan current & included files for defined name or macro
 " ] => tag completion
 " t => alias for ]
-set complete=.,w,b,d,i,t
+set complete=.,w,b,d,t
 
 " menu => Show menu when multiple autocomplete items are available
 " preview => Show extra info about the currently selected completion in menu
@@ -396,7 +436,6 @@ set noinfercase  " autocomplete without being case sensitive
 
 set ffs=unix,dos,mac " default line endings
 
-set history=600      " command line history
 set undolevels=9000  " undo history
 
 " auto reload vimrc when edited
@@ -406,8 +445,6 @@ augroup vim_autoreload
 augroup END
 
 " vim's backup / swap system
-set backupdir=~/.vim/tmp/,~/.tmp,/var/tmp,/tmp
-set directory=~/.vim/tmp/,~/.tmp,/var/tmp,/tmp
 " disable all swap, backup and writebackups
 set nobackup     " no backups
 set writebackup  " except when writing files
@@ -417,16 +454,12 @@ set noswapfile   " no swapfiles
 try
     if has('win32')
         set undodir=C:\Windows\Temp
-    else
-        set undodir=/tmp/vim_undodir
     endif
     set undofile
 catch
 endtry
 
-set autoread                   " auto refresh files that were changed
 set virtualedit=all            " let cursor stray beyond textfile bounds
-set backspace=eol,indent,start " backspace behaves like normal programs
 
 " Auto save buffers when focus is lost
 au FocusLost * silent! :wa
@@ -439,7 +472,6 @@ set nu rnu " enable relative line numbers
 set numberwidth=5
 
 " Set encoding and language
-set encoding=utf8
 set fileencoding=utf-8
 
 autocmd BufReadPost *
@@ -453,9 +485,6 @@ autocmd BufReadPost *
 
 " Customized titlebar, filename with 3 parent directories
 auto BufEnter * let &titlestring=expand("%:p:h:h:h:t") . "/" . expand("%:p:h:h:t") . "/" . expand("%:p:h:t") . "/" . expand("%:p:t") . " - Vim"
-
-" Always show status bar
-set laststatus=2
 
 " stylize the cursor in different modes
 set guicursor=n-v-c:block-Cursor
@@ -473,15 +502,11 @@ set t_vb=
 set tm=500
 
 set lazyredraw      " don't redraw when running macros
-set shortmess=aOstT " shortens messages to avoid 'press a key' prompt
-set ttyfast
+set shortmess=aOstTCF " shortens messages to avoid 'press a key' prompt
 
 " show matching parens, brackets and braces
 set showmatch
 set matchtime=1
-
-" Display cursor location info in the bottom right of status bar
-set ruler
 
 if has("gui_running")
     " disable toolbar & scrollbars
@@ -515,7 +540,6 @@ syntax sync minlines=50
 " Theme "
 """""""""
 let &t_Co=256
-set background=dark
 colorscheme hybrid
 set background=dark
 
@@ -684,14 +708,12 @@ nnoremap <leader>T :call RunTestsIfPossible()<cr>
 """""""""""""""""""""""""""""""""""""""""""""""
 
 " Copilot
-let g:copilot_no_tab_map = v:true
+"let g:copilot_no_tab_map = v:true
 
 """"""""""""
 " Defaults "
 """"""""""""
 set expandtab          " use spaces for tab key
-set autoindent         " automatically detect how to indent
-set smarttab           " be smart to how much to indent
 set cindent            " be smart for indenting a new line
 set shiftround         " round indent to multiple of shiftwidth
 
@@ -766,72 +788,69 @@ augroup END
 """"""""""""""""
 "      COC     "
 """"""""""""""""
-autocmd CursorHold * silent call CocActionAsync('highlight')
-
-let g:coc_global_extensions = [ 'coc-json', 'coc-go', ]
-
-set updatetime=400
-nmap <silent> K :call ShowDocumentation()<CR>
-nmap <silent><nowait> <leader>s  :<C-u>CocList -I symbols<CR>
-nmap <silent> <C-s> <Plug>(coc-range-select)
-xmap <silent> <C-s> <Plug>(coc-range-select)
-
-if has('nvim')
-    inoremap <silent><expr> <c-space> coc#refresh()
-else
-    inoremap <silent><expr> <c-@> coc#refresh()
-endif
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
-nmap <silent> <leader>r <Plug>(coc-rename)
-" nmap <silent> <leader>re <Plug>(coc-codeaction-refactor)
-" xmap <silent> <leader>rf <Plug>(coc-codeaction-refactor-selected)
-" nmap <silent> <leader>rf <Plug>(coc-codeaction-refactor-selected)
-nmap <silent><nowait> <leader>o :<C-u>CocList outline<CR>
-nmap <silent><nowait> <leader>c :<C-u>CocList commands<CR>
-" Highlight the symbol and its references when holding the cursor
-autocmd CursorHold * silent call CocActionAsync('highlight')
-
-" Applying code actions to the selected code block
-" Example: `<leader>aap` for current paragraph
-xmap <leader>a  <Plug>(coc-codeaction-selected)
-nmap <leader>a  <Plug>(coc-codeaction-selected)
-
-" Remap keys for applying code actions at the cursor position
-nmap <leader>ac  <Plug>(coc-codeaction-cursor)
-" Remap keys for apply code actions affect whole buffer
-nmap <leader>as  <Plug>(coc-codeaction-source)
-" Apply the most preferred quickfix action to fix diagnostic on the current line
-nmap <leader>qf  <Plug>(coc-fix-current)
-
-nmap <leader>cl  <Plug>(coc-codelens-action)
-
-" Add `:Format` command to format current buffer
-command! -nargs=0 Format :call CocActionAsync('format')
-
-" Add `:Fold` command to fold current buffer
-command! -nargs=? Fold :call     CocAction('fold', <f-args>)
-
-" Add `:OR` command for organize imports of the current buffer
-command! -nargs=0 OR   :call     CocActionAsync('runCommand', 'editor.action.organizeImport')
-
-" Use `[g` and `]g` to navigate diagnostics
-" Use `:CocDiagnostics` to get all diagnostics of current buffer in location list
-nmap <silent> [g <Plug>(coc-diagnostic-prev)
-nmap <silent> ]g <Plug>(coc-diagnostic-next)
-
-" File Explorer
-noremap <silent> \ <Cmd>CocCommand explorer<CR>
-
-autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
-
-function! FormatOnSave()
-    call <SID>StripTrailingWhitespaces()
-    " call CocAction('runCommand', 'editor.action.organizeImport')
-    call CocAction('format')
-endfunction
+" autocmd CursorHold * silent call CocActionAsync('highlight')
+" 
+" let g:coc_global_extensions = [ 'coc-json', 'coc-go', ]
+" 
+" set updatetime=400
+" nmap <silent> K :call ShowDocumentation()<CR>
+" nmap <silent><nowait> <leader>s  :<C-u>CocList -I symbols<CR>
+" nmap <silent> <C-s> <Plug>(coc-range-select)
+" xmap <silent> <C-s> <Plug>(coc-range-select)
+" 
+" if has('nvim')
+"     inoremap <silent><expr> <c-space> coc#refresh()
+" else
+"     inoremap <silent><expr> <c-@> coc#refresh()
+" endif
+" nmap <silent> gd <Plug>(coc-definition)
+" nmap <silent> gy <Plug>(coc-type-definition)
+" nmap <silent> gi <Plug>(coc-implementation)
+" nmap <silent> gr <Plug>(coc-references)
+" nmap <silent> <leader>r <Plug>(coc-rename)
+" nmap <silent><nowait> <leader>o :<C-u>CocList outline<CR>
+" nmap <silent><nowait> <leader>c :<C-u>CocList commands<CR>
+" " Highlight the symbol and its references when holding the cursor
+" autocmd CursorHold * silent call CocActionAsync('highlight')
+" 
+" " Applying code actions to the selected code block
+" " Example: `<leader>aap` for current paragraph
+" xmap <leader>a  <Plug>(coc-codeaction-selected)
+" nmap <leader>a  <Plug>(coc-codeaction-selected)
+" 
+" " Remap keys for applying code actions at the cursor position
+" nmap <leader>ac  <Plug>(coc-codeaction-cursor)
+" " Remap keys for apply code actions affect whole buffer
+" nmap <leader>as  <Plug>(coc-codeaction-source)
+" " Apply the most preferred quickfix action to fix diagnostic on the current line
+" nmap <leader>qf  <Plug>(coc-fix-current)
+" 
+" nmap <leader>cl  <Plug>(coc-codelens-action)
+" 
+" " Add `:Format` command to format current buffer
+" command! -nargs=0 Format :call CocActionAsync('format')
+" 
+" " Add `:Fold` command to fold current buffer
+" command! -nargs=? Fold :call     CocAction('fold', <f-args>)
+" 
+" " Add `:OR` command for organize imports of the current buffer
+" command! -nargs=0 OR   :call     CocActionAsync('runCommand', 'editor.action.organizeImport')
+" 
+" " Use `[g` and `]g` to navigate diagnostics
+" " Use `:CocDiagnostics` to get all diagnostics of current buffer in location list
+" nmap <silent> [g <Plug>(coc-diagnostic-prev)
+" nmap <silent> ]g <Plug>(coc-diagnostic-next)
+" 
+" " File Explorer
+" noremap <silent> \ <Cmd>CocCommand explorer<CR>
+" 
+" autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+" 
+" function! FormatOnSave()
+"     call <SID>StripTrailingWhitespaces()
+"     " call CocAction('runCommand', 'editor.action.organizeImport')
+"     call CocAction('format')
+" endfunction
 
 """"""""""
 " Python "
@@ -846,6 +865,7 @@ let g:pymode_lint_on_write = 0
 let g:pymode_rope = 1
 let g:pymode_rope_auto_project = 1
 
+
 """""""""""""
 " Google Go "
 """""""""""""
@@ -853,7 +873,7 @@ let g:pymode_rope_auto_project = 1
 augroup googlego_customizations
     autocmd!
     autocmd Filetype go nmap <Leader>p :Format
-    autocmd BufWritePre *.go call FormatOnSave()
+    " autocmd BufWritePre *.go call FormatOnSave()
     " autocmd FileType go nmap <Leader>i <Plug>(go-implements)
     " autocmd FileType go nmap <Leader>r <Plug>(go-rename)
 
@@ -937,3 +957,31 @@ let g:vim_markdown_initial_foldlevel=99
 
 let g:vim_json_syntax_conceal = 0
 
+"""""""""
+
+
+lua <<EOF
+    local lsp_zero = require('lsp-zero')
+
+    lsp_zero.on_attach(function(client, bufnr)
+    -- see :help lsp-zero-keybindings
+    -- to learn the available actions
+    lsp_zero.default_keymaps({buffer = bufnr})
+    end)
+
+    require('mason').setup({})
+    require('mason-lspconfig').setup({
+        ensure_installed = {
+            'cssmodules_ls',
+            'dockerls',
+            'gopls',
+            'html',
+            'htmx',
+            'jsonls',
+            'tsserver',
+        },
+        handlers = {
+            lsp_zero.default_setup,
+        },
+    })
+EOF

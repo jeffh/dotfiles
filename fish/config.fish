@@ -146,8 +146,8 @@ end
 setenv ALTERNATIVE_EDITOR ""
 
 fish_add_path -m /usr/local/opt/llvm@11/bin
-fish_add_path -m /opt/pkg/bin/
-fish_add_path -m /opt/pkg/sbin/
+test -d /opt/pkg/bin; and fish_add_path -m /opt/pkg/bin/
+test -d /opt/pkg/bin; and fish_add_path -m /opt/pkg/sbin/
 
 if test -f (which pyenv)
     pyenv init - | source

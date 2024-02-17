@@ -46,11 +46,11 @@ function symlink_to_home {
 
     echo " - neovim (.vim, .vimrc)"
     mkdir -p $HOME/.config/nvim || true
-    link $PWD/vim/vimrc $HOME/.config/nvim/init.vim
-    for FILE in autoload colors ftdetect ftplugin indent plugged plugin skel snippets syntax coc-settings.json
-    do
-        link $PWD/vim/vim/$FILE $HOME/.config/nvim/$FILE
-    done
+    link $PWD/nvim $HOME/.config/nvim
+    # for FILE in autoload colors ftdetect ftplugin indent plugged plugin skel snippets syntax coc-settings.json
+    # do
+    #     link $PWD/vim/vim/$FILE $HOME/.config/nvim/$FILE
+    # done
 
     echo " - clj-kondo"
     link $PWD/clj-kondo $HOME/.config/clj-kondo
@@ -234,9 +234,9 @@ function osx {
     #     run brew install rbenv --HEAD
     # fi
 
-    if [ ! -f /usr/local/bin/mvim ]; then
-        run brew install macvim
-    fi
+    # if [ ! -f /usr/local/bin/mvim ]; then
+    #     run brew install macvim
+    # fi
 
     if [ ! -f /usr/local/bin/nvim ]; then
         run brew install --HEAD neovim # need 0.5.0 or newer

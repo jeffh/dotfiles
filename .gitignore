@@ -19,3 +19,6 @@ emacs/emacs.d/places
 vim/vim/view
 nix/**/result
 nix/**/result-*
+
+nvim/plugged
+nvim/mason
