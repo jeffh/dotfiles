@@ -142,4 +142,4 @@ test -d /opt/pkg/bin; and fish_add_path -m /opt/pkg/sbin/
 test -f (which pyenv); and pyenv init - | source
 test -e (which nvim); and setenv EDITOR (which nvim)
 test -e (which vim); and setenv ALTERNATIVE_EDITOR (which vim)
-
+test -f (which jj); and jj util completion fish | source

@@ -4,15 +4,19 @@
 # * Git branch and dirty state (if inside a git repo)
 
 function _git_branch_name
-  if type -q git
     echo (git symbolic-ref HEAD 2>/dev/null | sed -e 's|^refs/heads/||')
-  end
 end
 
 function _is_git_dirty
-  if type -q git
     echo (git status -s --ignore-submodules=dirty 2>/dev/null)
-  end
+end
+
+function _jj_commit_hash
+    echo (jj log -l 1 2>/dev/null | grep '^@' | head -n 1 | awk '{printf $2}')
+end
+
+function _is_jj_dirty
+    echo (jj st 2>/dev/null | head -n 1 | grep 'copy changes' 2> /dev/null)
 end
 
 function fish_prompt
@@ -83,15 +87,31 @@ function fish_prompt
   echo -n -s $cwd $normal
 
   # Show git branch and dirty state
-  if [ (_git_branch_name) ]
-    set -l git_branch '(' (_git_branch_name) ')'
+  if type -q git
+    set -l git_branch (_git_branch_name)
+    if test -n "$git_branch"
+        set -l git_branch '(git:' $git_branch ')'
 
-    if [ (_is_git_dirty) ]
-      set git_info $repodirtycolor $git_branch " ★ "
-    else
-      set git_info $repocleancolor $git_branch
+        if [ (_is_git_dirty) ]
+            set git_info $repodirtycolor $git_branch " ★ "
+        else
+            set git_info $repocleancolor $git_branch
+        end
+        echo -n -s ' · ' $git_info $normal
     end
-    echo -n -s ' · ' $git_info $normal
+  end
+
+  if type -q jj
+    set -l jj_hash (_jj_commit_hash)
+    if test -n "$jj_hash"
+        set -l jj_hash '(jj:' $jj_hash ')'
+        if [ (_is_jj_dirty) ]
+            set jj_info $repodirtycolor $jj_hash " ★ "
+        else
+            set jj_info $repocleancolor $jj_hash
+        end
+        echo -n -s ' · ' $jj_info $normal
+    end
   end
 
   # Terminate with a nice prompt char
