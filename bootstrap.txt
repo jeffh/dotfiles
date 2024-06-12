@@ -1,0 +1,108 @@
+arg -optional INSTALL_SLACK
+    -type bool
+    -desc "If true, installs slack"
+    -default false
+
+arg -optional INSTALL_DISCORD
+    -type bool
+    -desc "If true, installs discord"
+    -default false
+
+system
+    -brew-pkg-add ag
+    -brew-pkg-add chromedriver
+    -brew-pkg-add fish
+    -brew-pkg-add go
+    -brew-pkg-add neovim
+    -brew-pkg-add node
+    -brew-pkg-add openjdk
+    -brew-pkg-add jj
+    -brew-pkg-add mosh
+    -brew-pkg-add mas
+    -brew-pkg-add orbstack:/Applications/OrbStack.app
+    -brew-pkg-add linear-linear:/Applications/Linear.app
+    -brew-pkg-add 'bartender:/Applications/Bartender 5.app'
+    -brew-pkg-add 'sublime-merge:/Applications/Sublime Merge.app'
+    -brew-pkg-add 'roam-research:/Applications/Roam Research.app'
+    -brew-pkg-add 'google-chrome:/Applications/Google Chrome.app'
+    -brew-pkg-add 'arc:/Applications/Arc.app'
+    -brew-pkg-add 'sizeup:/Applications/SizeUp.app'
+    -brew-pkg-add 'homebrew/cask/alfred:/Applications/Alfred 5.app'
+    -brew-pkg-add 'homebrew/cask/iterm2:/Applications/iTerm.app'
+
+system
+    -mas-pkg-add '424389933:Final Cut Pro'
+    -mas-pkg-add '904280696:Things'
+    -mas-pkg-add '409183694:Keynote'
+    -mas-pkg-add '409907375:Remote Desktop'
+    -mas-pkg-add '1365531024:1Blocker'
+    -mas-pkg-add '775737590:iA Writer'
+    -mas-pkg-add '425424353:The Unarchiver'
+    -mas-pkg-add '434290957:Motion'
+    -mas-pkg-add '409203825:Numbers'
+    -mas-pkg-add '497799835:Xcode'
+    -mas-pkg-add '409201541:Pages'
+    -mas-pkg-add '975937182:Fantastical'
+    -mas-pkg-add '290986013:Deliveries'
+    -mas-pkg-add '1508732804:Soulver 3'
+    -mas-pkg-add '1475387142:Tailscale'
+    -mas-upgrade
+    -defaults-write 'com.apple.finder:AppleShowAllFiles:bool:true'
+    -defaults-write ':InitialKeyRepeat:int:15'
+    -defaults-write ':KeyRepeat:int:1'
+    -defaults-write 'com.microsoft.VSCode:ApplePressAndHoldEnabled:bool:false'
+
+system
+    -mas-pkg-rm '406056744:Evernote'
+    -mas-pkg-rm '1488905707:Noteshelf'
+    -mas-pkg-rm '1481302432:Instapaper Save'
+    -mas-pkg-rm '1481669779:Evernote Web Clipper'
+
+when -key "INSTALL_SLACK"
+    system -brew-pkg-add homebrew/cask/slack:/Applications/Slack.app
+
+when -key "INSTALL_DISCORD"
+    system -brew-pkg-add discord:/Applications/Discord.app
+
+system
+    -brew-tap-add railwaycat/emacsmacport
+    -brew-pkg-add emacs-mac
+
+file -dir
+    -path ~/.rbenv/bin
+    -path ~/.rbenv/shims
+    -path ~/workspace/gopath/bin
+    -path ~/.cargo/bin
+    -path ~/.swiftenv/shims
+    -path ~/.config
+    -path ~/workspace
+
+git-config -scope global
+    -set 'user.name=Jeff Hui'
+    -set 'user.email=jeff@jeffhui.net'
+    -set 'alias.st=status'
+
+git-clone -clone-only -src 'git@github.com:jeffh/dotfiles.git' -dst ~/workspace/dotfiles
+
+symlink
+    -path ~/.vim              -to ~/workspace/dotfiles/vim
+    -path ~/.vimrc            -to ~/workspace/dotfiles/vimrc
+    -path ~/.config/nvim      -to ~/workspace/dotfiles/nvim
+    -path ~/.config/clj-kondo -to ~/workspace/dotfiles/clj-kondo
+    -path ~/.zshrc            -to ~/workspace/dotfiles/zsh/zshrc
+    -path ~/.zsh              -to ~/workspace/dotfiles/zsh/zsh
+    -path ~/.tmux.conf        -to ~/workspace/dotfiles/tmux/tmux.conf
+    -path ~/.config/fish      -to ~/workspace/dotfiles/fish
+    -path ~/.config/alacrityy -to ~/workspace/dotfiles/alacritty
+    -path ~/.emacs.d          -to ~/workspace/dotfiles/emacs
+    -path ~/bin               -to ~/workspace/dotfiles/bin
+    -path ~/.gnupg            -to ~/workspace/dotfiles/gnupg
+
+run -e 'nvim +PlugInstall +qall'
+    -e 'nvim +GoInstallBinaries +qall'
+
+git-clone -clone-only -src 'git@github.com:jeffh/cfs.git'      -dst ~/workspace/cfs
+git-clone -clone-only -src 'git@github.com:jeffh/run.git'      -dst ~/workspace/run
+git-clone -clone-only -src 'git@github.com:jeffh/runtime.git'  -dst ~/workspace/runtime
+git-clone -clone-only -src 'git@github.com:jeffh/kio.git'      -dst ~/workspace/kio
+git-clone -clone-only -src 'git@github.com:jeffh/trader.git'   -dst ~/workspace/trader
