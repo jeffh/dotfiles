@@ -19,16 +19,17 @@ system
     -brew-pkg-add jj
     -brew-pkg-add mosh
     -brew-pkg-add mas
-    -brew-pkg-add orbstack:/Applications/OrbStack.app
-    -brew-pkg-add linear-linear:/Applications/Linear.app
-    -brew-pkg-add 'bartender:/Applications/Bartender 5.app'
-    -brew-pkg-add 'sublime-merge:/Applications/Sublime Merge.app'
-    -brew-pkg-add 'roam-research:/Applications/Roam Research.app'
-    -brew-pkg-add 'google-chrome:/Applications/Google Chrome.app'
-    -brew-pkg-add 'arc:/Applications/Arc.app'
-    -brew-pkg-add 'sizeup:/Applications/SizeUp.app'
-    -brew-pkg-add 'homebrew/cask/alfred:/Applications/Alfred 5.app'
-    -brew-pkg-add 'homebrew/cask/iterm2:/Applications/iTerm.app'
+    -brew-pkg-add btop
+    -brew-cask-add orbstack:/Applications/OrbStack.app
+    -brew-cask-add linear-linear:/Applications/Linear.app
+    -brew-cask-add 'bartender:/Applications/Bartender 5.app'
+    -brew-cask-add 'sublime-merge:/Applications/Sublime Merge.app'
+    -brew-cask-add 'roam-research:/Applications/Roam Research.app'
+    -brew-cask-add 'google-chrome:/Applications/Google Chrome.app'
+    -brew-cask-add 'arc:/Applications/Arc.app'
+    -brew-cask-add 'sizeup:/Applications/SizeUp.app'
+    -brew-cask-add 'homebrew/cask/alfred:/Applications/Alfred 5.app'
+    -brew-cask-add 'homebrew/cask/iterm2:/Applications/iTerm.app'
 
 system
     -mas-pkg-add '424389933:Final Cut Pro'
@@ -42,7 +43,7 @@ system
     -mas-pkg-add '409203825:Numbers'
     -mas-pkg-add '497799835:Xcode'
     -mas-pkg-add '409201541:Pages'
-    -mas-pkg-add '975937182:Fantastical'
+    # -mas-pkg-add '975937182:Fantastical'
     -mas-pkg-add '290986013:Deliveries'
     -mas-pkg-add '1508732804:Soulver 3'
     -mas-pkg-add '1475387142:Tailscale'
@@ -52,21 +53,21 @@ system
     -defaults-write ':KeyRepeat:int:1'
     -defaults-write 'com.microsoft.VSCode:ApplePressAndHoldEnabled:bool:false'
 
-system
-    -mas-pkg-rm '406056744:Evernote'
-    -mas-pkg-rm '1488905707:Noteshelf'
-    -mas-pkg-rm '1481302432:Instapaper Save'
-    -mas-pkg-rm '1481669779:Evernote Web Clipper'
+#system
+#    -mas-pkg-rm '406056744:Evernote'
+#    -mas-pkg-rm '1488905707:Noteshelf'
+#    -mas-pkg-rm '1481302432:Instapaper Save'
+#    -mas-pkg-rm '1481669779:Evernote Web Clipper'
 
-when -key "INSTALL_SLACK"
-    system -brew-pkg-add homebrew/cask/slack:/Applications/Slack.app
+when -key INSTALL_SLACK
+    system -brew-cask-add slack:/Applications/Slack.app
 
-when -key "INSTALL_DISCORD"
-    system -brew-pkg-add discord:/Applications/Discord.app
+when -key INSTALL_DISCORD
+    system -brew-cask-add discord:/Applications/Discord.app
 
-system
-    -brew-tap-add railwaycat/emacsmacport
-    -brew-pkg-add emacs-mac
+#system
+#    -brew-tap-add railwaycat/emacsmacport
+#    -brew-pkg-add emacs-mac
 
 file -dir
     -path ~/.rbenv/bin
@@ -102,6 +103,7 @@ run -e 'nvim +PlugInstall +qall'
     -e 'nvim +GoInstallBinaries +qall'
 
 git-clone -clone-only -src 'git@github.com:jeffh/cfs.git'      -dst ~/workspace/cfs
+git-clone -clone-only -src 'git@github.com:jeffh/gocheck.git'  -dst ~/workspace/gocheck
 git-clone -clone-only -src 'git@github.com:jeffh/run.git'      -dst ~/workspace/run
 git-clone -clone-only -src 'git@github.com:jeffh/runtime.git'  -dst ~/workspace/runtime
 git-clone -clone-only -src 'git@github.com:jeffh/kio.git'      -dst ~/workspace/kio

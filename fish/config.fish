@@ -91,11 +91,8 @@ if test -d $HOME/.rbenv/shims
     set -x PATH ~/.rbenv/shims $PATH
     set -x RBENV_SHELL fish
 #set -gx RBENV_ROOT /usr/local/var/rbenv
-    if test -e which
-        which rbenv > /dev/null
-        if test $status -eq 0
-            rbenv init - | source
-        end
+    if type -q rbenv
+        rbenv init - | source
     end
 end
 
@@ -139,7 +136,8 @@ fish_add_path -m /usr/local/opt/llvm@11/bin
 test -d /opt/pkg/bin; and fish_add_path -m /opt/pkg/bin/
 test -d /opt/pkg/bin; and fish_add_path -m /opt/pkg/sbin/
 
-test -f (which pyenv); and pyenv init - | source
-test -e (which nvim); and setenv EDITOR (which nvim)
-test -e (which vim); and setenv ALTERNATIVE_EDITOR (which vim)
-test -f (which jj); and jj util completion fish | source
+test -d $HOME/.pyenv/bin; and fish_add_path -m $HOME/.pyenv/bin
+type -q pyenv; and pyenv init - | source
+type -q nvim; and setenv EDITOR (type -p nvim)
+type -q vim; and setenv ALTERNATIVE_EDITOR (type -p vim)
+type -q jj; and jj util completion fish | source
