@@ -82,8 +82,10 @@ Plug 'tpope/tpope-vim-abolish'
 Plug 'majutsushi/tagbar'
 
 " Github Copilot
-Plug 'github/copilot.vim'
+" Plug 'github/copilot.vim'
 " Needs :Copilot setup
+
+Plug 'supermaven-inc/supermaven-nvim'
 
 " :lua vim.lsp.start({
 "   name = 'my-server-name',
@@ -133,6 +135,7 @@ Plug 'juvenn/mustache.vim'
 
 " Google Go (golang)
 " Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
+Plug 'joerdav/templ.vim'
 
 " Clojure
 " Plug 'git://github.com/vim-scripts/paredit.vim.git'
@@ -158,7 +161,8 @@ Plug 'klen/python-mode'
 Plug 'saltstack/salt-vim'
 
 " Javascript
-Plug 'pangloss/vim-javascript'
+Plug 'HerringtonDarkholme/yats.vim' " typescript
+" Plug 'pangloss/vim-javascript'
 Plug 'elzr/vim-json'
 
 " Ruby
@@ -185,7 +189,6 @@ call plug#end()
 " call dein#add('junegunn/fzf', { 'build': './install --all', 'merged': 0 })
 
 filetype plugin indent on
-set regexpengine=1 " for ruby
 syntax enable
 
 let g:vimsyn_embed = 'l'
@@ -342,19 +345,8 @@ noremap <silent> td :tabclose<cr>
 
 " disable highlighting when hitting the return or esc key
 "inoremap <silent><script><expr> <CR> CleverReturn()
-inoremap <silent> <C-q> <Plug>(copilot-dismiss)
+" inoremap <silent> <C-q> <Plug>(copilot-dismiss)
 noremap <silent> <CR> :nohlsearch<cr><cr>
-noremap <leader>q :call ToggleCopilot()<CR>
-
-function! ToggleCopilot()
-    if g:copilot_enabled == 1
-        :Copilot disable
-        echo "Disabled copilot"
-    else
-        :Copilot enable
-        echo "Enabled copilot"
-    endif
-endfunction
 
 " Duplicate current line
 noremap Y <esc>yyp
@@ -763,6 +755,7 @@ augroup language_customizations
     autocmd FileType go setlocal tabstop=4
     autocmd FileType go setlocal softtabstop=4
     autocmd FileType go setlocal shiftwidth=4
+    autocmd BufWritePost *.templ silent! execute "!PATH=\"$PATH:$(go env GOPATH)/bin\" templ fmt <afile> >/dev/null 2>&1" | redraw!
 
     " autocmd FileType go setlocal efm=%E%.%#FAIL:\ %m,%C%.%#:[0-9]%#:\ %m,%C%.%#\ %f:%l,%Z%.%#stacktrace:\ %#%f:%l,%-G%.%#,#E%f:%l:\ %m
 " --- FAIL: TestCanNegotiateEncryptedSessionConnection (0.06 seconds)
@@ -961,6 +954,8 @@ let g:vim_json_syntax_conceal = 0
 lua <<EOF
     local lsp_zero = require('lsp-zero')
 
+    require('supermaven-nvim').setup({})
+
     lsp_zero.on_attach(function(client, bufnr)
     -- see :help lsp-zero-keybindings
     -- to learn the available actions
@@ -977,10 +972,35 @@ lua <<EOF
             'htmx',
             'jsonls',
             'tsserver',
+            'templ',
+            'tailwindcss',
         },
         handlers = {
             lsp_zero.default_setup,
         },
+    })
+
+    vim.api.nvim_create_autocmd("BufWritePre", {
+        pattern = {"*.ts", "*.tsx"},
+        callback = function()
+            local params = vim.lsp.util.make_range_params()
+            params.context = {only = {"source.organizeImports"}}
+            -- buf_request_sync defaults to a 1000ms timeout. Depending on your
+            -- machine and codebase, you may want longer. Add an additional
+            -- argument after params if you find that you have to write the file
+            -- twice for changes to be saved.
+            -- E.g., vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, 3000)
+            local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params)
+            for cid, res in pairs(result or {}) do
+            for _, r in pairs(res.result or {}) do
+                if r.edit then
+                local enc = (vim.lsp.get_client_by_id(cid) or {}).offset_encoding or "utf-16"
+                vim.lsp.util.apply_workspace_edit(r.edit, enc)
+                end
+            end
+            end
+            vim.lsp.buf.format({async = false})
+        end
     })
 
     vim.api.nvim_create_autocmd("BufWritePre", {
@@ -1005,6 +1025,8 @@ lua <<EOF
             vim.lsp.buf.format({async = false})
         end
     })
+
+    vim.filetype.add({ extension = { templ = "templ" } }) 
 
 
     -- Global mappings.

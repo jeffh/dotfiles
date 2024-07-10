@@ -20,6 +20,7 @@ system
     -brew-pkg-add mosh
     -brew-pkg-add mas
     -brew-pkg-add btop
+    -brew-pkg-add flyctl
     -brew-cask-add orbstack:/Applications/OrbStack.app
     -brew-cask-add linear-linear:/Applications/Linear.app
     -brew-cask-add 'bartender:/Applications/Bartender 5.app'
