@@ -51,12 +51,12 @@ Plug 'Shougo/vimproc.vim', { 'do': 'make' }
 Plug 'tpope/vim-surround'
 
 " NERD tree
-" Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
+Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf.vim'
-
-" Find Replace
+Plug 'nvim-treesitter/nvim-treesitter', { 'do': ':TSUpdate' }
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.8' }
+Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
 
 " Complementary pairing hotkeys & operations
 " eg - ]q jumps to next in quicklist, [q for other way
@@ -98,50 +98,17 @@ Plug 'supermaven-inc/supermaven-nvim'
 " Languages "
 """""""""""""
 
-
-" Ansible YAML
-Plug 'chase/vim-ansible-yaml'
-
 " Carthage
 Plug 'cfdrake/vim-carthage'
 
-" Dart
-Plug 'dart-lang/dart-vim-plugin'
-
-" Markdown
-Plug 'godlygeek/tabular'
-Plug 'plasticboy/vim-markdown'
-
-" Nix
-Plug 'LnL7/vim-nix'
-
-" Elm
-Plug 'elmcast/elm-vim'
-
-" Elixir
-Plug 'elixir-editors/vim-elixir'
-
-" Odin
-Plug 'Tetralux/odin.vim'
-
-" Terraform
-Plug 'hashivim/vim-terraform'
-
-" HCL
-Plug 'jvirtanen/vim-hcl'
-
 " Mustache
 Plug 'juvenn/mustache.vim'
-
-" Google Go (golang)
-" Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
-Plug 'joerdav/templ.vim'
 
 " Clojure
 " Plug 'git://github.com/vim-scripts/paredit.vim.git'
 Plug 'guns/vim-sexp', { 'for': 'clojure' }
 Plug 'guns/vim-clojure-static', { 'for': 'clojure' }
-Plug 'guns/vim-clojure-highlight', { 'for': 'clojure' }
+"Plug 'guns/vim-clojure-highlight', { 'for': 'clojure' }
 Plug 'liquidz/vim-iced', { 'for': 'clojure' }
 Plug 'tpope/vim-fireplace', { 'for': 'clojure' }
 Plug 'tpope/vim-sexp-mappings-for-regular-people', { 'for': 'clojure' }
@@ -150,43 +117,8 @@ Plug 'tpope/vim-projectionist', { 'for': 'clojure' }
 Plug 'tpope/vim-dispatch', { 'for': 'clojure' }
 " Plug 'kien/rainbow_parentheses.vim'
 
-" Haskell
-" Plug 'dag/vim2hs'
-Plug 'eagletmt/ghcmod-vim'
-Plug 'eagletmt/neco-ghc'
-
-" Python
-Plug 'jmcantrell/vim-virtualenv'
-Plug 'klen/python-mode'
-Plug 'saltstack/salt-vim'
-
-" Javascript
-Plug 'HerringtonDarkholme/yats.vim' " typescript
-" Plug 'pangloss/vim-javascript'
-Plug 'elzr/vim-json'
-
-" Ruby
-Plug 'tpope/vim-rvm'
-Plug 'vim-ruby/vim-ruby'
-
-" Rust
-Plug 'rust-lang/rust.vim'
-
-" SASS
-Plug 'cakebaker/scss-syntax.vim'
-
-" Swift
-Plug 'toyamarinyon/vim-swift'
-
-" Nim
-Plug 'zah/nim.vim'
-
-" Zig
-Plug 'ziglang/zig.vim'
 
 call plug#end()
-
-" call dein#add('junegunn/fzf', { 'build': './install --all', 'merged': 0 })
 
 filetype plugin indent on
 syntax enable
@@ -351,15 +283,15 @@ noremap <silent> <CR> :nohlsearch<cr><cr>
 " Duplicate current line
 noremap Y <esc>yyp
 
-let g:netrw_altv = 1
-let g:netrw_banner = 0
-let g:netrw_winsize = 20
-let g:netrw_liststyle = 3
-let g:netrw_browse_split = 0
-nmap <silent> \ :Lexplore<cr>
-nmap <silent> \| :Rexplore<cr>
+"let g:netrw_altv = 1
+"let g:netrw_banner = 0
+"let g:netrw_winsize = 20
+"let g:netrw_liststyle = 3
+"let g:netrw_browse_split = 0
+"nmap <silent> \ :Lexplore<cr>
+"nmap <silent> \| :Rexplore<cr>
 " NERDTree toggle
-" noremap \ :NERDTreeToggle<CR>
+ noremap \ :NERDTreeToggle<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""
 "                CORE CONFIG                  "
@@ -615,7 +547,7 @@ noremap <silent> <c-q> :call ToggleQuickFix()<cr>
 " Running Tests "
 """""""""""""""""
 function! RunIfMatchesFileOrVipe(command, file_ext_regex, append_file_as_arg)
-    let in_runnable_file = match(expand("%"), a:file_ext_regex) != -1
+    let in_runnable_file = match(expand("%:p"), a:file_ext_regex) != -1
     if in_runnable_file
         let t:last_ran_file=@%
     elseif !exists("t:last_ran_file")
@@ -633,16 +565,16 @@ function! RunIfMatchesFileOrVipe(command, file_ext_regex, append_file_as_arg)
 endfunction
 
 function! RunIfMatchesFile(command, file_ext_regex, append_file_as_arg)
-    let in_runnable_file = match(expand("%"), a:file_ext_regex) != -1
+    let in_runnable_file = match(expand("%:p"), a:file_ext_regex) != -1
     if in_runnable_file
-        let t:last_ran_file=@%
+        let t:last_ran_file=expand("%:p")
     elseif !exists("t:last_ran_file")
         return 0
-    elseif match(expand("%"), a:file_ext_regex) == -1
+    elseif match(expand("%:p"), a:file_ext_regex) == -1
         return 0
     end
 
-    :silent w
+    ":silent w
     if a:append_file_as_arg
         return RunCommand(a:command . t:last_ran_file)
     else
@@ -666,6 +598,7 @@ function! RunCommandOrVipe(command)
 endfunction
 
 function! RunCommand(command)
+    echo a:command
     exec a:command
     return 1
 endfunction
@@ -681,13 +614,13 @@ function! RunTestFileIfPossible()
     endif
     " Python
     if !has_ran && executable('py.test') == 1
-        let has_ran = RunIfMatchesFile("py.test ", '.*test.*.py$', 1)
+        let has_ran = RunIfMatchesFile("py.test ", '.*\/test.*.py$', 1)
     elseif !has_ran && executable('nosetests') == 1
-        let has_ran = RunIfMatchesFile("nosetests ", '.*test.*.py$', 1)
+        let has_ran = RunIfMatchesFile("nosetests ", '.*\/test.*.py$', 1)
     endif
 
     if !has_ran && executable("go") == 1
-        let has_ran = RunIfMatchesFile(':GoTestFunc', '.*test\.go$', 0)
+        let has_ran = RunIfMatchesFile("go test ./...", '.*test\.go$', 0)
     endif
 
     if !has_ran && (filereadable("Makefile") || filereadable("makefile"))
@@ -752,12 +685,13 @@ augroup language_customizations
     autocmd FileType sls setlocal expandtab
 
     " golang
+    autocmd FileType go setlocal noexpandtab
     autocmd FileType go setlocal tabstop=4
     autocmd FileType go setlocal softtabstop=4
     autocmd FileType go setlocal shiftwidth=4
     autocmd BufWritePost *.templ silent! execute "!PATH=\"$PATH:$(go env GOPATH)/bin\" templ fmt <afile> >/dev/null 2>&1" | redraw!
 
-    " autocmd FileType go setlocal efm=%E%.%#FAIL:\ %m,%C%.%#:[0-9]%#:\ %m,%C%.%#\ %f:%l,%Z%.%#stacktrace:\ %#%f:%l,%-G%.%#,#E%f:%l:\ %m
+     autocmd FileType go setlocal efm=%E%.%#FAIL:\ %m,%C%.%#:[0-9]%#:\ %m,%C%.%#\ %f:%l,%Z%.%#stacktrace:\ %#%f:%l,%-G%.%#,#E%f:%l:\ %m
 " --- FAIL: TestCanNegotiateEncryptedSessionConnection (0.06 seconds)
 " 	expectations.go:71: expected &protocol.packetBuffer{packets:[]interface {}{}, wUpgrader:(protocol.WriterFactory)(nil), rUpgrader:(protocol.ReaderFactory<...>ol.packetBuffer{packets:[]interface {}{}, wUpgrader:(protocol.WriterFactory)(nil), rUpgrader:(protocol.ReaderFactory)(nil)} (*protocol.packetBuffer) No packets to read!
 " 		 stacktrace: /Users/jeff/workspace/mc/src/mc/protocol/connection_test.go:246
@@ -773,6 +707,9 @@ augroup language_customizations
     autocmd FileType html setlocal noexpandtab
 
     autocmd FileType css setlocal noexpandtab
+    autocmd FileType css setlocal tabstop=2
+    autocmd FileType css setlocal softtabstop=2
+    autocmd FileType css setlocal shiftwidth=2
 
     autocmd FileType clojure set lisp
 
@@ -787,73 +724,6 @@ augroup END
 "              PLUGIN CONFIG                  "
 """""""""""""""""""""""""""""""""""""""""""""""
 
-""""""""""""""""
-"      COC     "
-""""""""""""""""
-" autocmd CursorHold * silent call CocActionAsync('highlight')
-" 
-" let g:coc_global_extensions = [ 'coc-json', 'coc-go', ]
-" 
-" set updatetime=400
-" nmap <silent> K :call ShowDocumentation()<CR>
-" nmap <silent><nowait> <leader>s  :<C-u>CocList -I symbols<CR>
-" nmap <silent> <C-s> <Plug>(coc-range-select)
-" xmap <silent> <C-s> <Plug>(coc-range-select)
-" 
-" if has('nvim')
-"     inoremap <silent><expr> <c-space> coc#refresh()
-" else
-"     inoremap <silent><expr> <c-@> coc#refresh()
-" endif
-" nmap <silent> gd <Plug>(coc-definition)
-" nmap <silent> gy <Plug>(coc-type-definition)
-" nmap <silent> gi <Plug>(coc-implementation)
-" nmap <silent> gr <Plug>(coc-references)
-" nmap <silent> <leader>r <Plug>(coc-rename)
-" nmap <silent><nowait> <leader>o :<C-u>CocList outline<CR>
-" nmap <silent><nowait> <leader>c :<C-u>CocList commands<CR>
-" " Highlight the symbol and its references when holding the cursor
-" autocmd CursorHold * silent call CocActionAsync('highlight')
-" 
-" " Applying code actions to the selected code block
-" " Example: `<leader>aap` for current paragraph
-" xmap <leader>a  <Plug>(coc-codeaction-selected)
-" nmap <leader>a  <Plug>(coc-codeaction-selected)
-" 
-" " Remap keys for applying code actions at the cursor position
-" nmap <leader>ac  <Plug>(coc-codeaction-cursor)
-" " Remap keys for apply code actions affect whole buffer
-" nmap <leader>as  <Plug>(coc-codeaction-source)
-" " Apply the most preferred quickfix action to fix diagnostic on the current line
-" nmap <leader>qf  <Plug>(coc-fix-current)
-" 
-" nmap <leader>cl  <Plug>(coc-codelens-action)
-" 
-" " Add `:Format` command to format current buffer
-" command! -nargs=0 Format :call CocActionAsync('format')
-" 
-" " Add `:Fold` command to fold current buffer
-" command! -nargs=? Fold :call     CocAction('fold', <f-args>)
-" 
-" " Add `:OR` command for organize imports of the current buffer
-" command! -nargs=0 OR   :call     CocActionAsync('runCommand', 'editor.action.organizeImport')
-" 
-" " Use `[g` and `]g` to navigate diagnostics
-" " Use `:CocDiagnostics` to get all diagnostics of current buffer in location list
-" nmap <silent> [g <Plug>(coc-diagnostic-prev)
-" nmap <silent> ]g <Plug>(coc-diagnostic-next)
-" 
-" " File Explorer
-" noremap <silent> \ <Cmd>CocCommand explorer<CR>
-" 
-" autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
-" 
-" function! FormatOnSave()
-"     call <SID>StripTrailingWhitespaces()
-"     " call CocAction('runCommand', 'editor.action.organizeImport')
-"     call CocAction('format')
-" endfunction
-
 """"""""""
 " Python "
 """"""""""
@@ -867,25 +737,6 @@ let g:pymode_lint_on_write = 0
 let g:pymode_rope = 1
 let g:pymode_rope_auto_project = 1
 
-
-"""""""""""""
-" Google Go "
-"""""""""""""
-
-augroup googlego_customizations
-    autocmd!
-    " autocmd Filetype go nmap <Leader>p :Format
-    " autocmd BufWritePre *.go lua vim.lsp.buf.format()
-    " autocmd FileType go nmap <Leader>i <Plug>(go-implements)
-    " autocmd FileType go nmap <Leader>r <Plug>(go-rename)
-
-"     autocmd FileType go nmap <Leader>i <Plug>(go-implements)
-"     autocmd FileType go nmap <Leader>r <Plug>(go-rename)
-"     " sort isn't working for gotags
-"     autocmd FileType go nmap <Leader>c :!gotags -f tags -sort=0 -R $GOPATH .<cr>
-augroup END
-" let g:go_fmt_command = "goimports"
-" let g:go_rename_command = 'gopls'
 
 """""""""""
 " Clojure "
@@ -902,51 +753,17 @@ augroup END
 " autocmd Syntax * RainbowParenthesesLoadSquare
 " autocmd Syntax * RainbowParenthesesLoadBraces
 
-"""""""""""
-" Haskell "
-"""""""""""
-" Disable haskell-vim omnifunc
-let g:haskellmode_completion_ghc = 0
-augroup haskell_customizations
-    autocmd!
-    autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
-    autocmd FileType haskell nmap <Leader>c :GhcModCheck<cr>
-    autocmd FileType haskell nmap <Leader>l :GhcModLint<cr>
-    autocmd FileType haskell nmap <Leader>e :GhcModType<cr>
-    autocmd FileType haskell nmap <Leader>i :GhcModTypeInsert<cr>
-    " autocmd FileType haskell nmap <Leader>g :GhcModSigCodegen<cr>
-    autocmd FileType haskell nmap <Leader>C :GhcModCheckClear<cr>
-    " autocmd FileType haskell nnoremap <CR> :silent! GhcModTypeClear<cr>:nohlsearch<cr><cr>
-augroup END
-
-""""""""
-"  FZF "
-""""""""
-nmap <Leader>f :FZF<cr>
-nmap <leader>Fp :GFiles<cr>
-nmap <leader>Fg :GFiles?<cr>
-nmap <leader>b :Buffers<cr>
-nmap <leader>m :Marks<cr>
-nmap <leader>g :Rg<space>
-nmap <leader>G :RG<space>
-" nmap <leader>
-
-""""""""""""""""""
-" vim-easy-align "
-""""""""""""""""""
-vmap <Enter> <Plug>(EasyAlign)
-nmap <Leader>a <Plug>(EasyAlign)
-
-""""""""""""""""
-" vim-markdown "
-""""""""""""""""
-let g:vim_markdown_initial_foldlevel=99
-
-""""""""""""
-" vim-json "
-""""""""""""
-
-let g:vim_json_syntax_conceal = 0
+"""""""""""""""
+"  Telescope  "
+"""""""""""""""
+nnoremap <Leader>f <cmd>Telescope find_files<cr>
+nnoremap <leader>g <cmd>Telescope live_grep<cr>
+nnoremap <leader>b <cmd>Telescope buffers<cr>
+nnoremap <leader>m <cmd>Telescope marks<cr>
+nnoremap <leader>s <cmd>Telescope lsp_dynamic_workspace_symbols<cr>
+nnoremap <leader>gd <cmd>Telescope lsp_definitions<cr>
+nnoremap <leader>gr <cmd>Telescope lsp_references<cr>
+nnoremap <leader>gi <cmd>Telescope lsp_implementations<cr>
 
 """""""""
 
@@ -955,6 +772,57 @@ lua <<EOF
     local lsp_zero = require('lsp-zero')
 
     require('supermaven-nvim').setup({})
+
+    require('nvim-treesitter.configs').setup {
+        ensure_installed = {
+            "bash",
+            "c",
+            "clojure",
+            "cpp",
+            "css",
+            "csv",
+            "diff",
+            "go",
+            "gomod",
+            "gosum",
+            "gotmpl",
+            "haskell",
+            "hcl",
+            "html",
+            "javascript",
+            "json",
+            "jsonnet",
+            "lua",
+            "make",
+            "markdown",
+            "markdown_inline",
+            "nix",
+            "odin",
+            "python",
+            "ruby",
+            "rust",
+            "scss",
+            "sql",
+            "swift",
+            "templ",
+            "terraform",
+            "tmux",
+            "toml",
+            "tsx",
+            "typescript",
+            "vim",
+            "vimdoc",
+            "xml",
+            "yaml",
+            "zig",
+        },
+        sync_install = false,
+        auto_install = true,
+        highlight = {
+            enable = true,
+        },
+        additional_vim_regex_highlighting = false,
+    }
 
     lsp_zero.on_attach(function(client, bufnr)
     -- see :help lsp-zero-keybindings
@@ -1026,7 +894,7 @@ lua <<EOF
         end
     })
 
-    vim.filetype.add({ extension = { templ = "templ" } }) 
+    vim.filetype.add({ extension = { templ = "templ" } })
 
 
     -- Global mappings.
