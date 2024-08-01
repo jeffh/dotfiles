@@ -22,6 +22,7 @@ system
     -brew-pkg-add btop
     -brew-pkg-add flyctl
     -brew-pkg-add ripgrep
+    -brew-pkg-add 1password-cli
     -brew-cask-add orbstack:/Applications/OrbStack.app
     -brew-cask-add linear-linear:/Applications/Linear.app
     -brew-cask-add 'bartender:/Applications/Bartender 5.app'
@@ -104,9 +105,10 @@ symlink
 run -e 'nvim +PlugInstall +qall'
     -e 'nvim +GoInstallBinaries +qall'
 
-git-clone -clone-only -src 'git@github.com:jeffh/cfs.git'      -dst ~/workspace/cfs
-git-clone -clone-only -src 'git@github.com:jeffh/gocheck.git'  -dst ~/workspace/gocheck
-git-clone -clone-only -src 'git@github.com:jeffh/run.git'      -dst ~/workspace/run
-git-clone -clone-only -src 'git@github.com:jeffh/runtime.git'  -dst ~/workspace/runtime
-git-clone -clone-only -src 'git@github.com:jeffh/kio.git'      -dst ~/workspace/kio
-git-clone -clone-only -src 'git@github.com:jeffh/trader.git'   -dst ~/workspace/trader
+git-clone -clone-only -src 'git@github.com:jeffh/cfs.git'       -dst ~/workspace/cfs
+git-clone -clone-only -src 'git@github.com:jeffh/gocheck.git'   -dst ~/workspace/gocheck
+git-clone -clone-only -src 'git@github.com:jeffh/run.git'       -dst ~/workspace/run
+git-clone -clone-only -src 'git@github.com:jeffh/runtime.git'   -dst ~/workspace/runtime
+git-clone -clone-only -src 'git@github.com:jeffh/kio.git'       -dst ~/workspace/kio
+git-clone -clone-only -src 'git@github.com:jeffh/trader.git'    -dst ~/workspace/trader
+git-clone -clone-only -src 'git@github.com:jeffh/gpt-serve.git' -dst ~/workspace/gpt-serve
