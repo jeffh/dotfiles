@@ -23,7 +23,7 @@ let &packpath = &runtimepath
 call plug#begin()
 
 " Theme
-Plug 'w0ng/vim-hybrid'
+Plug 'tiagovla/tokyodark.nvim'
 
 """""""""""
 " Plugins "
@@ -470,9 +470,21 @@ syntax sync minlines=50
 """""""""
 " Theme "
 """""""""
+
+"function! OverrideColorScheme() abort
+"    highlight Pmenu      ctermfg=250 ctermbg=237 guifg=#c5c8c6 guibg=#373b41
+"    highlight PmenuSel   cterm=reverse ctermfg=250 ctermbg=237 gui=reverse guifg=#c5c8c6 guibg=#373b41 blend=0
+"    highlight PmenuThumb guibg=NvimDarkGrey4
+"endfunction
+"
+"augroup color_customizations
+"    autocmd!
+"    autocmd ColorScheme * call OverrideColorScheme()
+"augroup END
+
 let &t_Co=256
-colorscheme hybrid
-set background=dark
+colorscheme tokyodark
+" set background=dark
 
 augroup color_customizations
     autocmd!
@@ -673,7 +685,13 @@ augroup language_customizations
     autocmd BufRead,BufNewFile Podfile set filetype=ruby
 
     autocmd FileType javascript setlocal expandtab
-    autocmd FileType yaml setlocal expandtab
+    autocmd FileType javascript setlocal tabstop=2 
+    autocmd FileType javascript setlocal softtabstop=2
+    autocmd FileType javascript setlocal shiftwidth=2
+    autocmd FileType ts setlocal expandtab
+    autocmd FileType ts setlocal tabstop=2 
+    autocmd FileType ts setlocal softtabstop=2
+    autocmd FileType ts setlocal shiftwidth=2
     autocmd FileType yaml setlocal tabstop=2
     autocmd FileType yaml setlocal softtabstop=2
     autocmd FileType yaml setlocal shiftwidth=2
@@ -718,6 +736,11 @@ augroup language_customizations
     autocmd FileType make setlocal nosmartindent
 
     autocmd FileType php setlocal noexpandtab
+
+    autocmd FileType yaml SupermavenStop
+    autocmd FileType json SupermavenStop
+    autocmd FileType fish SupermavenStop
+    autocmd FileType bash SupermavenStop
 augroup END
 
 """""""""""""""""""""""""""""""""""""""""""""""
@@ -757,7 +780,7 @@ augroup END
 "  Telescope  "
 """""""""""""""
 nnoremap <Leader>f <cmd>Telescope find_files<cr>
-nnoremap <leader>g <cmd>Telescope live_grep<cr>
+nnoremap <leader>G <cmd>Telescope live_grep<cr>
 nnoremap <leader>b <cmd>Telescope buffers<cr>
 nnoremap <leader>m <cmd>Telescope marks<cr>
 nnoremap <leader>s <cmd>Telescope lsp_dynamic_workspace_symbols<cr>
@@ -769,6 +792,27 @@ nnoremap <leader>gi <cmd>Telescope lsp_implementations<cr>
 
 
 lua <<EOF
+    local cmp = require('cmp')
+    -- cmp.setup({
+    --     mapping = {
+    --         ['<Tab>'] = function(fallback)
+    --             if cmp.visible() == 1 then
+    --                 cmp.select_next_item()
+    --             else
+    --                 fallback()
+    --             end
+    --         end
+    --     },
+    --     window = {
+    --         completion = {
+    --             winhighlight = "Normal:Pmenu",
+    --         },
+    --         documentation = {
+    --             winhighlight = "Normal:Pmenu",
+    --         }
+    --     }
+    -- })
+
     local lsp_zero = require('lsp-zero')
 
     require('supermaven-nvim').setup({})
@@ -782,6 +826,8 @@ lua <<EOF
             "css",
             "csv",
             "diff",
+            "elixir",
+            "fish",
             "go",
             "gomod",
             "gosum",
@@ -798,6 +844,7 @@ lua <<EOF
             "markdown_inline",
             "nix",
             "odin",
+            "proto",
             "python",
             "ruby",
             "rust",
@@ -835,6 +882,7 @@ lua <<EOF
         ensure_installed = {
             'cssmodules_ls',
             'dockerls',
+            'elixirls',
             'gopls',
             'html',
             'htmx',
