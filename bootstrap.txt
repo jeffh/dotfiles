@@ -89,8 +89,6 @@ git-config -scope global
 git-clone -clone-only -src 'git@github.com:jeffh/dotfiles.git' -dst ~/workspace/dotfiles
 
 symlink
-    -path ~/.vim              -to ~/workspace/dotfiles/vim
-    -path ~/.vimrc            -to ~/workspace/dotfiles/vimrc
     -path ~/.config/nvim      -to ~/workspace/dotfiles/nvim
     -path ~/.config/clj-kondo -to ~/workspace/dotfiles/clj-kondo
     -path ~/.zshrc            -to ~/workspace/dotfiles/zsh/zshrc
