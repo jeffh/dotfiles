@@ -82,10 +82,10 @@ Plug 'tpope/tpope-vim-abolish'
 Plug 'majutsushi/tagbar'
 
 " Github Copilot
-" Plug 'github/copilot.vim'
+Plug 'github/copilot.vim'
 " Needs :Copilot setup
 
-Plug 'supermaven-inc/supermaven-nvim'
+" Plug 'supermaven-inc/supermaven-nvim'
 
 " :lua vim.lsp.start({
 "   name = 'my-server-name',
@@ -737,10 +737,14 @@ augroup language_customizations
 
     autocmd FileType php setlocal noexpandtab
 
-    autocmd FileType yaml SupermavenStop
-    autocmd FileType json SupermavenStop
-    autocmd FileType fish SupermavenStop
-    autocmd FileType bash SupermavenStop
+    " autocmd FileType yaml SupermavenStop
+    " autocmd FileType json SupermavenStop
+    " autocmd FileType fish SupermavenStop
+    " autocmd FileType bash SupermavenStop
+    autocmd FileType yaml Copilot disable
+    autocmd FileType json Copilot disable
+    autocmd FileType fish Copilot disable
+    autocmd FileType bash Copilot disable
 augroup END
 
 """""""""""""""""""""""""""""""""""""""""""""""
@@ -815,7 +819,7 @@ lua <<EOF
 
     local lsp_zero = require('lsp-zero')
 
-    require('supermaven-nvim').setup({})
+    -- require('supermaven-nvim').setup({})
 
     require('nvim-treesitter.configs').setup {
         ensure_installed = {
