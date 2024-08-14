@@ -46,7 +46,6 @@ system
     -mas-pkg-add '409203825:Numbers'
     -mas-pkg-add '497799835:Xcode'
     -mas-pkg-add '409201541:Pages'
-    # -mas-pkg-add '975937182:Fantastical'
     -mas-pkg-add '290986013:Deliveries'
     -mas-pkg-add '1508732804:Soulver 3'
     -mas-pkg-add '1475387142:Tailscale'
@@ -61,6 +60,7 @@ system
 #    -mas-pkg-rm '1488905707:Noteshelf'
 #    -mas-pkg-rm '1481302432:Instapaper Save'
 #    -mas-pkg-rm '1481669779:Evernote Web Clipper'
+#    -mas-pkg-rm '975937182:Fantastical'
 
 when -key INSTALL_SLACK
     system -brew-cask-add slack:/Applications/Slack.app
