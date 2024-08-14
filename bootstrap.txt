@@ -22,6 +22,7 @@ system
     -brew-pkg-add btop
     -brew-pkg-add flyctl
     -brew-pkg-add ripgrep
+    -brew-pkg-add withgraphite/tap/graphite
     -brew-cask-add 1password-cli
     -brew-cask-add orbstack:/Applications/OrbStack.app
     -brew-cask-add linear-linear:/Applications/Linear.app
