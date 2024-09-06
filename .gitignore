@@ -26,3 +26,4 @@ nvim/.netrwhist
 nvim/telescope_history
 gnupg/pubring.kbx
 vim/.netrwhist
+nvim/tree-sitter-*

@@ -23,6 +23,7 @@ system
     -brew-pkg-add flyctl
     -brew-pkg-add ripgrep
     -brew-pkg-add withgraphite/tap/graphite
+    -brew-pkg-add delta
     -brew-cask-add 1password-cli
     -brew-cask-add orbstack:/Applications/OrbStack.app
     -brew-cask-add linear-linear:/Applications/Linear.app
@@ -86,6 +87,9 @@ git-config -scope global
     -set 'user.name=Jeff Hui'
     -set 'user.email=jeff@jeffhui.net'
     -set 'alias.st=status'
+    -set 'core.pager=delta'
+    -set 'delta.line-numbers=true'
+    -set 'push.autoSetupRemote=true'
 
 git-clone -clone-only -src 'git@github.com:jeffh/dotfiles.git' -dst ~/workspace/dotfiles
 

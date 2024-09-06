@@ -79,7 +79,7 @@ Plug 'luan/vipe'
 Plug 'tpope/tpope-vim-abolish'
 "
 " Tagbar
-Plug 'majutsushi/tagbar'
+"Plug 'majutsushi/tagbar'
 
 " Github Copilot
 Plug 'github/copilot.vim'
@@ -162,9 +162,6 @@ inoremap <c-k> <esc>Da
 "noremap <c-a> <esc>^i
 inoremap <c-e> <esc>$a
 inoremap <c-bs> <c-w>
-
-" tagbar
-nmap <leader>S :TagbarToggle<cr>
 
 " quickfix hotkeys
 noremap <leader>j :cn<cr>
@@ -788,6 +785,7 @@ nnoremap <leader>G <cmd>Telescope live_grep<cr>
 nnoremap <leader>b <cmd>Telescope buffers<cr>
 nnoremap <leader>m <cmd>Telescope marks<cr>
 nnoremap <leader>s <cmd>Telescope lsp_dynamic_workspace_symbols<cr>
+nnoremap <leader>S <cmd>Telescope lsp_document_symbols<cr>
 nnoremap <leader>gd <cmd>Telescope lsp_definitions<cr>
 nnoremap <leader>gr <cmd>Telescope lsp_references<cr>
 nnoremap <leader>gi <cmd>Telescope lsp_implementations<cr>
