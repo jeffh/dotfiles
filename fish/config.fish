@@ -141,3 +141,4 @@ type -q pyenv; and pyenv init - | source
 type -q nvim; and setenv EDITOR (type -p nvim)
 type -q vim; and setenv ALTERNATIVE_EDITOR (type -p vim)
 type -q jj; and jj util completion fish | source
+test -n "$VSCODE_INJECTION"; and setenv EDITOR "$(type -p cursor) --wait"

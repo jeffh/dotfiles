@@ -115,6 +115,7 @@ Plug 'tpope/vim-sexp-mappings-for-regular-people', { 'for': 'clojure' }
 Plug 'tpope/vim-salve', { 'for': 'clojure' }
 Plug 'tpope/vim-projectionist', { 'for': 'clojure' }
 Plug 'tpope/vim-dispatch', { 'for': 'clojure' }
+Plug 'Olical/conjure', { 'for': 'clojure' }
 " Plug 'kien/rainbow_parentheses.vim'
 
 
@@ -889,7 +890,7 @@ lua <<EOF
             'html',
             'htmx',
             'jsonls',
-            'tsserver',
+            'ts_ls',
             'templ',
             'tailwindcss',
         },
