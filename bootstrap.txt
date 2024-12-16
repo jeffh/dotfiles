@@ -13,6 +13,8 @@ system
     -brew-pkg-add chromedriver
     -brew-pkg-add fish
     -brew-pkg-add go
+    -brew-pkg-add python
+    -brew-pkg-add elixir
     -brew-pkg-add neovim
     -brew-pkg-add node
     -brew-pkg-add openjdk
