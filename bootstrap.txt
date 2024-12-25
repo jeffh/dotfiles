@@ -26,6 +26,7 @@ system
     -brew-pkg-add ripgrep
     -brew-pkg-add withgraphite/tap/graphite
     -brew-pkg-add delta
+    -brew-pkg-add rust
     -brew-cask-add 1password-cli
     -brew-cask-add orbstack:/Applications/OrbStack.app
     -brew-cask-add linear-linear:/Applications/Linear.app
@@ -37,6 +38,7 @@ system
     -brew-cask-add 'sizeup:/Applications/SizeUp.app'
     -brew-cask-add 'homebrew/cask/alfred:/Applications/Alfred 5.app'
     -brew-cask-add 'homebrew/cask/iterm2:/Applications/iTerm.app'
+    -brew-cask-add zen-browser
 
 system
     -mas-pkg-add '424389933:Final Cut Pro'

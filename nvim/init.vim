@@ -890,7 +890,6 @@ lua <<EOF
             'html',
             'htmx',
             'jsonls',
-            'ts_ls',
             'templ',
             'tailwindcss',
         },
