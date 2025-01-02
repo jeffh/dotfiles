@@ -27,6 +27,7 @@ system
     -brew-pkg-add withgraphite/tap/graphite
     -brew-pkg-add delta
     -brew-pkg-add rust
+    -brew-cask-add ghostty
     -brew-cask-add 1password-cli
     -brew-cask-add orbstack:/Applications/OrbStack.app
     -brew-cask-add linear-linear:/Applications/Linear.app
