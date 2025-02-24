@@ -35,7 +35,7 @@ Plug 'williamboman/mason-lspconfig.nvim'
 Plug 'neovim/nvim-lspconfig'
 Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-nvim-lsp'
-Plug 'L3MON4D3/LuaSnip'
+Plug 'L3MON4D3/LuaSnip', {',tag': 'v2.3.0', 'do': 'make install_jsregexp'}
 Plug 'VonHeikemen/lsp-zero.nvim', {'branch': 'v3.x'}
 
 " Repeat (Plug for plugins to use .)
@@ -853,7 +853,6 @@ lua <<EOF
             "rust",
             "scss",
             "sql",
-            "swift",
             "templ",
             "terraform",
             "tmux",

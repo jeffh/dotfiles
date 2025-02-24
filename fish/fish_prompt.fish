@@ -12,7 +12,7 @@ function _is_git_dirty
 end
 
 function _jj_commit_hash
-    echo (jj log -l 1 2>/dev/null | grep '^@' | head -n 1 | awk '{printf $2}')
+    echo (jj log -n 1 -T 'change_id.shortest()' 2>/dev/null | awk '{printf $2}')
 end
 
 function _is_jj_dirty
@@ -47,7 +47,7 @@ function fish_prompt
   echo -n -s $dirpathcolor (prompt_pwd) ' '
 
   # Display [shell] if in pyenv
-  if set -q PYENV_SHELL && test -e (which pyenv)
+  if set -q PYENV_SHELL && type -q pyenv
       set -l pyshell (pyenv local 2>/dev/null || pyenv global)
       if test "$pyshell" != "system"
         echo -n -s $info'pyenv:'$infoval $pyshell $normal ' '
