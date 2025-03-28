@@ -142,3 +142,7 @@ type -q nvim; and setenv EDITOR (type -p nvim)
 type -q vim; and setenv ALTERNATIVE_EDITOR (type -p vim)
 type -q jj; and jj util completion fish | source
 test -n "$VSCODE_INJECTION"; and setenv EDITOR "$(type -p cursor) --wait"
+
+# Added by OrbStack: command-line tools and integration
+# This won't be added again if you remove it.
+source ~/.orbstack/shell/init.fish 2>/dev/null || :
