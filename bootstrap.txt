@@ -28,6 +28,7 @@ system
     -brew-pkg-add delta
     -brew-pkg-add rust
     -brew-cask-add ghostty
+    -brew-pkg-add uv
     -brew-cask-add 1password-cli
     -brew-cask-add orbstack:/Applications/OrbStack.app
     -brew-cask-add linear-linear:/Applications/Linear.app
