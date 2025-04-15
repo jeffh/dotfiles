@@ -1,0 +1,5 @@
+#!/bin/bash
+
+set -xe
+
+docker run -v $(pwd):/repo --rm srcd/hercules hercules --burndown $@ --pb /repo | docker run --rm -i -v $(pwd):/io srcd/hercules labours -f pb -m burndown-project -o /io/burndown.png
