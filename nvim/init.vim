@@ -269,8 +269,9 @@ function! CleverReturn()
     " end
 endfunction
 
-inoremap <silent><expr> <tab> CleverTab()
-inoremap <silent><expr> <s-tab> CleverUnshiftTab()
+" Commented out to use nvim-cmp tab handling
+" inoremap <silent><expr> <tab> CleverTab()
+" inoremap <silent><expr> <s-tab> CleverUnshiftTab()
 noremap <silent> td :tabclose<cr>
 
 " disable highlighting when hitting the return or esc key
@@ -683,11 +684,15 @@ augroup language_customizations
     autocmd BufRead,BufNewFile Podfile set filetype=ruby
 
     autocmd FileType javascript setlocal expandtab
-    autocmd FileType javascript setlocal tabstop=2 
+    autocmd FileType javascript setlocal tabstop=2
     autocmd FileType javascript setlocal softtabstop=2
     autocmd FileType javascript setlocal shiftwidth=2
+    autocmd FileType tsx setlocal expandtab
+    autocmd FileType tsx setlocal tabstop=2
+    autocmd FileType tsx setlocal softtabstop=2
+    autocmd FileType tsx setlocal shiftwidth=2
     autocmd FileType ts setlocal expandtab
-    autocmd FileType ts setlocal tabstop=2 
+    autocmd FileType ts setlocal tabstop=2
     autocmd FileType ts setlocal softtabstop=2
     autocmd FileType ts setlocal shiftwidth=2
     autocmd FileType yaml setlocal tabstop=2
@@ -796,25 +801,48 @@ nnoremap <leader>gi <cmd>Telescope lsp_implementations<cr>
 
 lua <<EOF
     local cmp = require('cmp')
-    -- cmp.setup({
-    --     mapping = {
-    --         ['<Tab>'] = function(fallback)
-    --             if cmp.visible() == 1 then
-    --                 cmp.select_next_item()
-    --             else
-    --                 fallback()
-    --             end
-    --         end
-    --     },
-    --     window = {
-    --         completion = {
-    --             winhighlight = "Normal:Pmenu",
-    --         },
-    --         documentation = {
-    --             winhighlight = "Normal:Pmenu",
-    --         }
-    --     }
-    -- })
+    local luasnip = require('luasnip')
+
+    cmp.setup({
+        snippet = {
+            expand = function(args)
+                luasnip.lsp_expand(args.body)
+            end,
+        },
+        mapping = cmp.mapping.preset.insert({
+            ['<Tab>'] = cmp.mapping(function(fallback)
+                if cmp.visible() then
+                    cmp.select_next_item()
+                elseif luasnip.expand_or_jumpable() then
+                    luasnip.expand_or_jump()
+                else
+                    fallback()
+                end
+            end, { 'i', 's' }),
+            ['<S-Tab>'] = cmp.mapping(function(fallback)
+                if cmp.visible() then
+                    cmp.select_prev_item()
+                elseif luasnip.jumpable(-1) then
+                    luasnip.jump(-1)
+                else
+                    fallback()
+                end
+            end, { 'i', 's' }),
+            ['<CR>'] = cmp.mapping.confirm({ select = true }),
+        }),
+        sources = cmp.config.sources({
+            { name = 'nvim_lsp' },
+            { name = 'luasnip' },
+        }),
+        window = {
+            completion = {
+                winhighlight = "Normal:Pmenu",
+            },
+            documentation = {
+                winhighlight = "Normal:Pmenu",
+            }
+        }
+    })
 
     local lsp_zero = require('lsp-zero')
 
@@ -877,6 +905,9 @@ lua <<EOF
     -- see :help lsp-zero-keybindings
     -- to learn the available actions
     lsp_zero.default_keymaps({buffer = bufnr})
+
+    -- Disable built-in completion to avoid conflicts with nvim-cmp
+    vim.bo[bufnr].omnifunc = nil
     end)
 
     require('mason').setup({})
@@ -891,6 +922,7 @@ lua <<EOF
             'jsonls',
             'templ',
             'tailwindcss',
+            "ts_ls",
         },
         handlers = {
             lsp_zero.default_setup,
@@ -958,8 +990,8 @@ lua <<EOF
     vim.api.nvim_create_autocmd('LspAttach', {
     group = vim.api.nvim_create_augroup('UserLspConfig', {}),
     callback = function(ev)
-        -- Enable completion triggered by <c-x><c-o>
-        vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
+        -- Disable omnifunc to prevent conflicts with nvim-cmp
+        -- vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
 
         -- Buffer local mappings.
         -- See `:help vim.lsp.*` for documentation on any of the below functions

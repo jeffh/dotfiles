@@ -12,7 +12,7 @@ function _is_git_dirty
 end
 
 function _jj_commit_hash
-    echo (jj log -n 1 -T 'change_id.shortest()' 2>/dev/null | awk '{printf $2}')
+    echo (jj log -r @ -T 'change_id.shortest()' 2>/dev/null | awk '{printf $2}')
 end
 
 function _is_jj_dirty
@@ -25,12 +25,13 @@ function fish_prompt
 
   set -l info (set_color -o brblack)
   set -l infoval (set_color -o blue)
-  set -l dirpathcolor (set_color AAA)
+  set -l dirpathcolor (set_color -o cyan)
   set -l dircolor (set_color -o cyan)
   set -l exitcodecolor (set_color -o red)
   set -l normal (set_color normal)
   set -l durationcolor (set_color -o yellow)
 
+  set -l repotypecolor (set_color -o brcyan)
   set -l repocleancolor (set_color -o green)
   set -l repodirtycolor (set_color -o red)
 
@@ -43,8 +44,38 @@ function fish_prompt
     echo $info'=> '$exitcodecolor$last_status $normal
   end
 
-  # Display abbrev CWD
-  echo -n -s $dirpathcolor (prompt_pwd) ' '
+  # Display [nix] if in a nix shell
+  if test -n "$IN_NIX_SHELL"
+     echo -n -s $info'nix:'$infoval $normal
+  end
+
+  # Show git branch and dirty state
+  if type -q git
+    set -l git_branch (_git_branch_name)
+    if test -n "$git_branch"
+        set -l git_branch $git_branch
+
+        if [ (_is_git_dirty) ]
+            set git_info $repodirtycolor $git_branch "★"
+        else
+            set git_info $repocleancolor $git_branch
+        end
+        echo -n -s $repotypecolor 'git' $normal ':' $git_info $normal ' '
+    end
+  end
+
+  if type -q jj
+    set -l jj_hash (_jj_commit_hash)
+    if test -n "$jj_hash"
+        set -l jj_hash $jj_hash
+        if [ (_is_jj_dirty) ]
+            set jj_info $repodirtycolor $jj_hash "★"
+        else
+            set jj_info $repocleancolor $jj_hash
+        end
+        echo -n -s $repotypecolor 'jj' $normal ':' $jj_info $normal ' '
+    end
+  end
 
   # Display [shell] if in pyenv
   if set -q PYENV_SHELL && type -q pyenv
@@ -72,49 +103,21 @@ function fish_prompt
 
     if test "$cmd_dur" != ""
       echo -n -s $info'duration:' $durationcolor $cmd_dur $info ' now:' $infoval (date '+%I:%M:%S%p') $normal
+    else
+      echo -n -s $info 'now:' $infoval (date '+%I:%M:%S%p') $normal
     end
   end
  
   # Add a newline
   echo -e ""
 
-  # Display [nix] if in a nix shell
-  if test -n "$IN_NIX_SHELL"
-     echo -n -s $info'nix:'$infoval $normal
-  end
-
   # Display the current directory name
-  echo -n -s $cwd $normal
+  # echo -n -s $cwd $normal
 
-  # Show git branch and dirty state
-  if type -q git
-    set -l git_branch (_git_branch_name)
-    if test -n "$git_branch"
-        set -l git_branch '(git:' $git_branch ')'
-
-        if [ (_is_git_dirty) ]
-            set git_info $repodirtycolor $git_branch " ★ "
-        else
-            set git_info $repocleancolor $git_branch
-        end
-        echo -n -s ' · ' $git_info $normal
-    end
-  end
-
-  if type -q jj
-    set -l jj_hash (_jj_commit_hash)
-    if test -n "$jj_hash"
-        set -l jj_hash '(jj:' $jj_hash ')'
-        if [ (_is_jj_dirty) ]
-            set jj_info $repodirtycolor $jj_hash " ★ "
-        else
-            set jj_info $repocleancolor $jj_hash
-        end
-        echo -n -s ' · ' $jj_info $normal
-    end
-  end
+  # Display abbrev CWD
+  echo -n -s $dirpathcolor (prompt_pwd)
 
   # Terminate with a nice prompt char
-  echo -n -s ' ⟩ ' $normal
+  echo -n -s $normal '⟩ '
 
 end

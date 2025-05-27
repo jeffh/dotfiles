@@ -133,8 +133,8 @@ if test -d "/opt/homebrew/Cellar/llvm@11/11.1.0_2/bin"
 end
 
 fish_add_path -m /usr/local/opt/llvm@11/bin
-test -d /opt/pkg/bin; and fish_add_path -m /opt/pkg/bin/
-test -d /opt/pkg/bin; and fish_add_path -m /opt/pkg/sbin/
+fish_add_path -m /opt/pkg/bin/
+fish_add_path -m /opt/pkg/sbin/
 
 test -d $HOME/.pyenv/bin; and fish_add_path -m $HOME/.pyenv/bin
 type -q pyenv; and pyenv init - | source

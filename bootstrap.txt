@@ -94,6 +94,7 @@ git-config -scope global
     -set 'user.name=Jeff Hui'
     -set 'user.email=jeff@jeffhui.net'
     -set 'alias.st=status'
+    -set 'alias.ll=log --graph --oneline --decorate --all'
     -set 'core.pager=delta'
     -set 'delta.line-numbers=true'
     -set 'push.autoSetupRemote=true'
