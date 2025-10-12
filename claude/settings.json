@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh pr create:*)",
+      "Bash(gh pr list:*)",
+      "Bash(jj bookmark:*)",
+      "Bash(jj diff:*)",
+      "Bash(jj git fetch:*)",
+      "Bash(jj git push:*)",
+      "Bash(jj log:*)",
+      "Bash(mkdir:*)"
+    ],
+    "deny": [],
+    "ask": []
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "/bin/bash /Users/jeff/.claude/statusline-command.sh"
+  },
+  "enabledPlugins": {
+    "humanlayer@jeffh-claude-plugins": true,
+    "commit-commands@claude-code-plugins": true,
+    "jj@jeffh-claude-plugins": true,
+    "feature-dev@claude-code-plugins": true
+  },
+  "alwaysThinkingEnabled": false
+}

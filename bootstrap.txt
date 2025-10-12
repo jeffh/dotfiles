@@ -9,7 +9,7 @@ arg -optional INSTALL_DISCORD
     -default false
 
 system
-    -brew-pkg-add ag
+    -brew-pkg-add the_silver_searcher
     -brew-pkg-add chromedriver
     -brew-pkg-add fish
     -brew-pkg-add go
@@ -17,6 +17,7 @@ system
     -brew-pkg-add elixir
     -brew-pkg-add neovim
     -brew-pkg-add node
+    -brew-pkg-add bun
     -brew-pkg-add openjdk
     -brew-pkg-add jj
     -brew-pkg-add mosh
@@ -25,10 +26,11 @@ system
     -brew-pkg-add flyctl
     -brew-pkg-add ripgrep
     -brew-pkg-add withgraphite/tap/graphite
-    -brew-pkg-add delta
+    -brew-pkg-add git-delta
+    -brew-pkg-add difftastic
     -brew-pkg-add rust
     -brew-pkg-add uv
-    -brew-cask-add ghostty
+    -brew-cask-add 'ghostty:/Applications/Ghostty.app'
     -brew-cask-add 1password-cli
     -brew-cask-add orbstack:/Applications/OrbStack.app
     -brew-cask-add linear-linear:/Applications/Linear.app
@@ -41,7 +43,13 @@ system
     -brew-cask-add 'homebrew/cask/alfred:/Applications/Alfred 5.app'
     -brew-cask-add 'homebrew/cask/iterm2:/Applications/iTerm.app'
     -brew-cask-add 'homebrew/cask/ghostty:/Applications/Ghostty.app'
-    -brew-cask-add zen-browser
+    -brew-cask-add zen
+
+system
+    -npm-global-add @anthropic-ai/claude-code@latest
+    -npm-global-add @google/gemini-cli@latest
+    -npm-global-add npm@latest
+    -npm-global-add pnpm@latest
 
 system
     -mas-pkg-add '424389933:Final Cut Pro'
@@ -64,12 +72,12 @@ system
     -defaults-write ':KeyRepeat:int:1'
     -defaults-write 'com.microsoft.VSCode:ApplePressAndHoldEnabled:bool:false'
 
-#system
-#    -mas-pkg-rm '406056744:Evernote'
-#    -mas-pkg-rm '1488905707:Noteshelf'
-#    -mas-pkg-rm '1481302432:Instapaper Save'
-#    -mas-pkg-rm '1481669779:Evernote Web Clipper'
-#    -mas-pkg-rm '975937182:Fantastical'
+system
+    -mas-pkg-rm '406056744:Evernote'
+    -mas-pkg-rm '1488905707:Noteshelf'
+    -mas-pkg-rm '1481302432:Instapaper Save'
+    -mas-pkg-rm '1481669779:Evernote Web Clipper'
+    -mas-pkg-rm '975937182:Fantastical'
 
 when -key INSTALL_SLACK
     system -brew-cask-add slack:/Applications/Slack.app
@@ -89,37 +97,40 @@ file -dir
     -path ~/.swiftenv/shims
     -path ~/.config
     -path ~/workspace
+    -path ~/.claude
 
 git-config -scope global
     -set 'user.name=Jeff Hui'
     -set 'user.email=jeff@jeffhui.net'
     -set 'alias.st=status'
     -set 'alias.ll=log --graph --oneline --decorate --all'
-    -set 'core.pager=delta'
-    -set 'delta.line-numbers=true'
     -set 'push.autoSetupRemote=true'
+    -set 'diff.external=difft'
+#    -set 'core.pager=delta'
+#    -set 'delta.line-numbers=true'
 
 git-clone -clone-only -src 'git@github.com:jeffh/dotfiles.git' -dst ~/workspace/dotfiles
 
 symlink
-    -path ~/.config/nvim      -to ~/workspace/dotfiles/nvim
-    -path ~/.config/clj-kondo -to ~/workspace/dotfiles/clj-kondo
-    -path ~/.zshrc            -to ~/workspace/dotfiles/zsh/zshrc
-    -path ~/.zsh              -to ~/workspace/dotfiles/zsh/zsh
-    -path ~/.tmux.conf        -to ~/workspace/dotfiles/tmux/tmux.conf
-    -path ~/.config/fish      -to ~/workspace/dotfiles/fish
-    -path ~/.config/alacrityy -to ~/workspace/dotfiles/alacritty
-    -path ~/.emacs.d          -to ~/workspace/dotfiles/emacs
-    -path ~/bin               -to ~/workspace/dotfiles/bin
-    -path ~/.gnupg            -to ~/workspace/dotfiles/gnupg
+    -path ~/.config/nvim                  -to ~/workspace/dotfiles/nvim
+    -path ~/.config/clj-kondo             -to ~/workspace/dotfiles/clj-kondo
+    -path ~/.zshrc                        -to ~/workspace/dotfiles/zsh/zshrc
+    -path ~/.zsh                          -to ~/workspace/dotfiles/zsh/zsh
+    -path ~/.tmux.conf                    -to ~/workspace/dotfiles/tmux/tmux.conf
+    -path ~/.config/fish                  -to ~/workspace/dotfiles/fish
+    -path ~/.config/alacrityy             -to ~/workspace/dotfiles/alacritty
+    -path ~/.emacs.d                      -to ~/workspace/dotfiles/emacs
+    -path ~/bin                           -to ~/workspace/dotfiles/bin
+    -path ~/.gnupg                        -to ~/workspace/dotfiles/gnupg
+    -path ~/.claude/statusline-command.sh -to ~/workspace/dotfiles/statusline-command.sh
 
 run -e 'nvim +PlugInstall +qall'
     -e 'nvim +GoInstallBinaries +qall'
 
-git-clone -clone-only -src 'git@github.com:jeffh/cfs.git'       -dst ~/workspace/cfs
-git-clone -clone-only -src 'git@github.com:jeffh/gocheck.git'   -dst ~/workspace/gocheck
-git-clone -clone-only -src 'git@github.com:jeffh/run.git'       -dst ~/workspace/run
-git-clone -clone-only -src 'git@github.com:jeffh/runtime.git'   -dst ~/workspace/runtime
-git-clone -clone-only -src 'git@github.com:jeffh/kio.git'       -dst ~/workspace/kio
-git-clone -clone-only -src 'git@github.com:jeffh/trader.git'    -dst ~/workspace/trader
-git-clone -clone-only -src 'git@github.com:jeffh/gpt-serve.git' -dst ~/workspace/gpt-serve
+git-clone -clone-only -jj-colocate -src 'git@github.com:jeffh/cfs.git'       -dst ~/workspace/cfs
+git-clone -clone-only -jj-colocate -src 'git@github.com:jeffh/gocheck.git'   -dst ~/workspace/gocheck
+git-clone -clone-only -jj-colocate -src 'git@github.com:jeffh/run.git'       -dst ~/workspace/run
+git-clone -clone-only -jj-colocate -src 'git@github.com:jeffh/runtime.git'   -dst ~/workspace/runtime
+git-clone -clone-only -jj-colocate -src 'git@github.com:jeffh/kio.git'       -dst ~/workspace/kio
+git-clone -clone-only -jj-colocate -src 'git@github.com:jeffh/trader.git'    -dst ~/workspace/trader
+git-clone -clone-only -jj-colocate -src 'git@github.com:jeffh/gpt-serve.git' -dst ~/workspace/gpt-serve
