@@ -195,7 +195,7 @@ fi
 # Create temporary directory for worktree/workspace
 if [[ "$USE_JJ" == true ]]; then
     # For jj, create a path but not the directory (jj creates it)
-    WORKTREE_PATH="$(mktemp -d -t "jj-workspace-XXXXXX")"
+    WORKTREE_PATH="$(mktemp -d -t "jj-workspace-")"
     # Remove the directory since jj will create it
     rmdir "$WORKTREE_PATH"
     WORKSPACE_NAME="$BRANCH_NAME"
@@ -203,7 +203,7 @@ if [[ "$USE_JJ" == true ]]; then
     echo "Base revision: $BASE_BRANCH"
 else
     # For git, create the directory (git expects it to not exist, but we use it as a target)
-    WORKTREE_PATH=$(mktemp -d)
+    WORKTREE_PATH=$(mktemp -d -t "git-worktree-")
     echo "Creating git worktree '$BRANCH_NAME' at: $WORKTREE_PATH"
     echo "Base branch: $BASE_BRANCH"
 fi
@@ -239,15 +239,19 @@ if "${COMMAND_ARGS[@]}"; then
     echo "Command succeeded!"
 
     if [[ "$USE_JJ" == true ]]; then
-        # For jj, check if there are changes and set description
-        # jj automatically tracks changes, so we just need to set the description
-        echo "Setting change description..."
-        jj describe -m "$COMMIT_MESSAGE"
+        # For jj, check if there are changes
+        if jj diff --summary | grep -q .; then
+            echo "Changes detected. Setting change description..."
+            jj describe -m "$COMMIT_MESSAGE"
 
-        # Get the change ID for reference
-        CHANGE_ID=$(jj log -r @ --no-graph -T 'change_id' | head -1)
-        echo "Change description set on workspace '$WORKSPACE_NAME'"
-        echo "Change ID: $CHANGE_ID"
+            # Get the change ID for reference
+            CHANGE_ID=$(jj log -r @ --no-graph -T 'change_id' | head -1)
+            echo "Change description set on workspace '$WORKSPACE_NAME'"
+            echo "Change ID: $CHANGE_ID"
+        else
+            echo "No changes detected. Abandoning commit..."
+            jj abandon
+        fi
     else
         # Check if there are any changes to commit for git
         if git diff --quiet && git diff --cached --quiet; then

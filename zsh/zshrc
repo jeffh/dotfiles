@@ -190,3 +190,5 @@ bindkey '^T' autosuggest-toggle
 # nix
 [ -f ~/.nix-profile/etc/profile.d/nix.sh ] && source ~/.nix-profile/etc/profile.d/nix.sh
 if [ -e /Users/jeff/.nix-profile/etc/profile.d/nix.sh ]; then . /Users/jeff/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
+
+alias fabric="fabric-ai"

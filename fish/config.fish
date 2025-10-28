@@ -146,3 +146,5 @@ test -n "$VSCODE_INJECTION"; and setenv EDITOR "$(type -p cursor) --wait"
 # Added by OrbStack: command-line tools and integration
 # This won't be added again if you remove it.
 source ~/.orbstack/shell/init.fish 2>/dev/null || :
+
+type -q fabric-ai; and alias fabric fabric-ai
