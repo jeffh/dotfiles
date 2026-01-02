@@ -148,3 +148,7 @@ test -n "$VSCODE_INJECTION"; and setenv EDITOR "$(type -p cursor) --wait"
 source ~/.orbstack/shell/init.fish 2>/dev/null || :
 
 type -q fabric-ai; and alias fabric fabric-ai
+
+# bun
+set --export BUN_INSTALL "$HOME/.bun"
+set --export PATH $BUN_INSTALL/bin $PATH

@@ -17,7 +17,6 @@ system
     -brew-pkg-add elixir
     -brew-pkg-add neovim
     -brew-pkg-add node
-    -brew-pkg-add bun
     -brew-pkg-add openjdk
     -brew-pkg-add jj
     -brew-pkg-add mosh
@@ -30,6 +29,8 @@ system
     -brew-pkg-add difftastic
     -brew-pkg-add rust
     -brew-pkg-add uv
+    -brew-pkg-add jq
+    -brew-pkg-add gemini-cli
     -brew-cask-add 'ghostty:/Applications/Ghostty.app'
     -brew-cask-add 1password-cli
     -brew-cask-add orbstack:/Applications/OrbStack.app
@@ -44,12 +45,17 @@ system
     -brew-cask-add 'homebrew/cask/iterm2:/Applications/iTerm.app'
     -brew-cask-add 'homebrew/cask/ghostty:/Applications/Ghostty.app'
     -brew-cask-add zen
+    -brew-cask-add 'zed:/Applications/Zed.app'
 
 system
-    -npm-global-add @anthropic-ai/claude-code@latest
-    -npm-global-add @google/gemini-cli@latest
     -npm-global-add npm@latest
     -npm-global-add pnpm@latest
+
+run when -not -path claude
+    run -e 'bash -c "curl -fsSL https://claude.ai/install.sh | bash"'
+
+run when -not -path bun
+    run -e 'bash -c "curl -fsSL https://bun.sh/install | bash"'
 
 system
     -mas-pkg-add '424389933:Final Cut Pro'
