@@ -13,6 +13,7 @@ BASE_BRANCH="main"
 KEEP_WORKTREE=false
 FORCE_GIT=false
 USE_JJ=false
+SETUP_COMMAND=""
 
 # Function to display usage
 usage() {
@@ -28,6 +29,7 @@ OPTIONS:
     -b, --branch BRANCH      Branch/workspace name (default: auto-generated with timestamp)
     -m, --message MESSAGE    Commit/description message (default: auto-generated)
     -f, --from BRANCH        Base branch/revision to create from (default: main for git, @ for jj)
+    -s, --setup COMMAND      Setup command to run after worktree creation (before main command)
     -k, --keep              Keep worktree/workspace after command execution
     -g, --git               Force git worktree usage even in jj repositories
     -h, --help              Show this help message
@@ -36,6 +38,7 @@ EXAMPLES:
     $0 -- npm test
     $0 -b feature-test -m "Add new tests" -- make test
     $0 -f develop -- python run_checks.py
+    $0 -s "npm install" -- npm test  # Run setup before main command
     $0 --git -- npm test  # Force git worktree usage
     $0 -- claude "/do something"
 
@@ -126,6 +129,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         -f|--from)
             BASE_BRANCH="$2"
+            shift 2
+            ;;
+        -s|--setup)
+            SETUP_COMMAND="$2"
             shift 2
             ;;
         -k|--keep)
@@ -228,6 +235,20 @@ fi
 
 # Change to worktree/workspace directory
 cd "$WORKTREE_PATH"
+
+# Run setup command if provided
+if [[ -n "$SETUP_COMMAND" ]]; then
+    echo "Running setup command: $SETUP_COMMAND"
+    echo "Working directory: $(pwd)"
+    echo
+    if ! eval "$SETUP_COMMAND"; then
+        echo "Error: Setup command failed" >&2
+        exit 1
+    fi
+    echo
+    echo "Setup completed successfully."
+    echo
+fi
 
 echo "Running command in workspace..."
 echo "Working directory: $(pwd)"
