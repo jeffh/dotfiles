@@ -18,11 +18,12 @@ SETUP_COMMAND=""
 # Function to display usage
 usage() {
     cat << EOF
-Usage: $0 [OPTIONS] -- COMMAND [ARGS...]
+Usage: $0 [OPTIONS] [-- COMMAND [ARGS...]]
 
 Creates a temporary git worktree or jj workspace, runs the specified command, and
 commits changes on success. Cleans up the worktree/workspace on failure.
 
+If no command is specified, opens an interactive shell (\$SHELL).
 By default, uses jj workspaces if in a jj repository, otherwise falls back to git.
 
 OPTIONS:
@@ -35,14 +36,15 @@ OPTIONS:
     -h, --help              Show this help message
 
 EXAMPLES:
+    $0                              # Open interactive shell in workspace
     $0 -- npm test
     $0 -b feature-test -m "Add new tests" -- make test
     $0 -f develop -- python run_checks.py
     $0 -s "npm install" -- npm test  # Run setup before main command
-    $0 --git -- npm test  # Force git worktree usage
+    $0 --git -- npm test             # Force git worktree usage
     $0 -- claude "/do something"
 
-The command must be provided after '--' to properly handle arguments.
+Use '--' before commands with arguments to ensure proper parsing.
 EOF
 }
 
@@ -106,9 +108,34 @@ cleanup() {
     exit $exit_code
 }
 
-# Function to generate branch name with timestamp
+# Word list for random branch names (non-explicit, friendly words)
+BRANCH_WORDS=(
+    cakes apple bread candy chips coral cream daisy delta ember
+    fable flame frost grape honey ivory jelly knots lemon lunar
+    maple marsh melon mints oasis olive paper peach pearl piano
+    plums prism quilt raven ridge river rocky roses rusty sails
+    sands scout shade shelf silky solar spark spice stone storm
+    sunny swirl tango toast tulip twist umbra vapor velvet waves
+    wheel winds winter woods yarn zebra amber badge baker banks
+    beach bells berry birds bloom books boots brain brave brick
+    brush cabin cable camel candy cards cargo cedar chain chair
+    chalk charm chess child chips chord clean cliff climb clock
+    cloud coach coast coins coral couch craft crane crisp crown
+    dairy dance darts decks delta diary disco docks dodge dolls
+    doors draft drain dream dress drift drip drums dusty eagle
+    edges eight elbow ember entry equal event extra faint fairy
+    fancy farms feast fiber field fifty final flame flask flint
+    float flock floor fluid flute focus foggy fonts force forge
+    forms forum frame fresh frost fruit funds games gates gauge
+    gears ghost giant gifts gills glass globe gloss goats grain
+    grand grass grays green grids grove guard guide gummy gusts
+)
+
+# Function to generate branch name with random word + hex
 generate_branch_name() {
-    echo "${BRANCH_PREFIX}-$(date +%Y%m%d-%H%M%S)"
+    local word="${BRANCH_WORDS[$RANDOM % ${#BRANCH_WORDS[@]}]}"
+    local hex=$(printf '%04x' $((RANDOM % 65536)))
+    echo "${word}-${hex}"
 }
 
 # Function to generate commit message
@@ -160,11 +187,9 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# Validate inputs
+# Default to user's shell if no command specified
 if [[ ${#COMMAND_ARGS[@]} -eq 0 ]]; then
-    echo "Error: No command specified. Use -- before the command." >&2
-    echo "Example: $0 -- npm test" >&2
-    exit 1
+    COMMAND_ARGS=("${SHELL:-/bin/bash}")
 fi
 
 # Detect which VCS to use
@@ -262,12 +287,9 @@ if "${COMMAND_ARGS[@]}"; then
     if [[ "$USE_JJ" == true ]]; then
         # For jj, check if there are changes
         if jj diff --summary | grep -q .; then
-            echo "Changes detected. Setting change description..."
-            jj describe -m "$COMMIT_MESSAGE"
-
+            echo "Changes detected."
             # Get the change ID for reference
             CHANGE_ID=$(jj log -r @ --no-graph -T 'change_id' | head -1)
-            echo "Change description set on workspace '$WORKSPACE_NAME'"
             echo "Change ID: $CHANGE_ID"
         else
             echo "No changes detected. Abandoning commit..."
