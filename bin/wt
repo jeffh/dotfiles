@@ -6,16 +6,17 @@
 set -euo pipefail
 
 # Default values
-BRANCH_PREFIX="temp-work"
 COMMIT_MESSAGE=""
 COMMAND_ARGS=()
-BASE_BRANCH="main"
+BASE_BRANCH=""
 KEEP_WORKTREE=false
-FORCE_GIT=false
 USE_JJ=false
 SETUP_COMMAND=""
+BRANCH_NAME=""
+WORKTREE_PATH=""
+WORKSPACE_NAME=""
+ORIGINAL_DIR=""
 
-# Function to display usage
 usage() {
     cat << EOF
 Usage: $0 [OPTIONS] [-- COMMAND [ARGS...]]
@@ -48,67 +49,7 @@ Use '--' before commands with arguments to ensure proper parsing.
 EOF
 }
 
-# Function to detect which VCS to use
-detect_vcs() {
-    # Force git if requested
-    if [[ "$FORCE_GIT" == true ]]; then
-        USE_JJ=false
-        return
-    fi
-
-    # Check if jj command exists
-    if ! command -v jj &> /dev/null; then
-        USE_JJ=false
-        return
-    fi
-
-    # Check if we're in a jj repository
-    if jj root &> /dev/null; then
-        USE_JJ=true
-        # Set default base to @ for jj
-        if [[ "$BASE_BRANCH" == "main" ]]; then
-            BASE_BRANCH="@"
-        fi
-    else
-        USE_JJ=false
-    fi
-}
-
-# Function to cleanup on exit
-cleanup() {
-    local exit_code=$?
-
-    if [[ -n "${WORKTREE_PATH:-}" && -d "$WORKTREE_PATH" ]]; then
-        if [[ "$KEEP_WORKTREE" == false ]]; then
-            echo "Cleaning up workspace: $WORKTREE_PATH"
-            cd "$ORIGINAL_DIR"
-
-            if [[ "$USE_JJ" == true ]]; then
-                # For jj, forget the workspace and remove the directory
-                if [[ -n "${WORKSPACE_NAME:-}" ]]; then
-                    jj workspace forget "$WORKSPACE_NAME" 2>/dev/null || true
-                fi
-                rm -rf "$WORKTREE_PATH" 2>/dev/null || true
-            else
-                # For git, remove the worktree
-                git worktree remove --force "$WORKTREE_PATH" 2>/dev/null || true
-            fi
-        else
-            echo "Keeping workspace as requested: $WORKTREE_PATH"
-        fi
-    fi
-
-    # Remove branch if command failed and branch was created (unless keeping worktree)
-    # Only applies to git
-    if [[ $exit_code -ne 0 && "$USE_JJ" == false && -n "${BRANCH_NAME:-}" && "$KEEP_WORKTREE" == false ]]; then
-        echo "Removing branch due to failure: $BRANCH_NAME"
-        git branch -D "$BRANCH_NAME" 2>/dev/null || true
-    fi
-
-    exit $exit_code
-}
-
-# Word list for random branch names (non-explicit, friendly words)
+# Word list for random branch names
 BRANCH_WORDS=(
     cakes apple bread candy chips coral cream daisy delta ember
     fable flame frost grape honey ivory jelly knots lemon lunar
@@ -131,54 +72,54 @@ BRANCH_WORDS=(
     grand grass grays green grids grove guard guide gummy gusts
 )
 
-# Function to generate branch name with random word + hex
 generate_branch_name() {
     local word="${BRANCH_WORDS[$RANDOM % ${#BRANCH_WORDS[@]}]}"
-    local hex=$(printf '%04x' $((RANDOM % 65536)))
+    local hex
+    hex=$(printf '%04x' $((RANDOM % 65536)))
     echo "${word}-${hex}"
 }
 
-# Function to generate commit message
-generate_commit_message() {
-    echo "Automated commit: ${COMMAND_ARGS[*]} ($(date '+%Y-%m-%d %H:%M:%S'))"
+cleanup() {
+    local exit_code=$?
+
+    # Nothing to clean up if path is empty or doesn't exist
+    [[ -z "$WORKTREE_PATH" || ! -d "$WORKTREE_PATH" ]] && exit $exit_code
+
+    if [[ "$KEEP_WORKTREE" == true ]]; then
+        echo "Keeping workspace as requested: $WORKTREE_PATH"
+        exit $exit_code
+    fi
+
+    echo "Cleaning up workspace: $WORKTREE_PATH"
+    cd "$ORIGINAL_DIR"
+
+    if [[ "$USE_JJ" == true ]]; then
+        jj workspace forget "$WORKSPACE_NAME" 2>/dev/null || true
+        rm -rf "$WORKTREE_PATH" 2>/dev/null || true
+    else
+        git worktree remove --force "$WORKTREE_PATH" 2>/dev/null || true
+        # Remove branch on failure
+        if [[ $exit_code -ne 0 && -n "$BRANCH_NAME" ]]; then
+            echo "Removing branch due to failure: $BRANCH_NAME"
+            git branch -D "$BRANCH_NAME" 2>/dev/null || true
+        fi
+    fi
+
+    exit $exit_code
 }
 
 # Parse command line arguments
+FORCE_GIT=false
 while [[ $# -gt 0 ]]; do
     case $1 in
-        -b|--branch)
-            BRANCH_NAME="$2"
-            shift 2
-            ;;
-        -m|--message)
-            COMMIT_MESSAGE="$2"
-            shift 2
-            ;;
-        -f|--from)
-            BASE_BRANCH="$2"
-            shift 2
-            ;;
-        -s|--setup)
-            SETUP_COMMAND="$2"
-            shift 2
-            ;;
-        -k|--keep)
-            KEEP_WORKTREE=true
-            shift
-            ;;
-        -g|--git)
-            FORCE_GIT=true
-            shift
-            ;;
-        -h|--help)
-            usage
-            exit 0
-            ;;
-        --)
-            shift
-            COMMAND_ARGS=("$@")
-            break
-            ;;
+        -b|--branch)  BRANCH_NAME="$2"; shift 2 ;;
+        -m|--message) COMMIT_MESSAGE="$2"; shift 2 ;;
+        -f|--from)    BASE_BRANCH="$2"; shift 2 ;;
+        -s|--setup)   SETUP_COMMAND="$2"; shift 2 ;;
+        -k|--keep)    KEEP_WORKTREE=true; shift ;;
+        -g|--git)     FORCE_GIT=true; shift ;;
+        -h|--help)    usage; exit 0 ;;
+        --)           shift; COMMAND_ARGS=("$@"); break ;;
         *)
             echo "Error: Unknown option $1" >&2
             echo "Use --help for usage information" >&2
@@ -188,83 +129,72 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Default to user's shell if no command specified
-if [[ ${#COMMAND_ARGS[@]} -eq 0 ]]; then
-    COMMAND_ARGS=("${SHELL:-/bin/bash}")
+[[ ${#COMMAND_ARGS[@]} -eq 0 ]] && COMMAND_ARGS=("${SHELL:-/bin/bash}")
+
+# Detect VCS: use jj if available and in jj repo, unless git forced
+if [[ "$FORCE_GIT" != true ]] && command -v jj &>/dev/null && jj root &>/dev/null; then
+    USE_JJ=true
 fi
 
-# Detect which VCS to use
-detect_vcs
-
-# Check if we're in a repository
+# Set defaults based on VCS
 if [[ "$USE_JJ" == true ]]; then
-    if ! jj root &> /dev/null; then
-        echo "Error: Not in a jj repository" >&2
-        exit 1
-    fi
+    [[ -z "$BASE_BRANCH" ]] && BASE_BRANCH="@"
 else
-    if ! git rev-parse --git-dir > /dev/null 2>&1; then
+    [[ -z "$BASE_BRANCH" ]] && BASE_BRANCH="main"
+    if ! git rev-parse --git-dir &>/dev/null; then
         echo "Error: Not in a git repository" >&2
         exit 1
     fi
 fi
 
-# Store original directory
 ORIGINAL_DIR="$(pwd)"
-
-# Set up cleanup trap
 trap cleanup EXIT INT TERM
 
-# Generate branch name if not provided
-if [[ -z "${BRANCH_NAME:-}" ]]; then
-    BRANCH_NAME=$(generate_branch_name)
-fi
+# Generate defaults
+[[ -z "$BRANCH_NAME" ]] && BRANCH_NAME=$(generate_branch_name)
+[[ -z "$COMMIT_MESSAGE" ]] && COMMIT_MESSAGE="Automated commit: ${COMMAND_ARGS[*]} ($(date '+%Y-%m-%d %H:%M:%S'))"
 
-# Generate commit message if not provided
-if [[ -z "$COMMIT_MESSAGE" ]]; then
-    COMMIT_MESSAGE=$(generate_commit_message)
-fi
-
-# Create temporary directory for worktree/workspace
+# Get repository name and create worktree path
 if [[ "$USE_JJ" == true ]]; then
-    # For jj, create a path but not the directory (jj creates it)
-    WORKTREE_PATH="$(mktemp -d -t "jj-workspace-")"
-    # Remove the directory since jj will create it
-    rmdir "$WORKTREE_PATH"
+    REPO_NAME=$(basename "$(jj root)")
     WORKSPACE_NAME="$BRANCH_NAME"
-    echo "Creating jj workspace '$WORKSPACE_NAME' at: $WORKTREE_PATH"
+else
+    REPO_NAME=$(basename "$(git rev-parse --show-toplevel)")
+fi
+
+# Create temp path (jj needs empty path, git uses directory)
+WORKTREE_PATH=$(mktemp -d "${TMPDIR:-/tmp}/${REPO_NAME}-XXXXXXXXXX")
+[[ "$USE_JJ" == true ]] && rmdir "$WORKTREE_PATH"
+
+if [[ "$USE_JJ" == true ]]; then
+    echo "Creating jj workspace '$BRANCH_NAME' at: $WORKTREE_PATH"
     echo "Base revision: $BASE_BRANCH"
 else
-    # For git, create the directory (git expects it to not exist, but we use it as a target)
-    WORKTREE_PATH=$(mktemp -d -t "git-worktree-")
     echo "Creating git worktree '$BRANCH_NAME' at: $WORKTREE_PATH"
     echo "Base branch: $BASE_BRANCH"
 fi
-
 echo "Command to run: ${COMMAND_ARGS[*]}"
 echo
 
-# Create new branch/workspace
+# Create workspace/worktree
 if [[ "$USE_JJ" == true ]]; then
-    # Create jj workspace (jj will create the directory)
     if ! jj workspace add "$WORKTREE_PATH" --name "$WORKSPACE_NAME" -r "$BASE_BRANCH"; then
         echo "Error: Failed to create jj workspace" >&2
         exit 1
     fi
 else
-    # Create git worktree
     if ! git worktree add -b "$BRANCH_NAME" "$WORKTREE_PATH" "$BASE_BRANCH"; then
         echo "Error: Failed to create git worktree" >&2
         exit 1
     fi
 fi
 
-# Change to worktree/workspace directory
 cd "$WORKTREE_PATH"
+echo "Workspace directory: $(pwd)"
 
 # Run setup command if provided
 if [[ -n "$SETUP_COMMAND" ]]; then
     echo "Running setup command: $SETUP_COMMAND"
-    echo "Working directory: $(pwd)"
     echo
     if ! eval "$SETUP_COMMAND"; then
         echo "Error: Setup command failed" >&2
@@ -275,73 +205,58 @@ if [[ -n "$SETUP_COMMAND" ]]; then
     echo
 fi
 
-echo "Running command in workspace..."
-echo "Working directory: $(pwd)"
-echo
-
-# Run the command
-if "${COMMAND_ARGS[@]}"; then
-    echo
-    echo "Command succeeded!"
-
-    if [[ "$USE_JJ" == true ]]; then
-        # For jj, check if there are changes
-        if jj diff --summary | grep -q .; then
-            echo "Changes detected."
-            # Get the change ID for reference
-            CHANGE_ID=$(jj log -r @ --no-graph -T 'change_id' | head -1)
-            echo "Change ID: $CHANGE_ID"
-        else
-            echo "No changes detected. Abandoning commit..."
-            jj abandon
-        fi
-    else
-        # Check if there are any changes to commit for git
-        if git diff --quiet && git diff --cached --quiet; then
-            echo "No changes detected. Nothing to commit."
-        else
-            echo "Changes detected. Creating commit..."
-
-            # Add all changes
-            git add -A
-
-            # Create commit
-            git commit -m "$COMMIT_MESSAGE"
-
-            echo "Commit created successfully on branch '$BRANCH_NAME'"
-            echo "Commit hash: $(git rev-parse HEAD)"
-        fi
-    fi
-
-    # Switch back to original directory
-    cd "$ORIGINAL_DIR"
-
-    # Handle workspace/worktree cleanup/preservation
-    if [[ "$KEEP_WORKTREE" == true ]]; then
-        echo "Workspace preserved at: $WORKTREE_PATH"
-        echo "To switch to this workspace: cd $WORKTREE_PATH"
-        WORKTREE_PATH=""  # Prevent cleanup trap from trying to remove
-    else
-        if [[ "$USE_JJ" == true ]]; then
-            echo "Cleaning up jj workspace (change remains in repo)..."
-            jj workspace forget "$WORKSPACE_NAME"
-            rm -rf "$WORKTREE_PATH"
-        else
-            echo "Cleaning up git worktree (keeping branch)..."
-            git worktree remove "$WORKTREE_PATH"
-        fi
-        WORKTREE_PATH=""  # Prevent cleanup trap from trying to remove again
-    fi
-
-    if [[ "$USE_JJ" == true ]]; then
-        echo "Success! Workspace '$WORKSPACE_NAME' changes committed to repo."
-    else
-        echo "Success! Branch '$BRANCH_NAME' contains the committed changes."
-    fi
-
-else
+# Run the main command
+if ! "${COMMAND_ARGS[@]}"; then
     echo
     echo "Command failed! Cleaning up..."
-    # The cleanup trap will handle removing the workspace/worktree
     exit 1
+fi
+
+echo
+echo "Command succeeded!"
+
+# Handle changes based on VCS
+if [[ "$USE_JJ" == true ]]; then
+    if jj diff --summary | grep -q .; then
+        echo "Changes detected."
+        echo "Change ID: $(jj log -r @ --no-graph -T 'change_id' | head -1)"
+    else
+        echo "No changes detected. Abandoning commit..."
+        jj abandon
+    fi
+else
+    if git diff --quiet && git diff --cached --quiet; then
+        echo "No changes detected. Nothing to commit."
+    else
+        echo "Changes detected. Creating commit..."
+        git add -A
+        git commit -m "$COMMIT_MESSAGE"
+        echo "Commit created successfully on branch '$BRANCH_NAME'"
+        echo "Commit hash: $(git rev-parse HEAD)"
+    fi
+fi
+
+cd "$ORIGINAL_DIR"
+
+# Clean up workspace (success path)
+if [[ "$KEEP_WORKTREE" == true ]]; then
+    echo "Workspace preserved at: $WORKTREE_PATH"
+    echo "To switch to this workspace: cd $WORKTREE_PATH"
+else
+    if [[ "$USE_JJ" == true ]]; then
+        echo "Cleaning up jj workspace (change remains in repo)..."
+        jj workspace forget "$WORKSPACE_NAME"
+        rm -rf "$WORKTREE_PATH"
+    else
+        echo "Cleaning up git worktree (keeping branch)..."
+        git worktree remove "$WORKTREE_PATH"
+    fi
+fi
+# Clear path to prevent duplicate cleanup in trap
+WORKTREE_PATH=""
+
+if [[ "$USE_JJ" == true ]]; then
+    echo "Success! Workspace '$WORKSPACE_NAME' changes committed to repo."
+else
+    echo "Success! Branch '$BRANCH_NAME' contains the committed changes."
 fi
