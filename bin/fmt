@@ -1,0 +1,283 @@
+#!/bin/bash
+
+# Source Code Formatter
+# Detects file types in the directory and runs appropriate formatters
+
+set -euo pipefail
+
+# Formatters to run (empty means auto-detect)
+FORMATTERS=()
+FILES=()
+
+# Function to display usage
+usage() {
+    cat << EOF
+Usage: $0 [OPTIONS] [FILES...]
+
+Detects file types in the current directory and runs appropriate formatters.
+Optionally specify files to format only those files.
+
+OPTIONS:
+    -f, --formatter NAME    Specify formatter(s) to use (can be repeated)
+    -h, --help              Show this help message
+
+FORMATTERS:
+    ruff          Python: ruff check --fix && ruff format
+    ty            Python: ty check
+    bun           TypeScript: bun format
+    go            Go: go fmt
+    golangci-lint Go: golangci-lint run
+    shellcheck    Shell: shellcheck
+
+AUTO-DETECTION:
+    *.py          -> ruff + ty
+    *.ts          -> bun
+    *.go          -> go fmt
+    .golangci.yml -> golangci-lint
+    *.sh, *.bash  -> shellcheck
+
+EXAMPLES:
+    $0                          # Auto-detect and format
+    $0 -f ruff                  # Run only ruff
+    $0 -f ruff -f ty            # Run ruff and ty
+    $0 -f go src/*.go           # Run go fmt on specific files
+    $0 *.py                     # Auto-detect formatter for .py files
+EOF
+}
+
+# Function to check if files of a type exist
+has_files() {
+    local pattern="$1"
+    # shellcheck disable=SC2086
+    compgen -G "$pattern" > /dev/null 2>&1
+}
+
+# Function to run ruff formatter
+run_ruff() {
+    echo "Running ruff..."
+    if [[ ${#FILES[@]} -gt 0 ]]; then
+        uvx ruff check --fix "${FILES[@]}"
+        uvx ruff format "${FILES[@]}"
+    else
+        uvx ruff check --fix .
+        uvx ruff format .
+    fi
+}
+
+# Function to run ty checker
+run_ty() {
+    echo "Running ty..."
+    if [[ ${#FILES[@]} -gt 0 ]]; then
+        uvx ty check "${FILES[@]}"
+    else
+        uvx ty check
+    fi
+}
+
+# Function to run bun formatter
+run_bun() {
+    echo "Running bun format..."
+    if [[ ${#FILES[@]} -gt 0 ]]; then
+        bun format "${FILES[@]}"
+    else
+        bun format
+    fi
+}
+
+# Function to run go fmt
+run_go() {
+    echo "Running go fmt..."
+    if [[ ${#FILES[@]} -gt 0 ]]; then
+        go fmt "${FILES[@]}"
+    else
+        go fmt ./...
+    fi
+}
+
+# Function to run golangci-lint
+run_golangci_lint() {
+    echo "Running golangci-lint..."
+    if [[ ${#FILES[@]} -gt 0 ]]; then
+        golangci-lint run "${FILES[@]}"
+    else
+        golangci-lint run
+    fi
+}
+
+# Function to run shellcheck
+run_shellcheck() {
+    echo "Running shellcheck..."
+    if [[ ${#FILES[@]} -gt 0 ]]; then
+        shellcheck "${FILES[@]}"
+    else
+        # Find all shell scripts
+        local scripts=()
+        while IFS= read -r -d '' file; do
+            scripts+=("$file")
+        done < <(find . -type f \( -name "*.sh" -o -name "*.bash" \) -print0 2>/dev/null)
+
+        if [[ ${#scripts[@]} -gt 0 ]]; then
+            shellcheck "${scripts[@]}"
+        else
+            echo "No shell scripts found"
+        fi
+    fi
+}
+
+# Function to run a formatter by name
+run_formatter() {
+    local name="$1"
+    case "$name" in
+        ruff)
+            run_ruff
+            ;;
+        ty)
+            run_ty
+            ;;
+        bun)
+            run_bun
+            ;;
+        go)
+            run_go
+            ;;
+        golangci-lint)
+            run_golangci_lint
+            ;;
+        shellcheck)
+            run_shellcheck
+            ;;
+        *)
+            echo "Error: Unknown formatter '$name'" >&2
+            echo "Use --help for available formatters" >&2
+            exit 1
+            ;;
+    esac
+}
+
+# Function to auto-detect formatters based on files
+auto_detect_formatters() {
+    local detected=()
+
+    # Check for Python files
+    if has_files "*.py" || has_files "**/*.py"; then
+        detected+=("ruff" "ty")
+    fi
+
+    # Check for TypeScript files
+    if has_files "*.ts" || has_files "**/*.ts" || has_files "*.tsx" || has_files "**/*.tsx"; then
+        detected+=("bun")
+    fi
+
+    # Check for Go files
+    if has_files "*.go" || has_files "**/*.go"; then
+        detected+=("go")
+    fi
+
+    # Check for golangci-lint config
+    if [[ -f ".golangci.yml" || -f ".golangci.yaml" ]]; then
+        detected+=("golangci-lint")
+    fi
+
+    # Check for shell scripts
+    if has_files "*.sh" || has_files "**/*.sh" || has_files "*.bash" || has_files "**/*.bash"; then
+        detected+=("shellcheck")
+    fi
+
+    echo "${detected[@]}"
+}
+
+# Function to detect formatters from file extensions
+detect_from_files() {
+    local detected=()
+    local seen_ruff=false
+    local seen_ty=false
+    local seen_bun=false
+    local seen_go=false
+    local seen_shellcheck=false
+
+    for file in "${FILES[@]}"; do
+        case "$file" in
+            *.py)
+                if [[ "$seen_ruff" == false ]]; then
+                    detected+=("ruff")
+                    seen_ruff=true
+                fi
+                if [[ "$seen_ty" == false ]]; then
+                    detected+=("ty")
+                    seen_ty=true
+                fi
+                ;;
+            *.ts|*.tsx)
+                if [[ "$seen_bun" == false ]]; then
+                    detected+=("bun")
+                    seen_bun=true
+                fi
+                ;;
+            *.go)
+                if [[ "$seen_go" == false ]]; then
+                    detected+=("go")
+                    seen_go=true
+                fi
+                ;;
+            *.sh|*.bash)
+                if [[ "$seen_shellcheck" == false ]]; then
+                    detected+=("shellcheck")
+                    seen_shellcheck=true
+                fi
+                ;;
+        esac
+    done
+
+    echo "${detected[@]}"
+}
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -f|--formatter)
+            FORMATTERS+=("$2")
+            shift 2
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        -*)
+            echo "Error: Unknown option $1" >&2
+            echo "Use --help for usage information" >&2
+            exit 1
+            ;;
+        *)
+            FILES+=("$1")
+            shift
+            ;;
+    esac
+done
+
+# Determine which formatters to run
+if [[ ${#FORMATTERS[@]} -eq 0 ]]; then
+    # Auto-detect based on files or directory
+    if [[ ${#FILES[@]} -gt 0 ]]; then
+        read -ra FORMATTERS <<< "$(detect_from_files)"
+    else
+        read -ra FORMATTERS <<< "$(auto_detect_formatters)"
+    fi
+fi
+
+# Check if any formatters were detected
+if [[ ${#FORMATTERS[@]} -eq 0 ]]; then
+    echo "No formatters detected for this directory" >&2
+    echo "Use -f to specify a formatter explicitly" >&2
+    exit 1
+fi
+
+echo "Formatters to run: ${FORMATTERS[*]}"
+echo
+
+# Run each formatter
+for formatter in "${FORMATTERS[@]}"; do
+    run_formatter "$formatter"
+    echo
+done
+
+echo "Done!"
